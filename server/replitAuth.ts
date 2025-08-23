@@ -57,12 +57,21 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
+  // Determine role based on user - assign admin role to specific user for testing
+  let role: "admin" | "talent" | "client" = "talent"; // default role
+  
+  // You can test admin functionality by being assigned admin role
+  if (claims["sub"] === "45545974") {
+    role = "admin";
+  }
+  
   await storage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
+    role: role,
   });
 }
 
