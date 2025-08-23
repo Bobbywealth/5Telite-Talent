@@ -75,32 +75,121 @@ export default function Landing() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-hero">
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
-              Discover Exceptional Talent
-            </h1>
-            <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-3xl mx-auto">
-              Connect with professional models, actors, and performers for your next project. 
-              Book with confidence through our comprehensive talent platform.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/talent">
-                <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-browse-talent">
-                  <i className="fas fa-search mr-2"></i>Browse Talent
+      <section className="relative bg-gradient-hero-new overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="floating-shape shape-1"></div>
+          <div className="floating-shape shape-2"></div>
+          <div className="floating-shape shape-3"></div>
+          <div className="floating-dots"></div>
+        </div>
+        
+        {/* Content overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Main content */}
+            <div className="text-center lg:text-left">
+              {/* Badge */}
+              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6 animate-fade-in-up">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                500+ Professional Talents Available
+              </div>
+              
+              <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up-delay-1">
+                Book <span className="text-gradient-white relative">
+                  Exceptional
+                  <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transform scale-x-0 animate-underline"></div>
+                </span> Talent
+              </h1>
+              
+              <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-xl lg:max-w-none animate-fade-in-up-delay-2">
+                Connect with professional models, actors, and performers for your next project. 
+                <span className="text-yellow-300 font-semibold">Book with confidence</span> through our comprehensive talent platform.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 lg:justify-start justify-center mb-8 animate-fade-in-up-delay-3">
+                <Link href="/talent">
+                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl" data-testid="button-browse-talent">
+                    <i className="fas fa-search mr-2"></i>Browse 500+ Talents
+                    <i className="fas fa-arrow-right ml-2"></i>
+                  </Button>
+                </Link>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm"
+                  onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  data-testid="button-request-booking"
+                >
+                  <i className="fas fa-calendar mr-2"></i>Start Booking
+                  <i className="fas fa-sparkles ml-2"></i>
                 </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="border-2 border-white text-white hover:bg-white hover:text-primary"
-                onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-request-booking"
-              >
-                <i className="fas fa-calendar mr-2"></i>Request Booking
-              </Button>
+              </div>
+              
+              {/* Stats */}
+              <div className="flex flex-wrap gap-6 justify-center lg:justify-start text-white animate-fade-in-up-delay-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold">500+</div>
+                  <div className="text-sm text-slate-200">Active Talents</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">1000+</div>
+                  <div className="text-sm text-slate-200">Completed Projects</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">50+</div>
+                  <div className="text-sm text-slate-200">Cities Worldwide</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right side - Visual elements */}
+            <div className="hidden lg:block relative">
+              <div className="relative">
+                {/* Floating cards */}
+                <div className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-3 hover:rotate-0 transition-all duration-500 floating-card-1">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <i className="fas fa-star text-white"></i>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800">Top Rated</div>
+                      <div className="text-sm text-gray-600">5.0 ★ Rating</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="absolute top-20 left-0 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-500 floating-card-2">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                      <i className="fas fa-check text-white"></i>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800">Verified</div>
+                      <div className="text-sm text-gray-600">Professional</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="absolute bottom-0 right-10 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-500 floating-card-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                      <i className="fas fa-bolt text-white"></i>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800">Fast Response</div>
+                      <div className="text-sm text-gray-600">&lt; 24 hours</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Central icon */}
+                <div className="mx-auto w-48 h-48 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 pulse-animation">
+                  <i className="fas fa-users text-6xl text-white"></i>
+                </div>
+              </div>
             </div>
           </div>
         </div>
