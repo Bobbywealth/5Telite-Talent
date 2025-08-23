@@ -1,0 +1,519 @@
+# 5T Talent Platform — Replit Build Spec (MVP → v1.0)
+
+This is a complete, implementation‑ready specification you can paste into Replit’s AI (Ghostwriter) to scaffold the project. It includes stack choices, data models, API contracts, page routes, and acceptance criteria.
+
+---
+
+## 0) High‑level summary
+
+**Goal:** Build a booking platform for a talent agency (5T) where **talents** can sign up and manage profiles/media/availability, **clients** can request bookings, and **admins** can manage bookings, tasks, contracts (e‑sign), payments, and a master calendar.
+
+**User roles:** `admin`, `talent`, `client` (optional: `agent` later)
+
+**Core flows:**
+
+1. **Talent onboarding & profiles** (data + photos/videos + resume PDFs)
+2. **Talent directory & search** (public)
+3. **Booking workflow** (request → proposal → e‑sign → payment → calendar event)
+4. **Admin calendar** (master calendar; filter by talent/status)
+5. **Task manager** (Kanban/list per booking or per talent)
+6. **Contracts** (template merge + e‑sign via Dropbox Sign or stub)
+7. **Payments** (Stripe)
+8. **Notifications** (email) & basic activity log
+
+---
+
+## 1) Tech stack (MVP)
+
+* **Frontend**: React + Vite (or Next.js if preferred), TailwindCSS, shadcn/ui
+* **Backend**: Node.js + Express
+* **Auth**: JWT (access/refresh tokens), bcrypt password hashing
+* **Database**: MongoDB Atlas + Mongoose
+* **Storage**: Cloudinary for images/videos/PDFs (simple uploads)
+* **Payments**: Stripe (Checkout/Invoices)
+* **E‑sign**: Dropbox Sign (HelloSign) API (stub allowed in MVP with a mock signer)
+* **Calendar UI**: FullCalendar (admin), iCal feed generation for read‑only external view
+* **Email**: Resend or SendGrid (transactional notifications)
+* **Deployment**: Replit for dev, (optional) Render/Vercel later
+
+> If Replit AI prefers Next.js (App Router), that’s fine—keep the same models and endpoints.
+
+---
+
+## 2) Environment variables
+
+```
+PORT=3000
+MONGODB_URI=your_mongodb_atlas_uri
+JWT_SECRET=super_secret_jwt
+REFRESH_JWT_SECRET=super_secret_refresh
+CLOUDINARY_CLOUD_NAME=xxx
+CLOUDINARY_API_KEY=xxx
+CLOUDINARY_API_SECRET=xxx
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+RESEND_API_KEY=re_xxx  # or SENDGRID_API_KEY
+HELLOSIGN_API_KEY=hs_xxx  # optional; mock if not available
+BASE_URL=http://localhost:3000  # for callbacks/webhooks in dev
+```
+
+---
+
+## 3) Data model (Mongoose schemas)
+
+### 3.1 User
+
+```ts
+User {
+  _id: ObjectId,
+  role: 'admin' | 'talent' | 'client',
+  email: string (unique, required),
+  passwordHash: string,
+  name: string,
+  phone?: string,
+  status: 'active' | 'pending' | 'suspended',
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.2 TalentProfile
+
+```ts
+TalentProfile {
+  _id: ObjectId,
+  userId: ObjectId (ref User),
+  stageName?: string,
+  categories: string[]  // e.g., ['On-Camera', 'Voiceover', 'Runway', 'Commercials']
+  skills: string[],     // tags: acting, dancing, modeling, VO, languages, etc.
+  bio?: string,
+  location?: string,
+  unionStatus?: string, // SAG-AFTRA, Non-Union
+  measurements?: {
+    height?: string, weight?: string, bust?: string, waist?: string, hips?: string,
+    jacket?: string, inseam?: string, shoe?: string, hair?: string, eyes?: string
+  },
+  rates?: {
+    day?: number, halfDay?: number, hourly?: number
+  },
+  availability?: {
+    timeslots: [{ start: Date, end: Date, note?: string }]
+  },
+  media: [{
+    kind: 'image' | 'video' | 'pdf',
+    url: string,        // Cloudinary URL
+    publicId?: string,  // Cloudinary public_id
+    caption?: string,
+    createdAt: Date
+  }],
+  resumeUrls?: string[],
+  social?: { instagram?: string, tiktok?: string, youtube?: string, website?: string },
+  guardian?: { // for minors
+    name?: string, email?: string, phone?: string
+  },
+  approvalStatus: 'pending' | 'approved' | 'rejected',
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.3 ClientOrg (optional in MVP; otherwise store client in User)
+
+```ts
+ClientOrg {
+  _id: ObjectId,
+  name: string,
+  contacts: [{ name: string, email: string, phone?: string }],
+  notes?: string,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.4 Booking
+
+```ts
+Booking {
+  _id: ObjectId,
+  code: string, // human-friendly e.g., BK-2025-0001
+  clientId: ObjectId (ref User or ClientOrg),
+  talentIds: ObjectId[] (ref User),
+  title: string, // "Brand X Spring Shoot"
+  location?: string,
+  start: Date,
+  end: Date,
+  rate: number, // total rate for talent or per talent on BookingTalent join (v1.0)
+  usage?: { territory?: string, term?: string, media?: string },
+  deliverables?: string,
+  notes?: string,
+  status: 'inquiry' | 'proposed' | 'contract_sent' | 'signed' | 'invoiced' | 'paid' | 'completed' | 'cancelled',
+  contractId?: ObjectId (ref Contract),
+  invoiceId?: ObjectId (ref Invoice),
+  tasks: ObjectId[] (ref Task),
+  createdBy: ObjectId (ref User), // admin who created
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.5 Contract
+
+```ts
+Contract {
+  _id: ObjectId,
+  bookingId: ObjectId (ref Booking),
+  templateKey: string,  // e.g., 'standard-booking-v1'
+  parties: {
+    agency: { name: '5T', contactEmail: string },
+    client: { name: string, email: string },
+    talents: [{ name: string, email: string }]
+  },
+  fields: { [key: string]: string | number }, // merge fields
+  status: 'draft' | 'sent' | 'signed' | 'declined',
+  signedPdfUrl?: string,
+  externalId?: string, // Dropbox Sign signature request id
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.6 Invoice
+
+```ts
+Invoice {
+  _id: ObjectId,
+  bookingId: ObjectId (ref Booking),
+  amount: number,
+  currency: 'USD',
+  status: 'draft' | 'sent' | 'paid' | 'void',
+  stripeSessionId?: string,
+  stripeInvoiceId?: string,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.7 Task
+
+```ts
+Task {
+  _id: ObjectId,
+  scope: 'booking' | 'talent',
+  bookingId?: ObjectId,
+  talentId?: ObjectId (ref User),
+  title: string,
+  description?: string,
+  status: 'todo' | 'in_progress' | 'blocked' | 'done',
+  dueAt?: Date,
+  assigneeId?: ObjectId (ref User),
+  attachments: [{ kind: 'image'|'pdf'|'other', url: string, publicId?: string }],
+  createdBy: ObjectId (ref User),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 3.8 ActivityLog (simple)
+
+```ts
+ActivityLog {
+  _id: ObjectId,
+  actorId: ObjectId (ref User),
+  action: string, // 'CREATE_BOOKING', 'UPDATE_TASK', etc.
+  targetType: 'booking' | 'task' | 'contract' | 'profile' | 'media' | 'invoice',
+  targetId: ObjectId,
+  createdAt: Date
+}
+```
+
+---
+
+## 4) API design (Express)
+
+All routes prefixed with `/api`. Use JWT auth middleware and role guards.
+
+### Auth
+
+* `POST /api/auth/register` { role, email, password, name }
+* `POST /api/auth/login` { email, password } → { accessToken, refreshToken, user }
+* `POST /api/auth/refresh` → new tokens
+* `POST /api/auth/logout`
+
+### Talent profiles
+
+* `GET /api/talents` (public directory; query params: q, category, skill, location, page)
+* `GET /api/talents/:id` (public)
+* `POST /api/talents/me` (talent only: create/update own profile)
+* `POST /api/talents/me/media` (talent: upload to Cloudinary)
+* `PATCH /api/admin/talents/:id/approve` (admin)
+
+### Bookings
+
+* `POST /api/bookings` (admin creates; or client inquiry)
+* `GET /api/bookings` (admin; filters: status, date range, talentId)
+* `GET /api/bookings/:id`
+* `PATCH /api/bookings/:id` (admin)
+* `POST /api/bookings/:id/add-talent` (admin)
+* `POST /api/bookings/:id/status` (admin)
+
+### Contracts
+
+* `POST /api/contracts` (admin: create from template + fields)
+* `POST /api/contracts/:id/send` (admin: create Dropbox Sign request)
+* `GET /api/contracts/:id` (admin/talent/client if party)
+* `POST /api/webhooks/hellosign` (webhook)
+
+### Invoices & Payments (Stripe)
+
+* `POST /api/invoices` (admin)
+* `GET /api/invoices/:id`
+* `POST /api/payments/checkout-session` { invoiceId } → { url }
+* `POST /api/webhooks/stripe` (webhook)
+
+### Tasks
+
+* `POST /api/tasks` (admin)
+* `GET /api/tasks` (admin; filters: bookingId, talentId, status)
+* `PATCH /api/tasks/:id` (admin or assignee)
+
+### Calendar
+
+* `GET /api/calendar` (admin; returns booking events)
+* `GET /api/calendar/ical` (read-only iCal feed)
+
+### Uploads
+
+* `POST /api/uploads` (signed Cloudinary upload, all roles as permitted)
+
+### Search (basic)
+
+* Use query params on `/api/talents` to filter by `category`, `skills[]`, `location`, `min/max height`, etc.
+
+---
+
+## 5) Frontend pages & routes
+
+### Public
+
+* `/` – Landing (hero, “Browse Talent”, “Book Now”, About, Contact)
+* `/talent` – Directory (filters: categories, skills, location, age bands)
+* `/talent/:id` – Profile detail (gallery, reels, bio, measurements, rates, availability)
+* `/book` – Booking request form (client lead capture)
+
+### Auth
+
+* `/login`, `/register` (role selection)
+
+### Talent dashboard
+
+* `/dashboard` (role-aware)
+* `/dashboard/profile` – edit profile, upload media
+* `/dashboard/bookings` – list their bookings
+* `/dashboard/tasks` – tasks assigned to the talent
+
+### Admin dashboard
+
+* `/admin` – overview KPIs (bookings by status, upcoming events)
+* `/admin/talents` – table + approve/reject + filters
+* `/admin/bookings` – table, create/edit
+* `/admin/bookings/:id` – details: timeline, contract, invoice, tasks
+* `/admin/calendar` – FullCalendar (day/week/month, filter by talent/status)
+* `/admin/tasks` – list + Kanban view; assign tasks to talent/bookings
+* `/admin/contracts` – templates list (create from template)
+* `/admin/invoices` – list
+
+---
+
+## 6) Booking workflow (MVP)
+
+1. **Inquiry**: Client submits `/book` form → creates `Booking` in `inquiry` status and emails admin.
+2. **Proposal**: Admin edits dates/talents/rates/usage → sets status `proposed` and sends to client (email with link).
+3. **Contract**: Admin generates `Contract` from template; `POST /contracts/:id/send` to Dropbox Sign (or mock). Status `contract_sent`.
+4. **Signature**: Parties sign → webhook updates `Contract` to `signed` and attaches `signedPdfUrl`; Booking moves to `signed`.
+5. **Invoice/Payment**: Admin creates `Invoice`; `/payments/checkout-session` yields Stripe URL; webhook marks `paid` → Booking → `paid` and event added to calendar.
+6. **Completion**: After end date, set Booking `completed`.
+
+---
+
+## 7) Task manager (MVP)
+
+* Create tasks scoped to **booking** or **talent**.
+* Fields: title, description, status, due date, assignee, attachments
+* List + Kanban UI; filter by status/assignee/booking/talent
+* Notifications on assignment/status change
+
+---
+
+## 8) Contracts & templates
+
+* Store a few JSON templates (e.g., `standard-booking-v1`).
+* Merge fields: `{AGENCY_NAME}`, `{CLIENT_NAME}`, `{TALENT_NAME}`, `{DATES}`, `{RATE}`, `{USAGE_TERRITORY}`, `{USAGE_TERM}`, `{MEDIA}`, `{KILL_FEE}`, `{GUARDIAN_NAME}` (for minors), etc.
+* Render to HTML → PDF (for preview) and/or send to Dropbox Sign.
+* Webhook endpoint updates status and stores `signedPdfUrl`.
+
+---
+
+## 9) Payments (Stripe)
+
+* Create invoices with amount.
+* Use Checkout Session for quick pay.
+* Webhook validates signature, updates Invoice to `paid`, Booking to `paid`.
+
+---
+
+## 10) Security & permissions
+
+* Passwords hashed (bcrypt), JWTs short‑lived + refresh tokens.
+* Role guards:
+
+  * **Admin**: all admin routes; view everything.
+  * **Talent**: can view/edit only their profile, their bookings, their tasks.
+  * **Client**: can view their bookings/contracts/invoices (if client portal added in v1.0).
+* Uploads: Cloudinary restricted presets; validate MIME types.
+* PII: limit exposed fields in public endpoints.
+
+---
+
+## 11) Notifications
+
+* Email on: new inquiry, booking status change, new task assignment, contract sent/signed, invoice ready/paid.
+* Template variables and a simple mailer service wrapper.
+
+---
+
+## 12) Calendar
+
+* `GET /api/calendar` returns array of events: `{ id, title, start, end, bookingId, talentIds[] }`.
+* Admin UI with FullCalendar; filters by talent and status.
+* Optional read‑only iCal feed for the whole calendar or per‑talent.
+
+---
+
+## 13) Public talent directory & SEO
+
+* Server‑side rendered lists with meta tags and Open Graph.
+* Filters: categories, skills (tag pills), location, age band, height range.
+* Card grid with lazy‑loaded media.
+
+---
+
+## 14) Project structure (suggested)
+
+```
+root/
+  client/                # React or Next.js app
+    src/
+      pages|routes/
+      components/
+      lib/
+      styles/
+  server/
+    src/
+      index.ts
+      config/
+      middleware/
+      routes/
+        auth.ts
+        talents.ts
+        bookings.ts
+        tasks.ts
+        contracts.ts
+        invoices.ts
+        payments.ts
+        uploads.ts
+        calendar.ts
+        webhooks/
+          stripe.ts
+          hellosign.ts
+      models/
+        User.ts
+        TalentProfile.ts
+        Booking.ts
+        Contract.ts
+        Invoice.ts
+        Task.ts
+        ActivityLog.ts
+      services/
+        auth.service.ts
+        email.service.ts
+        cloudinary.service.ts
+        stripe.service.ts
+        contract.service.ts
+      utils/
+        validators.ts
+        errors.ts
+  package.json
+  README.md
+```
+
+---
+
+## 15) Seed data (for demo)
+
+* 3 talents with different categories/skills, photos (Cloudinary placeholders).
+* 1 admin user.
+* 1 client user.
+* 2 bookings (one `proposed`, one `paid`).
+* 4 tasks across bookings/talents.
+
+---
+
+## 16) Acceptance criteria (MVP)
+
+1. **Auth**: Users can register/login; talent can create/edit a profile; admin can approve.
+2. **Directory**: Anyone can browse/search talents and open profile pages.
+3. **Bookings**: Admin can create/edit a booking, attach talent, update status.
+4. **Contracts**: Admin can generate a contract from a template and send (mock OK); status updates visible.
+5. **Payments**: Admin can create an invoice; Stripe Checkout pays it; webhook marks it paid.
+6. **Tasks**: Admin can create/assign tasks; talents see tasks in dashboard; statuses update.
+7. **Calendar**: Admin sees a master calendar with bookings.
+8. **Uploads**: Talent can upload images/videos/resumes; appear on their profile.
+9. **Notifications**: Emails sent on key events.
+10. **Security**: Role‑based access enforced on server routes.
+
+---
+
+## 17) v1.0 Enhancements
+
+* Client portal to review proposals/contracts/invoices
+* Advanced search (multi‑facet), shortlist builder, shareable casting links
+* Real‑time chat per booking (Socket.io)
+* Commission tracking & payout report exports (CSV)
+* Meilisearch/Algolia for faster search
+* Rate cards by category and usage presets
+
+---
+
+## 18) Implementation notes for Replit AI
+
+* Generate both **client** and **server** workspaces with scripts:
+
+  * `npm run dev:server` (ts-node nodemon), `npm run dev:client`
+  * Root `npm run dev` to run concurrently (use `concurrently`)
+* Provide Mongoose models exactly as above and seed script.
+* Provide Cloudinary upload endpoint returning `secure_url` and `public_id`.
+* Provide a simple PDF render for contracts (HTML → PDF via `puppeteer` or `pdf-lib`) if Dropbox Sign is mocked.
+* Add Stripe and HelloSign webhook endpoints with signature verification stubs and clear TODOs.
+* Include example `.env.example` and README with setup steps.
+
+---
+
+## 19) Copy & UI hints
+
+* Admin tables with shadcn/ui Table, Filters (status, date, talent), and row actions (View, Edit, Contract, Invoice)
+* Profile form broken into tabs: General, Measurements, Skills/Tags, Media, Rates, Availability
+* Booking detail page with tabs: Summary, Timeline, Contract, Invoice, Tasks
+* Task board with columns: To‑do, In Progress, Blocked, Done
+
+---
+
+## 20) Out‑of‑scope (for now)
+
+* Payout automation to talents (manual/off‑platform in MVP)
+* Two‑factor auth
+* GDPR data export/delete flows
+* Deep analytics dashboards
+
+---
+
+**Deliverable:** A working MVP in Replit with the described routes, pages, and flows. Use the models, endpoints, and acceptance criteria above as the single source of truth.
