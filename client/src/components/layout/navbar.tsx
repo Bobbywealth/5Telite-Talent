@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import logoImage from "@assets/5t-logo.png";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
@@ -35,8 +36,12 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-primary" data-testid="link-logo">
-              5T
+            <Link href="/" className="flex items-center" data-testid="link-logo">
+              <img 
+                src={logoImage} 
+                alt="5T Talent Platform" 
+                className="h-10 w-auto mr-2 hover:scale-105 transition-transform duration-200"
+              />
             </Link>
             
             {/* Desktop Navigation */}
