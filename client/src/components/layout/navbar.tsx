@@ -33,62 +33,60 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-20">
+          {/* Left: Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center" data-testid="link-logo">
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
-                className="h-14 w-auto mr-2 hover:scale-105 transition-transform duration-200"
+                className="h-14 w-auto hover:scale-105 transition-transform duration-200"
               />
             </Link>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:block ml-10">
-              <div className="flex items-baseline space-x-8">
-                <Link href="/">
-                  <a 
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive("/") && location === "/" 
-                        ? "text-primary" 
-                        : "text-slate-600 hover:text-primary"
-                    }`}
-                    data-testid="link-home"
-                  >
-                    Home
-                  </a>
-                </Link>
-                <Link href="/talent">
-                  <a 
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive("/talent") 
-                        ? "text-primary" 
-                        : "text-slate-600 hover:text-primary"
-                    }`}
-                    data-testid="link-find-talent"
-                  >
-                    Find Talent
-                  </a>
-                </Link>
-                <Link href="/book">
-                  <a 
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive("/book") 
-                        ? "text-primary" 
-                        : "text-slate-600 hover:text-primary"
-                    }`}
-                    data-testid="link-book"
-                  >
-                    Book Now
-                  </a>
-                </Link>
-              </div>
-            </div>
           </div>
 
-          {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          {/* Center: Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/">
+              <a 
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive("/") && location === "/" 
+                    ? "text-white bg-primary shadow-md" 
+                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                }`}
+                data-testid="link-home"
+              >
+                Home
+              </a>
+            </Link>
+            <Link href="/talent">
+              <a 
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive("/talent") 
+                    ? "text-white bg-primary shadow-md" 
+                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                }`}
+                data-testid="link-find-talent"
+              >
+                Find Talent
+              </a>
+            </Link>
+            <Link href="/book">
+              <a 
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive("/book") 
+                    ? "text-white bg-primary shadow-md" 
+                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                }`}
+                data-testid="link-book"
+              >
+                Book Now
+              </a>
+            </Link>
+          </div>
+
+          {/* Right: User Actions */}
+          <div className="flex items-center space-x-3">
             {!isAuthenticated ? (
               <Button 
                 onClick={() => window.location.href = "/api/login"}
