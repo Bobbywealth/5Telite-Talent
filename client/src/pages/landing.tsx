@@ -90,7 +90,7 @@ export default function Landing() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Main content */}
-            <div className="text-center lg:text-left">
+            <div className="text-center">
               {/* Badge */}
               <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6 animate-fade-in-up">
                 <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
@@ -104,12 +104,12 @@ export default function Landing() {
                 </span> Talent
               </h1>
               
-              <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-xl lg:max-w-none animate-fade-in-up-delay-2">
+              <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-xl mx-auto animate-fade-in-up-delay-2">
                 Connect with professional models, actors, and performers for your next project. 
                 <span className="text-yellow-300 font-semibold">Book with confidence</span> through our comprehensive talent platform.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 lg:justify-start justify-center mb-8 animate-fade-in-up-delay-3">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in-up-delay-3">
                 <Link href="/talent">
                   <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl" data-testid="button-browse-talent">
                     <i className="fas fa-search mr-2"></i>Browse 500+ Talents
@@ -129,7 +129,7 @@ export default function Landing() {
               </div>
               
               {/* Stats */}
-              <div className="flex flex-wrap gap-6 justify-center lg:justify-start text-white animate-fade-in-up-delay-4">
+              <div className="flex flex-wrap gap-6 justify-center text-white animate-fade-in-up-delay-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold">500+</div>
                   <div className="text-sm text-slate-200">Active Talents</div>

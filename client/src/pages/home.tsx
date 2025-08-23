@@ -5,6 +5,7 @@ import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export default function Home() {
   const { user } = useAuth();

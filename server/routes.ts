@@ -40,6 +40,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Route to switch user role for testing
+  app.post('/api/auth/switch-role', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { role } = req.body;
+      
+      if (!role || !['admin', 'talent', 'client'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role. Must be 'admin', 'talent', or 'client'" });
+      }
+
+      // Update user role in database
+      const updatedUser = await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        firstName: req.user.claims.first_name,
+        lastName: req.user.claims.last_name,
+        profileImageUrl: req.user.claims.profile_image_url,
+        role: role,
+      });
+      
+      res.json({ message: `Role switched to ${role}`, user: updatedUser });
+    } catch (error) {
+      console.error("Error switching user role:", error);
+      res.status(500).json({ message: "Failed to switch role" });
+    }
+  });
+
   // Object storage routes
   app.get("/public-objects/:filePath(*)", async (req, res) => {
     const filePath = req.params.filePath;
