@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import logoImage from "@assets/5t-logo.png";
 
 export default function Footer() {
   return (
@@ -7,7 +8,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <div className="text-2xl font-bold text-primary mb-4">5T</div>
+            <Link href="/" className="flex items-center mb-4">
+              <img 
+                src={logoImage} 
+                alt="5T Talent Platform" 
+                className="h-12 w-auto hover:scale-105 transition-transform duration-200"
+              />
+            </Link>
             <p className="text-slate-400 mb-4">
               Professional talent agency connecting exceptional performers with leading brands and productions.
             </p>

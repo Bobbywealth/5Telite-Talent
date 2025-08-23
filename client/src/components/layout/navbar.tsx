@@ -33,14 +33,14 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-24">
           {/* Left: Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center" data-testid="link-logo">
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
-                className="h-14 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-16 w-auto hover:scale-105 transition-transform duration-200"
               />
             </Link>
           </div>
