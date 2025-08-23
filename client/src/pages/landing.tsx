@@ -195,8 +195,80 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* What We Do Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">WHAT WE DO</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {/* Talent Acquisition */}
+            <div className="text-center group">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
+                <i className="fas fa-briefcase text-3xl text-white"></i>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Talent Acquisition</h3>
+              <p className="text-slate-600 mb-6 leading-relaxed max-w-sm mx-auto">
+                We understand the unique needs of your business. We're not just recruiting; we're building 
+                lasting partnerships between companies and top talent.
+              </p>
+              <Button variant="outline" className="border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white" data-testid="button-talent-acquisition">
+                Read More
+              </Button>
+            </div>
+
+            {/* Strategic Consulting */}
+            <div className="text-center group">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
+                <i className="fas fa-chart-line text-3xl text-white"></i>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Strategic Consulting</h3>
+              <p className="text-slate-600 mb-6 leading-relaxed max-w-sm mx-auto">
+                Our strategic advice goes beyond recruitment. We guide your workforce decisions, 
+                empowering your business to succeed.
+              </p>
+              <Button variant="outline" className="border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white" data-testid="button-strategic-consulting">
+                Read More
+              </Button>
+            </div>
+
+            {/* Industry Specialization */}
+            <div className="text-center group">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
+                <i className="fas fa-industry text-3xl text-white"></i>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Industry Specialization</h3>
+              <p className="text-slate-600 mb-6 leading-relaxed max-w-sm mx-auto">
+                Our deep industry knowledge ensures we connect you with professionals who understand 
+                your sector inside and out. Trust us for industry-specific staffing.
+              </p>
+              <Button variant="outline" className="border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white" data-testid="button-industry-specialization">
+                Read More
+              </Button>
+            </div>
+          </div>
+
+          {/* Statistics Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-slate-200">
+            <div className="text-center">
+              <div className="text-5xl lg:text-6xl font-bold text-slate-900 mb-2">100%</div>
+              <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">SATISFACTION GUARANTEED</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl lg:text-6xl font-bold text-slate-900 mb-2">500+</div>
+              <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">ACTIVE TALENTS</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl lg:text-6xl font-bold text-slate-900 mb-2">1000+</div>
+              <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">SUCCESSFUL PROJECTS</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Talents */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Featured Talent</h2>
