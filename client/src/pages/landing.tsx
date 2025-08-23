@@ -75,17 +75,50 @@ export default function Landing() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-hero-new overflow-hidden">
-        {/* Animated background elements */}
+      <section className="relative bg-gradient-hero-enhanced overflow-hidden">
+        {/* Dynamic animated background elements */}
         <div className="absolute inset-0">
+          {/* Floating geometric shapes */}
           <div className="floating-shape shape-1"></div>
           <div className="floating-shape shape-2"></div>
           <div className="floating-shape shape-3"></div>
-          <div className="floating-dots"></div>
+          <div className="floating-shape shape-4"></div>
+          <div className="floating-shape shape-5"></div>
+          
+          {/* Animated particles */}
+          <div className="floating-particles">
+            <div className="particle particle-1"></div>
+            <div className="particle particle-2"></div>
+            <div className="particle particle-3"></div>
+            <div className="particle particle-4"></div>
+            <div className="particle particle-5"></div>
+            <div className="particle particle-6"></div>
+            <div className="particle particle-7"></div>
+            <div className="particle particle-8"></div>
+          </div>
+          
+          {/* Floating geometric elements */}
+          <div className="geometric-elements">
+            <div className="triangle triangle-1"></div>
+            <div className="triangle triangle-2"></div>
+            <div className="circle circle-1"></div>
+            <div className="circle circle-2"></div>
+            <div className="square square-1"></div>
+            <div className="square square-2"></div>
+          </div>
+          
+          {/* Animated gradient orbs */}
+          <div className="gradient-orbs">
+            <div className="orb orb-1"></div>
+            <div className="orb orb-2"></div>
+            <div className="orb orb-3"></div>
+          </div>
         </div>
         
-        {/* Content overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        {/* Content overlay with subtle pattern */}
+        <div className="absolute inset-0 bg-black bg-opacity-20">
+          <div className="absolute inset-0 hero-pattern opacity-5"></div>
+        </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -196,72 +229,84 @@ export default function Landing() {
       </section>
 
       {/* What We Do Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">WHAT WE DO</h2>
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">What We Do</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Comprehensive talent solutions designed to elevate your business and connect you with exceptional performers
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {/* Talent Acquisition */}
-            <div className="text-center group">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
-                <i className="fas fa-briefcase text-3xl text-white"></i>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Talent Acquisition</h3>
-              <p className="text-slate-600 mb-6 leading-relaxed max-w-sm mx-auto">
-                We understand the unique needs of your business. We're not just recruiting; we're building 
-                lasting partnerships between companies and top talent.
-              </p>
-              <Button variant="outline" className="border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white" data-testid="button-talent-acquisition">
-                Read More
-              </Button>
-            </div>
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90">
+              <CardContent className="p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                  <i className="fas fa-briefcase text-3xl text-white"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Talent Acquisition</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  We understand the unique needs of your business. We're not just recruiting; we're building 
+                  lasting partnerships between companies and top talent.
+                </p>
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 hover:shadow-lg transition-all duration-300" data-testid="button-talent-acquisition">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Strategic Consulting */}
-            <div className="text-center group">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
-                <i className="fas fa-chart-line text-3xl text-white"></i>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Strategic Consulting</h3>
-              <p className="text-slate-600 mb-6 leading-relaxed max-w-sm mx-auto">
-                Our strategic advice goes beyond recruitment. We guide your workforce decisions, 
-                empowering your business to succeed.
-              </p>
-              <Button variant="outline" className="border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white" data-testid="button-strategic-consulting">
-                Read More
-              </Button>
-            </div>
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90">
+              <CardContent className="p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                  <i className="fas fa-chart-line text-3xl text-white"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Strategic Consulting</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  Our strategic advice goes beyond recruitment. We guide your workforce decisions, 
+                  empowering your business to succeed.
+                </p>
+                <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white border-0 hover:shadow-lg transition-all duration-300" data-testid="button-strategic-consulting">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Industry Specialization */}
-            <div className="text-center group">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
-                <i className="fas fa-industry text-3xl text-white"></i>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Industry Specialization</h3>
-              <p className="text-slate-600 mb-6 leading-relaxed max-w-sm mx-auto">
-                Our deep industry knowledge ensures we connect you with professionals who understand 
-                your sector inside and out. Trust us for industry-specific staffing.
-              </p>
-              <Button variant="outline" className="border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white" data-testid="button-industry-specialization">
-                Read More
-              </Button>
-            </div>
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90">
+              <CardContent className="p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-blue-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                  <i className="fas fa-star text-3xl text-white"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Industry Specialization</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  Our deep industry knowledge ensures we connect you with professionals who understand 
+                  your sector inside and out. Trust us for industry-specific staffing.
+                </p>
+                <Button className="bg-gradient-to-r from-pink-500 to-blue-600 hover:from-pink-600 hover:to-blue-700 text-white border-0 hover:shadow-lg transition-all duration-300" data-testid="button-industry-specialization">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Statistics Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-slate-200">
-            <div className="text-center">
-              <div className="text-5xl lg:text-6xl font-bold text-slate-900 mb-2">100%</div>
-              <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">SATISFACTION GUARANTEED</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl lg:text-6xl font-bold text-slate-900 mb-2">500+</div>
-              <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">ACTIVE TALENTS</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl lg:text-6xl font-bold text-slate-900 mb-2">1000+</div>
-              <div className="text-sm font-medium text-slate-500 uppercase tracking-wide">SUCCESSFUL PROJECTS</div>
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl"></div>
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 p-12 backdrop-blur-sm bg-white/30 rounded-3xl border border-white/20">
+              <div className="text-center">
+                <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent mb-2">100%</div>
+                <div className="text-sm font-medium text-slate-600 uppercase tracking-wide">Satisfaction Guaranteed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-500 to-pink-600 bg-clip-text text-transparent mb-2">500+</div>
+                <div className="text-sm font-medium text-slate-600 uppercase tracking-wide">Active Talents</div>
+              </div>
+              <div className="text-center">
+                <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-pink-500 to-blue-600 bg-clip-text text-transparent mb-2">1000+</div>
+                <div className="text-sm font-medium text-slate-600 uppercase tracking-wide">Successful Projects</div>
+              </div>
             </div>
           </div>
         </div>
