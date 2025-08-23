@@ -12,7 +12,7 @@ export default function Footer() {
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
-                className="h-12 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-16 w-auto hover:scale-105 transition-transform duration-200"
               />
             </Link>
             <p className="text-slate-400 mb-4">
