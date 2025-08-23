@@ -1,0 +1,155 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
+import TalentCard from "@/components/talent-card";
+import SearchFilters from "@/components/search-filters";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function TalentDirectory() {
+  const [filters, setFilters] = useState({
+    search: "",
+    category: "",
+    skills: [] as string[],
+    location: "",
+    page: 1,
+  });
+
+  const { data: talentsData, isLoading, error } = useQuery({
+    queryKey: ["/api/talents", filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (filters.search) params.set("search", filters.search);
+      if (filters.category) params.set("category", filters.category);
+      if (filters.location) params.set("location", filters.location);
+      if (filters.skills.length > 0) {
+        filters.skills.forEach(skill => params.append("skills", skill));
+      }
+      params.set("page", filters.page.toString());
+      params.set("limit", "12");
+
+      const response = await fetch(`/api/talents?${params}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch talents");
+      }
+      return response.json();
+    },
+  });
+
+  const handleLoadMore = () => {
+    setFilters(prev => ({ ...prev, page: prev.page + 1 }));
+  };
+
+  const hasMoreData = talentsData && talentsData.talents.length < talentsData.total;
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
+            Talent Directory
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Discover professional talent for your next project. Filter by category, skills, and location to find the perfect match.
+          </p>
+        </div>
+
+        {/* Search and Filters */}
+        <SearchFilters filters={filters} onFiltersChange={setFilters} />
+
+        {/* Results */}
+        {error && (
+          <div className="text-center py-12">
+            <div className="text-red-600 mb-4">
+              <i className="fas fa-exclamation-triangle text-4xl"></i>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">Error Loading Talents</h3>
+            <p className="text-slate-600">Please try refreshing the page or adjusting your filters.</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <Skeleton className="w-full h-64" />
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-3 w-2/3" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {talentsData && talentsData.talents.length === 0 && !isLoading && (
+          <div className="text-center py-12">
+            <div className="text-slate-400 mb-4">
+              <i className="fas fa-search text-6xl"></i>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Talents Found</h3>
+            <p className="text-slate-600 mb-4">
+              Try adjusting your search criteria or browse all available talent.
+            </p>
+            <Button 
+              onClick={() => setFilters({ search: "", category: "", skills: [], location: "", page: 1 })}
+              data-testid="button-clear-filters"
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
+
+        {talentsData && talentsData.talents.length > 0 && (
+          <>
+            {/* Results info */}
+            <div className="mb-6 text-sm text-slate-600">
+              Showing {talentsData.talents.length} of {talentsData.total} talents
+            </div>
+
+            {/* Talent Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" data-testid="talent-grid">
+              {talentsData.talents.map((talent: any) => (
+                <TalentCard key={talent.id} talent={talent} />
+              ))}
+            </div>
+
+            {/* Load More */}
+            {hasMoreData && (
+              <div className="text-center">
+                <Button 
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                  data-testid="button-load-more"
+                >
+                  {isLoading ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin mr-2"></i>Loading...
+                    </>
+                  ) : (
+                    "Load More Talents"
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <Footer />
+    </div>
+  );
+}

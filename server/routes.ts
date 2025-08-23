@@ -1,0 +1,507 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { ObjectPermission } from "./objectAcl";
+import { z } from "zod";
+import { insertTalentProfileSchema, insertBookingSchema, insertTaskSchema } from "@shared/schema";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Seed demo data on startup
+  try {
+    await storage.seedDemoData();
+  } catch (error) {
+    console.error("Failed to seed demo data:", error);
+  }
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Include talent profile if user is a talent
+      let talentProfile = null;
+      if (user.role === 'talent') {
+        talentProfile = await storage.getTalentProfile(userId);
+      }
+      
+      res.json({ ...user, talentProfile });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Object storage routes
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    const filePath = req.params.filePath;
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error searching for public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
+    const userId = req.user?.claims?.sub;
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(
+        req.path,
+      );
+      const canAccess = await objectStorageService.canAccessObjectEntity({
+        objectFile,
+        userId: userId,
+        requestedPermission: ObjectPermission.READ,
+      });
+      if (!canAccess) {
+        return res.sendStatus(401);
+      }
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error checking object access:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  app.post("/api/objects/upload", isAuthenticated, async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    res.json({ uploadURL });
+  });
+
+  // Talent routes
+  app.get('/api/talents', async (req, res) => {
+    try {
+      const { 
+        category, 
+        skills, 
+        location, 
+        search, 
+        page = "1", 
+        limit = "20" 
+      } = req.query;
+
+      const skillsArray = skills ? (Array.isArray(skills) ? skills : [skills]) : undefined;
+      const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
+
+      const result = await storage.getAllTalents({
+        category: category as string,
+        skills: skillsArray as string[],
+        location: location as string,
+        search: search as string,
+        limit: parseInt(limit as string),
+        offset,
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching talents:", error);
+      res.status(500).json({ message: "Failed to fetch talents" });
+    }
+  });
+
+  app.get('/api/talents/:id', async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user || user.role !== 'talent') {
+        return res.status(404).json({ message: "Talent not found" });
+      }
+
+      const profile = await storage.getTalentProfile(req.params.id);
+      if (!profile || profile.approvalStatus !== 'approved') {
+        return res.status(404).json({ message: "Talent profile not found or not approved" });
+      }
+
+      res.json({ ...profile, user });
+    } catch (error) {
+      console.error("Error fetching talent:", error);
+      res.status(500).json({ message: "Failed to fetch talent" });
+    }
+  });
+
+  app.post('/api/talents/me', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'talent') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const profileData = insertTalentProfileSchema.parse({
+        ...req.body,
+        userId,
+      });
+
+      const existingProfile = await storage.getTalentProfile(userId);
+      let profile;
+
+      if (existingProfile) {
+        profile = await storage.updateTalentProfile(userId, profileData);
+      } else {
+        profile = await storage.createTalentProfile(profileData);
+      }
+
+      res.json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error updating talent profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.put("/api/talents/me/media", isAuthenticated, async (req: any, res) => {
+    if (!req.body.mediaUrl) {
+      return res.status(400).json({ error: "mediaUrl is required" });
+    }
+
+    const userId = req.user.claims.sub;
+    const user = await storage.getUser(userId);
+    
+    if (!user || user.role !== 'talent') {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        req.body.mediaUrl,
+        {
+          owner: userId,
+          visibility: "public", // Talent media is public for directory viewing
+        },
+      );
+
+      // Update talent profile with new media URL
+      const profile = await storage.getTalentProfile(userId);
+      if (profile) {
+        const mediaUrls = [...(profile.mediaUrls || []), objectPath];
+        await storage.updateTalentProfile(userId, { mediaUrls });
+      }
+
+      res.status(200).json({ objectPath });
+    } catch (error) {
+      console.error("Error setting talent media:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.patch('/api/admin/talents/:id/approve', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { status } = req.body;
+      if (!['approved', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      const profile = await storage.approveTalent(req.params.id, status);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error approving talent:", error);
+      res.status(500).json({ message: "Failed to approve talent" });
+    }
+  });
+
+  // Booking routes
+  app.post('/api/bookings', async (req, res) => {
+    try {
+      let bookingData;
+      let createdBy = req.body.createdBy;
+
+      // Check if user is authenticated (admin creating booking) or public inquiry
+      if (req.user) {
+        const user = await storage.getUser(req.user.claims.sub);
+        if (user && user.role === 'admin') {
+          createdBy = user.id;
+        }
+      }
+
+      // If no createdBy, this is a public inquiry - create a basic client user
+      if (!createdBy && req.body.clientEmail) {
+        const clientData = {
+          role: "client" as const,
+          email: req.body.clientEmail,
+          firstName: req.body.clientName?.split(' ')[0] || "Client",
+          lastName: req.body.clientName?.split(' ').slice(1).join(' ') || "User",
+        };
+
+        let client = await storage.getUser(clientData.email!); // Use email as ID for demo
+        if (!client) {
+          client = await storage.upsertUser(clientData);
+        }
+        
+        createdBy = client.id;
+        bookingData = insertBookingSchema.parse({
+          ...req.body,
+          clientId: client.id,
+          createdBy: client.id,
+        });
+      } else {
+        bookingData = insertBookingSchema.parse(req.body);
+      }
+
+      const booking = await storage.createBooking(bookingData);
+      res.json(booking);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating booking:", error);
+      res.status(500).json({ message: "Failed to create booking" });
+    }
+  });
+
+  app.get('/api/bookings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { 
+        status, 
+        talentId, 
+        page = "1", 
+        limit = "20" 
+      } = req.query;
+
+      const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
+      
+      let options: any = {
+        limit: parseInt(limit as string),
+        offset,
+      };
+
+      // Filter based on user role
+      if (user.role === 'talent') {
+        options.talentId = userId;
+      } else if (user.role === 'client') {
+        options.clientId = userId;
+      } else if (user.role === 'admin') {
+        if (status) options.status = status;
+        if (talentId) options.talentId = talentId;
+      }
+
+      const result = await storage.getAllBookings(options);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ message: "Failed to fetch bookings" });
+    }
+  });
+
+  app.get('/api/bookings/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const booking = await storage.getBooking(req.params.id);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      // Check access permissions
+      const hasAccess = user.role === 'admin' || 
+                       booking.clientId === userId ||
+                       booking.bookingTalents.some(bt => bt.talentId === userId);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json(booking);
+    } catch (error) {
+      console.error("Error fetching booking:", error);
+      res.status(500).json({ message: "Failed to fetch booking" });
+    }
+  });
+
+  app.patch('/api/bookings/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const booking = await storage.updateBooking(req.params.id, req.body);
+      res.json(booking);
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      res.status(500).json({ message: "Failed to update booking" });
+    }
+  });
+
+  app.post('/api/bookings/:id/add-talent', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { talentId } = req.body;
+      const bookingTalent = await storage.addTalentToBooking(req.params.id, talentId);
+      res.json(bookingTalent);
+    } catch (error) {
+      console.error("Error adding talent to booking:", error);
+      res.status(500).json({ message: "Failed to add talent to booking" });
+    }
+  });
+
+  // Task routes
+  app.post('/api/tasks', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const taskData = insertTaskSchema.parse({
+        ...req.body,
+        createdBy: userId,
+      });
+
+      const task = await storage.createTask(taskData);
+      res.json(task);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating task:", error);
+      res.status(500).json({ message: "Failed to create task" });
+    }
+  });
+
+  app.get('/api/tasks', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { 
+        bookingId, 
+        talentId, 
+        status, 
+        page = "1", 
+        limit = "20" 
+      } = req.query;
+
+      const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
+      
+      let options: any = {
+        limit: parseInt(limit as string),
+        offset,
+      };
+
+      // Filter based on user role
+      if (user.role === 'talent') {
+        options.talentId = userId;
+      } else if (user.role === 'admin') {
+        if (bookingId) options.bookingId = bookingId;
+        if (talentId) options.talentId = talentId;
+        if (status) options.status = status;
+      }
+
+      const result = await storage.getAllTasks(options);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      res.status(500).json({ message: "Failed to fetch tasks" });
+    }
+  });
+
+  app.patch('/api/tasks/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Only admin or assigned user can update tasks
+      if (user.role !== 'admin' && req.body.assigneeId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const task = await storage.updateTask(req.params.id, req.body);
+      res.json(task);
+    } catch (error) {
+      console.error("Error updating task:", error);
+      res.status(500).json({ message: "Failed to update task" });
+    }
+  });
+
+  // Calendar routes
+  app.get('/api/calendar', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { bookings } = await storage.getAllBookings({ limit: 100 });
+      
+      const events = bookings
+        .filter(booking => booking.status === 'confirmed' || booking.status === 'paid')
+        .map(booking => ({
+          id: booking.id,
+          title: booking.title,
+          start: booking.startDate,
+          end: booking.endDate,
+          bookingId: booking.id,
+          talentIds: booking.bookingTalents.map(bt => bt.talentId),
+        }));
+
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching calendar:", error);
+      res.status(500).json({ message: "Failed to fetch calendar" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

@@ -1,0 +1,148 @@
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+export default function Navbar() {
+  const { isAuthenticated, user } = useAuth();
+  const [location] = useLocation();
+
+  const isActive = (path: string) => {
+    if (path === "/") return location === "/";
+    return location.startsWith(path);
+  };
+
+  const getInitials = (firstName?: string, lastName?: string) => {
+    return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
+  };
+
+  const getDashboardLink = () => {
+    if (user?.role === 'admin') return '/admin';
+    if (user?.role === 'talent') return '/dashboard';
+    return '/';
+  };
+
+  return (
+    <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link href="/" className="text-2xl font-bold text-primary" data-testid="link-logo">
+              5T
+            </Link>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:block ml-10">
+              <div className="flex items-baseline space-x-8">
+                <Link href="/">
+                  <a 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive("/") && location === "/" 
+                        ? "text-primary" 
+                        : "text-slate-600 hover:text-primary"
+                    }`}
+                    data-testid="link-home"
+                  >
+                    Home
+                  </a>
+                </Link>
+                <Link href="/talent">
+                  <a 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive("/talent") 
+                        ? "text-primary" 
+                        : "text-slate-600 hover:text-primary"
+                    }`}
+                    data-testid="link-find-talent"
+                  >
+                    Find Talent
+                  </a>
+                </Link>
+                <Link href="/book">
+                  <a 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive("/book") 
+                        ? "text-primary" 
+                        : "text-slate-600 hover:text-primary"
+                    }`}
+                    data-testid="link-book"
+                  >
+                    Book Now
+                  </a>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side actions */}
+          <div className="flex items-center space-x-4">
+            {!isAuthenticated ? (
+              <Button 
+                onClick={() => window.location.href = "/api/login"}
+                variant="outline"
+                data-testid="button-sign-in"
+              >
+                <i className="fas fa-user mr-2"></i>Sign In
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full" data-testid="button-user-menu">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user?.profileImageUrl} alt={`${user?.firstName} ${user?.lastName}`} />
+                      <AvatarFallback>{getInitials(user?.firstName, user?.lastName)}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium" data-testid="text-user-name">
+                      {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-xs text-slate-500" data-testid="text-user-email">
+                      {user?.email}
+                    </p>
+                    <p className="text-xs text-slate-400 capitalize" data-testid="text-user-role">
+                      {user?.role}
+                    </p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={getDashboardLink()}>
+                      <i className="fas fa-tachometer-alt mr-2 w-4"></i>
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  {user?.role === 'talent' && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/profile">
+                        <i className="fas fa-user-edit mr-2 w-4"></i>
+                        Edit Profile
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => window.location.href = "/api/logout"}
+                    data-testid="button-logout"
+                  >
+                    <i className="fas fa-sign-out-alt mr-2 w-4"></i>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
