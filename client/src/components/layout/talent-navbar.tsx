@@ -13,73 +13,7 @@ import {
 import logoImage from "@assets/5t-logo.png";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { Home, User, Calendar, ClipboardList, FileText, Users, Menu, ChevronDown, Settings, LogOut } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Compact role switcher for dropdown menus
-function CompactRoleSwitcher() {
-  const { user } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<string>("");
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  const switchRoleMutation = useMutation({
-    mutationFn: async (role: string) => {
-      return await apiRequest("POST", "/api/auth/switch-role", { role });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      toast({
-        title: "Role switched!",
-        description: `Successfully switched to ${selectedRole} role`,
-      });
-      setSelectedRole("");
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to switch role",
-        variant: "destructive",
-      });
-      console.error("Role switch error:", error);
-    },
-  });
-
-  const handleRoleSwitch = () => {
-    if (selectedRole && selectedRole !== user?.role) {
-      switchRoleMutation.mutate(selectedRole);
-    }
-  };
-
-  if (!user) return null;
-
-  return (
-    <div className="space-y-2">
-      <Select value={selectedRole} onValueChange={setSelectedRole}>
-        <SelectTrigger className="h-8 text-xs">
-          <SelectValue placeholder="Select role..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="admin">Admin</SelectItem>
-          <SelectItem value="talent">Talent</SelectItem>
-          <SelectItem value="client">Client</SelectItem>
-        </SelectContent>
-      </Select>
-      {selectedRole && selectedRole !== user?.role && (
-        <Button 
-          size="sm" 
-          onClick={handleRoleSwitch}
-          disabled={switchRoleMutation.isPending}
-          className="w-full h-7 text-xs"
-        >
-          {switchRoleMutation.isPending ? "Switching..." : "Switch Role"}
-        </Button>
-      )}
-    </div>
-  );
-}
 
 export default function TalentNavbar() {
   const { user } = useAuth();
@@ -214,12 +148,6 @@ export default function TalentNavbar() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <div className="p-2">
-                  <div className="text-xs text-slate-500 mb-2 px-2">Switch Roles (Dev)</div>
-                  <CompactRoleSwitcher />
-                </div>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <a href="/api/logout" className="flex items-center cursor-pointer">
                     <LogOut className="w-4 h-4 mr-2" />

@@ -12,7 +12,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { useAuth } from "@/hooks/useAuth";
-import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 import logoImage from "@assets/5t-logo.png";
 import { LayoutDashboard, Search, PlusCircle, FileText, User, Calendar, Settings, LogOut, Menu, X } from "lucide-react";
 
@@ -139,12 +138,6 @@ export default function ClientNavbar() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <div className="p-2">
-                  <div className="text-xs text-slate-500 mb-2 px-2">Switch Roles (Dev)</div>
-                  <RoleSwitcher />
-                </div>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <a href="/api/logout" className="w-full flex items-center">
                     <LogOut className="w-4 h-4 mr-2" />
