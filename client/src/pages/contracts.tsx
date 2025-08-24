@@ -339,7 +339,7 @@ export default function ContractsPage() {
     </div>
   );
 
-  // Render with appropriate layout based on user role
+  // Render with appropriate navigation based on user role
   if (user?.role === 'admin') {
     return (
       <div className="min-h-screen bg-slate-50 flex">
@@ -372,16 +372,13 @@ export default function ContractsPage() {
     );
   }
 
-  if (user?.role === 'client') {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <ClientNavbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <ContractsContent />
-        </div>
+  // Default to client layout for client users and unauthenticated users
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <ClientNavbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ContractsContent />
       </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 }

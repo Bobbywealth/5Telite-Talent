@@ -167,17 +167,7 @@ export default function TalentDirectory() {
     </div>
   );
 
-  // Render with appropriate layout based on authentication and user role
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <TalentDirectoryContent />
-        <Footer />
-      </div>
-    );
-  }
-
+  // Render with appropriate navigation based on user role
   if (user?.role === 'admin') {
     return (
       <div className="min-h-screen bg-slate-50 flex">
@@ -211,17 +201,14 @@ export default function TalentDirectory() {
     );
   }
 
-  if (user?.role === 'client') {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <ClientNavbar />
-        <div className="pt-4">
-          <TalentDirectoryContent />
-        </div>
-        <Footer />
+  // Default layout for client users and unauthenticated users
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <ClientNavbar />
+      <div className="pt-4">
+        <TalentDirectoryContent />
       </div>
-    );
-  }
-
-  return null;
+      <Footer />
+    </div>
+  );
 }
