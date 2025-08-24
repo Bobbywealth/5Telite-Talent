@@ -164,7 +164,7 @@ export default function AdminDashboard() {
       
       <div className="flex-1">
         {/* Mobile Header */}
-        <header className="lg:hidden bg-white shadow-sm border-b border-slate-200 px-4 py-3">
+        <header className="xl:hidden bg-white shadow-sm border-b border-slate-200 px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <Button 
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Desktop Header */}
-        <header className="hidden lg:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+        <header className="hidden xl:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <img 

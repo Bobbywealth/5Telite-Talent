@@ -108,13 +108,13 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-64 bg-white shadow-lg min-h-screen relative">
+      {/* Desktop Sidebar - Only show on extra large screens */}
+      <div className="hidden xl:flex w-64 bg-white shadow-lg min-h-screen relative">
         <SidebarContent />
       </div>
 
-      {/* Mobile Sidebar */}
-      <div className="lg:hidden">
+      {/* Mobile Sidebar - Show sheet for all screens smaller than xl */}
+      <div className="xl:hidden">
         <Sheet open={isMobileOpen} onOpenChange={onMobileToggle}>
           <SheetContent side="left" className="w-64 p-0">
             <div className="relative h-full">
