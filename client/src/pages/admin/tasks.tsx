@@ -170,6 +170,11 @@ export default function AdminTasks() {
     mutationFn: async (taskData: typeof newTask) => {
       return apiRequest("POST", "/api/tasks", {
         ...taskData,
+        // Convert empty strings to undefined for optional fields
+        bookingId: taskData.bookingId || undefined,
+        talentId: taskData.talentId || undefined,
+        assigneeId: taskData.assigneeId || undefined,
+        description: taskData.description || undefined,
         dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : undefined,
       });
     },
