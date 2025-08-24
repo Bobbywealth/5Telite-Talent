@@ -146,7 +146,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in-up-delay-3">
               <Link href="/talent" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
-                  <i className="fas fa-search text-lg mr-3"></i>Browse 500+ Talents
+                  <i className="fas fa-search text-lg mr-3"></i>Browse Elite Talent
                   <i className="fas fa-arrow-right ml-3"></i>
                 </Button>
               </Link>
@@ -166,16 +166,16 @@ export default function Landing() {
             {/* Stats - improved layout */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto text-white animate-fade-in-up-delay-4">
               <div className="text-center">
-                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">500+</div>
-                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Active Talents</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">1000+</div>
-                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Completed Projects</div>
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">100%</div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Verified Talent</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">50+</div>
-                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Cities Worldwide</div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Completed Projects</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">24hr</div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Response Time</div>
               </div>
             </div>
 
