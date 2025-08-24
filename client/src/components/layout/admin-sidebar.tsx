@@ -56,9 +56,9 @@ export default function AdminSidebar() {
         <div className="px-6 space-y-2">
           {sidebarItems.map((item) => (
             <Link key={item.href} href={item.href}>
-              <a
+              <div
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                  "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
                   isActive(item.href)
                     ? "text-white bg-primary"
                     : "text-slate-600 hover:bg-slate-100"
@@ -67,7 +67,7 @@ export default function AdminSidebar() {
               >
                 <i className={`${item.icon} mr-3 w-4`}></i>
                 {item.title}
-              </a>
+              </div>
             </Link>
           ))}
         </div>

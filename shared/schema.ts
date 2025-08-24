@@ -56,6 +56,7 @@ export const talentProfiles = pgTable("talent_profiles", {
   skills: text("skills").array().default(sql`'{}'::text[]`),
   bio: text("bio"),
   location: varchar("location"),
+  experience: varchar("experience"), // Years of experience level
   unionStatus: unionStatusEnum("union_status"),
   // Measurements as JSON
   measurements: jsonb("measurements"),
