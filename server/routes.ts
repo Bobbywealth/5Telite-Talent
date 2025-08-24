@@ -606,7 +606,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const taskData = insertTaskSchema.parse(req.body);
+      const taskData = insertTaskSchema.parse({
+        ...req.body,
+        createdBy: userId // Automatically set the createdBy field to the authenticated user
+      });
       const task = await storage.createTask(taskData);
       res.json(task);
     } catch (error) {
