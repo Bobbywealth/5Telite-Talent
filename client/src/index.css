@@ -435,7 +435,12 @@
   }
   
   button,
-  [role="button"] {
+  [role="button"],
+  input,
+  textarea,
+  select,
+  [data-testid*="input"],
+  [data-testid*="select"] {
     pointer-events: auto !important;
     position: relative !important;
     z-index: 999999 !important;

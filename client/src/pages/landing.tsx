@@ -353,10 +353,12 @@ export default function Landing() {
           </div>
 
           <div className="text-center">
-            <Button data-testid="button-load-more-talent" asChild>
-              <Link href="/talent">
-                Load More Talent
-              </Link>
+            <Button 
+              data-testid="button-load-more-talent" 
+              className="relative z-[999999]"
+              onClick={() => window.location.href = "/talent"}
+            >
+              Load More Talent
             </Button>
           </div>
         </div>
@@ -378,9 +380,9 @@ export default function Landing() {
             </p>
           </div>
 
-          <Card className="max-w-2xl mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
+          <Card className="max-w-2xl mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl relative z-[999999]">
             <CardContent className="p-8">
-              <form onSubmit={handleBookingSubmit} className="space-y-6">
+              <form onSubmit={handleBookingSubmit} className="space-y-6 relative z-[999999]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="title">Project Title</Label>
