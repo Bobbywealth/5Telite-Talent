@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { useAuth } from "@/hooks/useAuth";
+import logoImage from "@assets/5t-logo.png";
 
 export default function ClientNavbar() {
   const { user } = useAuth();
@@ -35,11 +36,12 @@ export default function ClientNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-primary text-white rounded-lg p-2 font-bold text-lg">
-              5T
-            </div>
-            <span className="font-bold text-slate-900 hidden sm:block">Elite</span>
+          <Link href="/" className="flex items-center" data-testid="link-logo">
+            <img 
+              src={logoImage} 
+              alt="5T Talent Platform" 
+              className="h-16 w-auto hover:scale-105 transition-transform duration-200"
+            />
           </Link>
 
           {/* Desktop Navigation */}

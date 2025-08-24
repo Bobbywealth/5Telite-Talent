@@ -136,16 +136,6 @@ export default function Home() {
               <p className="text-xl text-slate-200 mb-6">
                 {getRoleDescription()}
               </p>
-              {/* 5T Logo for client dashboard */}
-              {user?.role === 'client' && (
-                <div className="flex items-center mt-6">
-                  <img 
-                    src={logoImage} 
-                    alt="5T Elite Logo" 
-                    className="h-16 w-auto opacity-90 hover:opacity-100 transition-opacity duration-200"
-                  />
-                </div>
-              )}
             </div>
           </div>
 
