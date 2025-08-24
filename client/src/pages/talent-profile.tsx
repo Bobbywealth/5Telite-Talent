@@ -60,9 +60,9 @@ export default function TalentProfile() {
             <p className="text-slate-600 mb-4">
               The talent profile you're looking for doesn't exist or isn't available.
             </p>
-            <Link href="/talent">
-              <Button>Back to Directory</Button>
-            </Link>
+            <Button asChild>
+              <Link href="/talent">Back to Directory</Link>
+            </Button>
           </div>
         </div>
       </div>

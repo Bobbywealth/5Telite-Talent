@@ -144,23 +144,24 @@ export default function Landing() {
 
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in-up-delay-3">
-              <Link href="/talent" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
+              <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent" asChild>
+                <Link href="/talent">
                   <i className="fas fa-search text-lg mr-3"></i>Browse Elite Talent
                   <i className="fas fa-arrow-right ml-3"></i>
-                </Button>
-              </Link>
-              <Link href="/book" className="w-full sm:w-auto">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full sm:w-auto border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
-                  data-testid="button-request-booking"
-                >
-                <i className="fas fa-calendar text-lg mr-3"></i>Start Booking
+                </Link>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full sm:w-auto border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
+                data-testid="button-request-booking"
+                asChild
+              >
+                <Link href="/book">
+                  <i className="fas fa-calendar text-lg mr-3"></i>Start Booking
                   <i className="fas fa-sparkles ml-3"></i>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
 
             {/* Stats - improved layout */}
@@ -346,11 +347,11 @@ export default function Landing() {
           </div>
 
           <div className="text-center">
-            <Link href="/talent">
-              <Button data-testid="button-load-more-talent">
+            <Button data-testid="button-load-more-talent" asChild>
+              <Link href="/talent">
                 Load More Talent
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
