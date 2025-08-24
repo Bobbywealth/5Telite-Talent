@@ -5,37 +5,38 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from "@assets/5t-logo.png";
+import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText } from "lucide-react";
 
 const sidebarItems = [
   {
     title: "Dashboard",
     href: "/admin",
-    icon: "fas fa-tachometer-alt",
+    icon: LayoutDashboard,
   },
   {
     title: "Talent Management",
     href: "/admin/talents",
-    icon: "fas fa-users",
+    icon: Users,
   },
   {
     title: "Browse Talent",
     href: "/talent",
-    icon: "fas fa-search",
+    icon: Search,
   },
   {
     title: "Bookings",
     href: "/admin/bookings",
-    icon: "fas fa-calendar",
+    icon: Calendar,
   },
   {
     title: "Task Manager",
     href: "/admin/tasks",
-    icon: "fas fa-tasks",
+    icon: ClipboardList,
   },
   {
     title: "Contracts",
     href: "/contracts",
-    icon: "fas fa-file-contract",
+    icon: FileText,
   },
 ];
 
@@ -69,23 +70,26 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
       {/* Navigation */}
       <nav className="mt-6">
         <div className="px-6 space-y-2">
-          {sidebarItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <div
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
-                  isActive(item.href)
-                    ? "text-white bg-primary"
-                    : "text-slate-600 hover:bg-slate-100"
-                )}
-                data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
-                onClick={onMobileToggle}
-              >
-                <i className={`${item.icon} mr-3 w-4`}></i>
-                {item.title}
-              </div>
-            </Link>
-          ))}
+          {sidebarItems.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <Link key={item.href} href={item.href}>
+                <div
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
+                    isActive(item.href)
+                      ? "text-white bg-primary"
+                      : "text-slate-600 hover:bg-slate-100"
+                  )}
+                  data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+                  onClick={onMobileToggle}
+                >
+                  <IconComponent className="w-4 h-4 mr-3" />
+                  {item.title}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </nav>
 

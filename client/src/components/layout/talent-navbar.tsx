@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoImage from "@assets/5t-logo.png";
 import { NotificationBell } from "@/components/ui/notification-bell";
+import { Home, User, Calendar, ClipboardList, FileText, Users, Menu, ChevronDown, Settings, LogOut } from "lucide-react";
 
 export default function TalentNavbar() {
   const { user } = useAuth();
@@ -27,12 +28,12 @@ export default function TalentNavbar() {
   };
 
   const navigationItems = [
-    { href: "/dashboard", label: "Dashboard", icon: "fas fa-home" },
-    { href: "/dashboard/profile", label: "My Profile", icon: "fas fa-user" },
-    { href: "/dashboard/bookings", label: "My Bookings", icon: "fas fa-calendar" },
-    { href: "/dashboard/tasks", label: "My Tasks", icon: "fas fa-tasks" },
-    { href: "/contracts", label: "My Contracts", icon: "fas fa-file-contract" },
-    { href: "/talent", label: "Browse Talent", icon: "fas fa-users" },
+    { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/dashboard/profile", label: "My Profile", icon: User },
+    { href: "/dashboard/bookings", label: "My Bookings", icon: Calendar },
+    { href: "/dashboard/tasks", label: "My Tasks", icon: ClipboardList },
+    { href: "/contracts", label: "My Contracts", icon: FileText },
+    { href: "/talent", label: "Browse Talent", icon: Users },
   ];
 
   return (
@@ -45,7 +46,7 @@ export default function TalentNavbar() {
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="lg:hidden p-2" data-testid="button-mobile-menu-talent">
-                  <i className="fas fa-bars text-lg"></i>
+                  <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
@@ -69,7 +70,7 @@ export default function TalentNavbar() {
                             ? "text-white bg-primary" 
                             : "text-slate-600 hover:bg-slate-100"
                         }`}>
-                          <i className={`${item.icon} mr-3 w-4`}></i>
+                          <item.icon className="w-4 h-4 mr-3" />
                           {item.label}
                         </div>
                       </Link>
@@ -101,7 +102,7 @@ export default function TalentNavbar() {
                 }`}
                 data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
-                <i className={`${item.icon} mr-2 w-4`}></i>
+                <item.icon className="w-4 h-4 mr-2" />
                 {item.label}
               </Link>
             ))}
@@ -130,25 +131,25 @@ export default function TalentNavbar() {
                       Talent
                     </div>
                   </div>
-                  <i className="fas fa-chevron-down text-slate-400 text-xs"></i>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/profile" className="flex items-center cursor-pointer">
-                    <i className="fas fa-user mr-2 w-4"></i>
+                    <User className="w-4 h-4 mr-2" />
                     Edit Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/settings" className="flex items-center cursor-pointer">
-                    <i className="fas fa-cog mr-2 w-4"></i>
+                    <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <a href="/api/logout" className="flex items-center cursor-pointer">
-                    <i className="fas fa-sign-out-alt mr-2 w-4"></i>
+                    <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </a>
                 </DropdownMenuItem>
@@ -172,7 +173,7 @@ export default function TalentNavbar() {
               }`}
               data-testid={`mobile-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
             >
-              <i className={`${item.icon} mr-3 w-4`}></i>
+              <item.icon className="w-4 h-4 mr-3" />
               {item.label}
             </Link>
           ))}

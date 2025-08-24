@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { useAuth } from "@/hooks/useAuth";
 import logoImage from "@assets/5t-logo.png";
+import { LayoutDashboard, Search, PlusCircle, FileText, User, Calendar, Settings, LogOut, Menu, X } from "lucide-react";
 
 export default function ClientNavbar() {
   const { user } = useAuth();
@@ -20,10 +21,10 @@ export default function ClientNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: "fas fa-tachometer-alt" },
-    { href: "/talent", label: "Find Talent", icon: "fas fa-search" },
-    { href: "/book", label: "Book Now", icon: "fas fa-plus-circle" },
-    { href: "/contracts", label: "My Contracts", icon: "fas fa-file-contract" },
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/talent", label: "Find Talent", icon: Search },
+    { href: "/book", label: "Book Now", icon: PlusCircle },
+    { href: "/contracts", label: "My Contracts", icon: FileText },
   ];
 
   const isActive = (href: string) => {
@@ -44,7 +45,7 @@ export default function ClientNavbar() {
               className="lg:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
               data-testid="button-mobile-menu-client"
             >
-              <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`}></i>
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             
             <Link href="/" className="flex items-center" data-testid="link-logo">
@@ -80,14 +81,14 @@ export default function ClientNavbar() {
             {/* User Info Badge */}
             <div className="hidden lg:flex items-center space-x-2">
               <Badge variant="outline" className="text-xs">
-                <i className="fas fa-user mr-1"></i>
+                <User className="w-4 h-4 mr-1" />
                 Client Account
               </Badge>
               <Badge 
                 variant={user?.status === 'active' ? 'default' : 'secondary'} 
                 className="text-xs"
               >
-                <i className="fas fa-circle text-[8px] mr-1"></i>
+                <div className="w-2 h-2 bg-current rounded-full mr-1"></div>
                 {user?.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Active'}
               </Badge>
             </div>
@@ -121,26 +122,26 @@ export default function ClientNavbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="w-full cursor-pointer">
-                    <i className="fas fa-user mr-2"></i>
+                    <User className="w-4 h-4 mr-2" />
                     My Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/client/bookings" className="w-full cursor-pointer">
-                    <i className="fas fa-calendar mr-2"></i>
+                    <Calendar className="w-4 h-4 mr-2" />
                     My Bookings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/settings" className="w-full cursor-pointer">
-                    <i className="fas fa-cog mr-2"></i>
+                    <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <a href="/api/logout" className="w-full flex items-center">
-                    <i className="fas fa-sign-out-alt mr-2"></i>
+                    <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </a>
                 </DropdownMenuItem>
@@ -154,7 +155,7 @@ export default function ClientNavbar() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               data-testid="mobile-menu-toggle"
             >
-              <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
         </div>
@@ -175,7 +176,7 @@ export default function ClientNavbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   data-testid={`mobile-nav-${item.label.toLowerCase().replace(" ", "-")}`}
                 >
-                  <i className={`${item.icon} text-sm`}></i>
+                  <item.icon className="w-4 h-4" />
                   <span>{item.label}</span>
                 </Link>
               ))}
