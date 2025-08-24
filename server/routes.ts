@@ -41,6 +41,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Role switching for testing purposes
+  app.post('/api/auth/switch-role', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { role } = req.body;
+
+      if (!role || !['admin', 'talent', 'client'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role specified" });
+      }
+
+      const updatedUser = await storage.updateUserRole(userId, role);
+      res.json({ message: "Role switched successfully", user: updatedUser });
+    } catch (error) {
+      console.error("Error switching role:", error);
+      res.status(500).json({ message: "Failed to switch role" });
+    }
+  });
+
   // User role management (placeholder - not implemented in storage yet)
   app.patch('/api/users/:id/role', isAuthenticated, async (req: any, res) => {
     try {
