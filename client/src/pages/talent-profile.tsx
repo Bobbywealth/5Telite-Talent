@@ -1,6 +1,10 @@
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/layout/navbar";
+import AdminSidebar from "@/components/layout/admin-sidebar";
+import TalentNavbar from "@/components/layout/talent-navbar";
+import ClientNavbar from "@/components/layout/client-navbar";
 import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TalentProfile() {
   const { id } = useParams();
+  const { isAuthenticated, user } = useAuth();
 
   const { data: talent, isLoading, error } = useQuery({
     queryKey: ["/api/talents", id],
@@ -22,220 +27,380 @@ export default function TalentProfile() {
     retry: false,
   });
 
+  // Loading state component
+  const LoadingState = () => (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <Skeleton className="h-64 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-48 rounded-lg" />
+            ))}
+          </div>
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-24 w-full rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Error state component
+  const ErrorState = () => (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">
+          <i className="fas fa-exclamation-triangle text-4xl"></i>
+        </div>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">Talent Profile Not Found</h3>
+        <p className="text-slate-600 mb-4">
+          The talent profile you're looking for doesn't exist or isn't available.
+        </p>
+        <Button asChild>
+          <Link href="/talent">Back to Directory</Link>
+        </Button>
+      </div>
+    </div>
+  );
+
+  // Show loading state
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <Skeleton className="h-64 w-full rounded-xl" />
-              <Skeleton className="h-32 w-full rounded-xl" />
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-48 rounded-lg" />
-                ))}
-              </div>
-            </div>
-            <div className="space-y-6">
-              <Skeleton className="h-48 w-full rounded-xl" />
-              <Skeleton className="h-32 w-full rounded-xl" />
-              <Skeleton className="h-24 w-full rounded-xl" />
-            </div>
-          </div>
+    if (!isAuthenticated) {
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <Navbar />
+          <LoadingState />
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (error || !talent) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-12">
-            <div className="text-red-600 mb-4">
-              <i className="fas fa-exclamation-triangle text-4xl"></i>
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">Talent Profile Not Found</h3>
-            <p className="text-slate-600 mb-4">
-              The talent profile you're looking for doesn't exist or isn't available.
-            </p>
-            <Button asChild>
-              <Link href="/talent">Back to Directory</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
-      
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="w-32 h-32 md:w-40 md:h-40 mx-auto md:mx-0">
-                {talent.user.profileImageUrl ? (
-                  <img 
-                    src={talent.user.profileImageUrl} 
-                    alt={`${talent.user.firstName} ${talent.user.lastName}`}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-slate-200 flex items-center justify-center">
-                    <i className="fas fa-user text-slate-400 text-4xl"></i>
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold text-slate-900 mb-2" data-testid="text-talent-name">
-                  {talent.user.firstName} {talent.user.lastName}
-                </h1>
-                {talent.stageName && (
-                  <p className="text-lg text-slate-600 mb-2" data-testid="text-stage-name">
-                    Stage Name: {talent.stageName}
-                  </p>
-                )}
-                <p className="text-slate-500 mb-4" data-testid="text-location">
-                  <i className="fas fa-map-marker-alt mr-2"></i>
-                  {talent.location || "Location not specified"}
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
-                  {talent.categories?.map((category: string) => (
-                    <Badge key={category} className="bg-primary/10 text-primary">
-                      {category}
-                    </Badge>
-                  ))}
+    if (user?.role === 'admin') {
+      return (
+        <div className="min-h-screen bg-slate-50 flex">
+          <AdminSidebar />
+          <div className="flex-1">
+            <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900">Talent Profile</h1>
+                  <p className="text-slate-600">Loading talent details...</p>
                 </div>
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                  {talent.skills?.map((skill: string) => (
-                    <Badge key={skill} variant="secondary" className="text-xs">
+              </div>
+            </header>
+            <main className="overflow-y-auto">
+              <LoadingState />
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    if (user?.role === 'talent') {
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <TalentNavbar />
+          <LoadingState />
+        </div>
+      );
+    }
+
+    if (user?.role === 'client') {
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <ClientNavbar />
+          <LoadingState />
+        </div>
+      );
+    }
+  }
+
+  // Show error state
+  if (error || !talent) {
+    if (!isAuthenticated) {
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <Navbar />
+          <ErrorState />
+        </div>
+      );
+    }
+
+    if (user?.role === 'admin') {
+      return (
+        <div className="min-h-screen bg-slate-50 flex">
+          <AdminSidebar />
+          <div className="flex-1">
+            <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900">Talent Profile</h1>
+                  <p className="text-slate-600">Profile not found</p>
+                </div>
+              </div>
+            </header>
+            <main className="overflow-y-auto">
+              <ErrorState />
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    if (user?.role === 'talent') {
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <TalentNavbar />
+          <ErrorState />
+        </div>
+      );
+    }
+
+    if (user?.role === 'client') {
+      return (
+        <div className="min-h-screen bg-slate-50">
+          <ClientNavbar />
+          <ErrorState />
+        </div>
+      );
+    }
+  }
+
+  // Main content component
+  const TalentProfileContent = () => (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <Card className="mb-8">
+        <CardContent className="p-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Profile Picture */}
+            <div className="flex-shrink-0">
+              {talent.profileImageUrl ? (
+                <img 
+                  src={talent.profileImageUrl} 
+                  alt={`${talent.firstName} ${talent.lastName}`}
+                  className="w-48 h-48 rounded-xl object-cover shadow-lg"
+                />
+              ) : (
+                <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-4xl text-slate-400">{talent.firstName?.[0]}{talent.lastName?.[0]}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Info */}
+            <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                    {talent.firstName} {talent.lastName}
+                  </h1>
+                  <p className="text-xl text-primary font-medium mb-4">{talent.category}</p>
+                  {talent.location && (
+                    <p className="text-slate-600 mb-4 flex items-center">
+                      <i className="fas fa-map-marker-alt mr-2"></i>
+                      {talent.location}
+                    </p>
+                  )}
+                  {talent.bio && (
+                    <p className="text-slate-700 leading-relaxed">{talent.bio}</p>
+                  )}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button asChild>
+                    <Link href="/book">Book Now</Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/talent">Back to Directory</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Skills */}
+          {talent.skills && talent.skills.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Skills & Expertise</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {talent.skills.map((skill: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="px-3 py-1">
                       {skill}
                     </Badge>
                   ))}
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Biography */}
-            {talent.bio && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Biography</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-700" data-testid="text-bio">{talent.bio}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Portfolio */}
-            {talent.mediaUrls && talent.mediaUrls.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Portfolio</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {talent.mediaUrls.map((url: string, index: number) => (
-                      <img
-                        key={index}
-                        src={url}
-                        alt={`Portfolio image ${index + 1}`}
-                        className="rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer w-full h-48 object-cover"
-                        data-testid={`img-portfolio-${index}`}
-                      />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {talent.user.email && (
-                  <div className="flex items-center" data-testid="text-email">
-                    <i className="fas fa-envelope text-slate-400 w-5"></i>
-                    <span className="ml-3 text-slate-600">{talent.user.email}</span>
-                  </div>
-                )}
-                {talent.user.phone && (
-                  <div className="flex items-center" data-testid="text-phone">
-                    <i className="fas fa-phone text-slate-400 w-5"></i>
-                    <span className="ml-3 text-slate-600">{talent.user.phone}</span>
-                  </div>
-                )}
-                {talent.social?.instagram && (
-                  <div className="flex items-center" data-testid="text-instagram">
-                    <i className="fab fa-instagram text-slate-400 w-5"></i>
-                    <span className="ml-3 text-slate-600">{talent.social.instagram}</span>
-                  </div>
-                )}
               </CardContent>
             </Card>
-          </div>
+          )}
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Measurements */}
-            {talent.measurements && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Measurements</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  {Object.entries(talent.measurements).map(([key, value]) => (
-                    <div key={key} className="flex justify-between">
-                      <span className="text-slate-600 capitalize">{key}:</span>
-                      <span className="text-slate-900" data-testid={`text-measurement-${key}`}>{value as string}</span>
+          {/* Portfolio */}
+          {talent.portfolioItems && talent.portfolioItems.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {talent.portfolioItems.map((item: any, index: number) => (
+                    <div key={index} className="space-y-3">
+                      {item.imageUrl && (
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title || `Portfolio item ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg shadow-sm"
+                        />
+                      )}
+                      {item.title && (
+                        <h4 className="font-semibold text-slate-900">{item.title}</h4>
+                      )}
+                      {item.description && (
+                        <p className="text-sm text-slate-600">{item.description}</p>
+                      )}
                     </div>
                   ))}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-            
+          {/* Experience */}
+          {talent.experience && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Experience</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-slate max-w-none">
+                  <p className="whitespace-pre-wrap">{talent.experience}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-            {/* Union Status */}
-            {talent.unionStatus && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Union Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Badge variant="outline" data-testid="text-union-status">
-                    {talent.unionStatus}
-                  </Badge>
-                </CardContent>
-              </Card>
-            )}
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Quick Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Info</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {talent.yearsOfExperience && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Experience:</span>
+                  <span className="font-medium">{talent.yearsOfExperience} years</span>
+                </div>
+              )}
+              {talent.category && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Category:</span>
+                  <span className="font-medium">{talent.category}</span>
+                </div>
+              )}
+              {talent.hourlyRate && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Hourly Rate:</span>
+                  <span className="font-medium">${talent.hourlyRate}</span>
+                </div>
+              )}
+              {talent.availability && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Availability:</span>
+                  <span className="font-medium">{talent.availability}</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            {/* Book Now Button */}
-            <Link href="/book">
-              <Button className="w-full" data-testid="button-request-booking">
-                <i className="fas fa-calendar-plus mr-2"></i>
-                Request Booking
+          {/* Contact */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Get in Touch</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button className="w-full" asChild>
+                <Link href="/book">Book This Talent</Link>
               </Button>
-            </Link>
-          </div>
+              <p className="text-sm text-slate-600 text-center">
+                Ready to work together? Click above to start the booking process.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
+
+  // Render with appropriate layout based on authentication and user role
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+        <TalentProfileContent />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (user?.role === 'admin') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex">
+        <AdminSidebar />
+        <div className="flex-1">
+          <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">
+                  {talent?.firstName} {talent?.lastName}
+                </h1>
+                <p className="text-slate-600">Talent Profile</p>
+              </div>
+            </div>
+          </header>
+          <main className="overflow-y-auto">
+            <TalentProfileContent />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (user?.role === 'talent') {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <TalentNavbar />
+        <div className="pt-4">
+          <TalentProfileContent />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (user?.role === 'client') {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <ClientNavbar />
+        <div className="pt-4">
+          <TalentProfileContent />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return null;
 }

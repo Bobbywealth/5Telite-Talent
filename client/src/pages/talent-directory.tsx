@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/layout/navbar";
+import AdminSidebar from "@/components/layout/admin-sidebar";
+import TalentNavbar from "@/components/layout/talent-navbar";
+import ClientNavbar from "@/components/layout/client-navbar";
 import Footer from "@/components/layout/footer";
 import TalentCard from "@/components/talent-card";
 import SearchFilters from "@/components/search-filters";
@@ -8,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TalentDirectory() {
+  const { isAuthenticated, user } = useAuth();
   const [filters, setFilters] = useState({
     search: "",
     category: "",
@@ -43,10 +48,9 @@ export default function TalentDirectory() {
 
   const hasMoreData = talentsData && talentsData.talents.length < talentsData.total;
 
-  return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
-
+  // Content component to avoid duplication
+  const TalentDirectoryContent = () => (
+    <div className="space-y-8">
       {/* Brand-aligned Hero Section */}
       <section className="relative bg-gradient-hero-enhanced overflow-hidden py-20">
         <div className="absolute inset-0">
@@ -79,61 +83,37 @@ export default function TalentDirectory() {
         </div>
 
         {/* Search and Filters */}
-        <SearchFilters filters={filters} onFiltersChange={setFilters} />
+        <SearchFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          data-testid="search-filters"
+        />
 
-        {/* Results */}
-        {error && (
+        {/* Content */}
+        {isLoading && filters.page === 1 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-4">
+                <Skeleton className="h-48 w-full rounded-lg" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : error ? (
           <div className="text-center py-12">
             <div className="text-red-600 mb-4">
               <i className="fas fa-exclamation-triangle text-4xl"></i>
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">Error Loading Talents</h3>
-            <p className="text-slate-600">Please try refreshing the page or adjusting your filters.</p>
-          </div>
-        )}
-
-        {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <Skeleton className="w-full h-64" />
-                <div className="p-4 space-y-3">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
-                  <Skeleton className="h-3 w-2/3" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16 rounded-full" />
-                    <Skeleton className="h-6 w-20 rounded-full" />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-6 w-20" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {talentsData && talentsData.talents.length === 0 && !isLoading && (
-          <div className="text-center py-12">
-            <div className="text-slate-400 mb-4">
-              <i className="fas fa-search text-6xl"></i>
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Talents Found</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">Unable to Load Talents</h3>
             <p className="text-slate-600 mb-4">
-              Try adjusting your search criteria or browse all available talent.
+              {error instanceof Error ? error.message : "Something went wrong while loading the talent directory."}
             </p>
-            <Button 
-              onClick={() => setFilters({ search: "", category: "", skills: [], location: "", page: 1 })}
-              data-testid="button-clear-filters"
-            >
-              Clear Filters
+            <Button onClick={() => window.location.reload()}>
+              Try Again
             </Button>
           </div>
-        )}
-
-        {talentsData && talentsData.talents.length > 0 && (
+        ) : talentsData && talentsData.talents.length > 0 ? (
           <>
             {/* Results info */}
             <div className="mb-6 text-sm text-slate-600">
@@ -147,29 +127,101 @@ export default function TalentDirectory() {
               ))}
             </div>
 
-            {/* Load More */}
+            {/* Load More Button */}
             {hasMoreData && (
               <div className="text-center">
                 <Button 
                   onClick={handleLoadMore}
                   disabled={isLoading}
+                  size="lg"
+                  className="px-8"
                   data-testid="button-load-more"
                 >
-                  {isLoading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>Loading...
-                    </>
-                  ) : (
-                    "Load More Talents"
-                  )}
+                  {isLoading ? "Loading..." : "Load More Talent"}
                 </Button>
               </div>
             )}
           </>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-slate-400 mb-4">
+              <i className="fas fa-users text-4xl"></i>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Talents Found</h3>
+            <p className="text-slate-600 mb-4">
+              {filters.search || filters.category || filters.location || filters.skills.length > 0
+                ? "Try adjusting your search criteria to find more results."
+                : "No talents are currently available in the directory."}
+            </p>
+            {(filters.search || filters.category || filters.location || filters.skills.length > 0) && (
+              <Button 
+                variant="outline"
+                onClick={() => setFilters({ search: "", category: "", skills: [], location: "", page: 1 })}
+              >
+                Clear All Filters
+              </Button>
+            )}
+          </div>
         )}
       </div>
-
-      <Footer />
     </div>
   );
+
+  // Render with appropriate layout based on authentication and user role
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+        <TalentDirectoryContent />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (user?.role === 'admin') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex">
+        <AdminSidebar />
+        <div className="flex-1">
+          <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Talent Directory</h1>
+                <p className="text-slate-600">Browse and discover talent profiles</p>
+              </div>
+            </div>
+          </header>
+          <main className="overflow-y-auto">
+            <TalentDirectoryContent />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (user?.role === 'talent') {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <TalentNavbar />
+        <div className="pt-4">
+          <TalentDirectoryContent />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (user?.role === 'client') {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <ClientNavbar />
+        <div className="pt-4">
+          <TalentDirectoryContent />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return null;
 }

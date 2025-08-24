@@ -16,6 +16,11 @@ const sidebarItems = [
     icon: "fas fa-users",
   },
   {
+    title: "Browse Talent",
+    href: "/talent",
+    icon: "fas fa-search",
+  },
+  {
     title: "Bookings",
     href: "/admin/bookings",
     icon: "fas fa-calendar",
