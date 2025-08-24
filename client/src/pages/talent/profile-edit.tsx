@@ -98,59 +98,6 @@ export default function TalentProfileEdit() {
     queryKey: ["/api/auth/user"],
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
-    onSuccess: (data) => {
-      if (data?.talentProfile) {
-        const profile = data.talentProfile;
-        setFormData({
-          stageName: profile.stageName || "",
-          categories: profile.categories || [],
-          skills: profile.skills || [],
-          bio: profile.bio || "",
-          location: profile.location || "",
-          unionStatus: profile.unionStatus || "",
-          measurements: {
-            height: profile.measurements?.height || "",
-            weight: profile.measurements?.weight || "",
-            bust: profile.measurements?.bust || "",
-            waist: profile.measurements?.waist || "",
-            hips: profile.measurements?.hips || "",
-            jacket: profile.measurements?.jacket || "",
-            inseam: profile.measurements?.inseam || "",
-            shoe: profile.measurements?.shoe || "",
-            hair: profile.measurements?.hair || "",
-            eyes: profile.measurements?.eyes || "",
-          },
-          rates: {
-            day: profile.rates?.day?.toString() || "",
-            halfDay: profile.rates?.halfDay?.toString() || "",
-            hourly: profile.rates?.hourly?.toString() || "",
-          },
-          social: {
-            instagram: profile.social?.instagram || "",
-            tiktok: profile.social?.tiktok || "",
-            youtube: profile.social?.youtube || "",
-            website: profile.social?.website || "",
-          },
-          guardian: {
-            name: profile.guardian?.name || "",
-            email: profile.guardian?.email || "",
-            phone: profile.guardian?.phone || "",
-          },
-        });
-      }
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   // Save profile mutation
@@ -306,27 +253,6 @@ export default function TalentProfileEdit() {
           </p>
           
           {/* Profile Status */}
-          {user?.talentProfile && (
-            <div className="mt-4 flex items-center gap-2">
-              <Badge 
-                variant={
-                  user.talentProfile.approvalStatus === 'approved' ? 'default' :
-                  user.talentProfile.approvalStatus === 'rejected' ? 'destructive' : 'secondary'
-                }
-                data-testid="badge-approval-status"
-              >
-                {user.talentProfile.approvalStatus === 'approved' && <i className="fas fa-check mr-1"></i>}
-                {user.talentProfile.approvalStatus === 'rejected' && <i className="fas fa-times mr-1"></i>}
-                {user.talentProfile.approvalStatus === 'pending' && <i className="fas fa-clock mr-1"></i>}
-                {user.talentProfile.approvalStatus?.charAt(0).toUpperCase() + user.talentProfile.approvalStatus?.slice(1)}
-              </Badge>
-              <span className="text-sm text-slate-600">
-                {user.talentProfile.approvalStatus === 'approved' && "Your profile is live in the directory"}
-                {user.talentProfile.approvalStatus === 'rejected' && "Profile needs updates"}
-                {user.talentProfile.approvalStatus === 'pending' && "Profile under review"}
-              </span>
-            </div>
-          )}
         </div>
 
         {profileLoading ? (
@@ -662,38 +588,6 @@ export default function TalentProfileEdit() {
                       </div>
 
                       {/* Current Media */}
-                      {user?.talentProfile?.mediaUrls && user.talentProfile.mediaUrls.length > 0 && (
-                        <div>
-                          <Label className="text-base font-medium mb-4 block">Current Portfolio</Label>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {user.talentProfile.mediaUrls.map((url: string, index: number) => (
-                              <div key={index} className="relative group">
-                                <img
-                                  src={url}
-                                  alt={`Portfolio ${index + 1}`}
-                                  className="w-full h-32 object-cover rounded-lg"
-                                  data-testid={`img-current-media-${index}`}
-                                />
-                                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => {
-                                      // TODO: Implement media deletion
-                                      toast({
-                                        title: "Feature coming soon",
-                                        description: "Media deletion will be available in the next update.",
-                                      });
-                                    }}
-                                  >
-                                    <i className="fas fa-trash"></i>
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </CardContent>
                 </Card>

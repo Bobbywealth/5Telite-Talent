@@ -193,35 +193,6 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Profile Status for Talents */}
-        {user?.role === 'talent' && user?.talentProfile && (
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <i className="fas fa-info-circle text-blue-600"></i>
-                Profile Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Badge 
-                  variant={user.talentProfile.approvalStatus === 'approved' ? 'default' : 
-                          user.talentProfile.approvalStatus === 'rejected' ? 'destructive' : 'secondary'}
-                >
-                  {user.talentProfile.approvalStatus === 'approved' && <i className="fas fa-check mr-1"></i>}
-                  {user.talentProfile.approvalStatus === 'rejected' && <i className="fas fa-times mr-1"></i>}
-                  {user.talentProfile.approvalStatus === 'pending' && <i className="fas fa-clock mr-1"></i>}
-                  {user.talentProfile.approvalStatus?.charAt(0).toUpperCase() + user.talentProfile.approvalStatus?.slice(1)}
-                </Badge>
-                <p className="text-slate-600">
-                  {user.talentProfile.approvalStatus === 'approved' && "Your profile is live and visible in the talent directory."}
-                  {user.talentProfile.approvalStatus === 'rejected' && "Your profile needs updates. Please contact support."}
-                  {user.talentProfile.approvalStatus === 'pending' && "Your profile is under review. You'll be notified once approved."}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       <Footer />

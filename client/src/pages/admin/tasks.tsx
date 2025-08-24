@@ -98,72 +98,12 @@ export default function AdminTasks() {
         dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : undefined,
       });
     },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Task created successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-      setShowCreateDialog(false);
-      setNewTask({
-        title: "",
-        description: "",
-        scope: "booking",
-        bookingId: "",
-        talentId: "",
-        assigneeId: "",
-        dueAt: "",
-      });
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
   });
 
   // Update task mutation
   const updateTaskMutation = useMutation({
     mutationFn: async ({ taskId, updates }: { taskId: string; updates: any }) => {
       return apiRequest("PATCH", `/api/tasks/${taskId}`, updates);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Task updated successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
     },
   });
 
