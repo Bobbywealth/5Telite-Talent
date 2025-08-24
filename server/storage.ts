@@ -556,335 +556,146 @@ export class DatabaseStorage implements IStorage {
   }
 
   async seedDemoData(): Promise<void> {
-    // Check if demo data already exists
-    const existingUsers = await db.select().from(users).limit(1);
-    if (existingUsers.length > 0) {
-      console.log("Demo data already exists, skipping seed");
-      return;
-    }
+    // Clear existing data first to ensure fresh seed with proper passwords
+    await db.delete(users);
+    console.log("Cleared existing users for fresh seed");
 
     console.log("Seeding demo data...");
 
-    // Create demo users
-    const adminUser = await this.upsertUser({
-      id: "admin-demo-id",
-      role: "admin",
+    // Import hash function (we'll import it at the top of the file)
+    const { hashPassword } = await import("./auth");
+
+    // Create demo users with passwords
+    const adminUser = await this.createUser({
       email: "admin@5t.com",
+      password: await hashPassword("admin123"),
       firstName: "Admin",
       lastName: "User",
-      status: "active",
+      role: "admin",
     });
 
-    // Create demo talent users and profiles
-    const demoTalents = [
-      {
-        id: "e6330a2c-922a-4c8e-84b4-96b1b709e523",
-        userId: "talent-demo-id-1",
-        stageName: "Sarah J.",
-        categories: ["Commercial", "Runway", "Editorial"],
-        skills: ["Acting", "Modeling", "Dance", "Spanish", "Yoga"],
-        bio: "Professional model and actress with over 5 years of experience in fashion, commercial, and editorial work. Specializes in high-fashion runway shows and brand campaigns.",
-        location: "New York, NY",
-        unionStatus: "SAG-AFTRA",
-        measurements: {
-          height: "5'8\"",
-          weight: "",
-          bust: "34\"",
-          waist: "26\"",
-          hips: "36\"",
-          shoe: "8.5",
-          hair: "Brown",
-          eyes: "Hazel"
-        },
-        rates: {
-          hourly: 125,
-          halfDay: 500,
-          day: 800
-        },
-        mediaUrls: [],
-        resumeUrls: [],
-        social: {
-          instagram: "@sarahjmodel"
-        },
-        guardian: null,
-        approvalStatus: "approved" as const,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        user: {
-          id: "talent-demo-id-1",
-          role: "talent" as const,
-          email: "sarah@5t.com",
-          firstName: "Sarah",
-          lastName: "Chen",
-          phone: null,
-          profileImageUrl: "/attached_assets/image_1756045490912.png",
-          status: "active" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      },
-      {
-        id: "f7441b3d-033b-5d9f-95c5-a7c2c820f634",
-        userId: "talent-demo-id-2",
-        stageName: "Marcus R.",
-        categories: ["Commercial", "Print", "Fitness"],
-        skills: ["Fitness Modeling", "Acting", "Stunt Work", "Boxing", "Swimming"],
-        bio: "Athletic model and actor specializing in fitness, sports, and action roles. Former professional athlete with extensive experience in commercial campaigns and fitness brands.",
-        location: "Los Angeles, CA",
-        unionStatus: "SAG-AFTRA",
-        measurements: {
-          height: "6'2\"",
-          weight: "185 lbs",
-          chest: "42\"",
-          waist: "32\"",
-          shoe: "11",
-          hair: "Black",
-          eyes: "Brown"
-        },
-        rates: {
-          hourly: 150,
-          halfDay: 600,
-          day: 950
-        },
-        mediaUrls: [],
-        resumeUrls: [],
-        social: {
-          instagram: "@marcusfitmodel"
-        },
-        guardian: null,
-        approvalStatus: "approved" as const,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        user: {
-          id: "talent-demo-id-2",
-          role: "talent" as const,
-          email: "marcus@5t.com",
-          firstName: "Marcus",
-          lastName: "Rodriguez",
-          phone: null,
-          profileImageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-          status: "active" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      },
-      {
-        id: "g8552c4e-144c-6e0g-a6d6-b8d3d931g745",
-        userId: "talent-demo-id-3",
-        stageName: "Elena C.",
-        categories: ["Editorial", "High Fashion", "Beauty"],
-        skills: ["Runway", "Editorial", "Beauty", "Fashion", "Posing"],
-        bio: "High fashion model with international runway experience. Featured in major fashion magazines and campaigns for luxury brands. Specializes in avant-garde and editorial work.",
-        location: "Miami, FL",
-        unionStatus: "Non-Union",
-        measurements: {
-          height: "5'10\"",
-          weight: "",
-          bust: "32\"",
-          waist: "24\"",
-          hips: "34\"",
-          shoe: "9",
-          hair: "Blonde",
-          eyes: "Blue"
-        },
-        rates: {
-          hourly: 200,
-          halfDay: 750,
-          day: 1200
-        },
-        mediaUrls: [],
-        resumeUrls: [],
-        social: {
-          instagram: "@elenacouture"
-        },
-        guardian: null,
-        approvalStatus: "approved" as const,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        user: {
-          id: "talent-demo-id-3",
-          role: "talent" as const,
-          email: "elena@5t.com",
-          firstName: "Elena",
-          lastName: "Chen",
-          phone: null,
-          profileImageUrl: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
-          status: "active" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      },
-      {
-        id: "h9663d5f-255d-7f1h-b7e7-c9e4e042h856",
-        userId: "talent-demo-id-4",
-        stageName: "JT",
-        categories: ["Commercial", "Character", "Voice Over"],
-        skills: ["Voice Acting", "Character Work", "Improv", "Commercial Acting", "Dialects"],
-        bio: "Versatile character actor and voice talent with extensive commercial and theatrical experience. Known for authentic portrayals and distinctive voice work across multiple mediums.",
-        location: "Chicago, IL",
-        unionStatus: "SAG-AFTRA",
-        measurements: {
-          height: "5'11\"",
-          weight: "170 lbs",
-          chest: "40\"",
-          waist: "32\"",
-          shoe: "10.5",
-          hair: "Brown",
-          eyes: "Green"
-        },
-        rates: {
-          hourly: 135,
-          halfDay: 525,
-          day: 850
-        },
-        mediaUrls: [],
-        resumeUrls: [],
-        social: {
-          instagram: "@jtactor"
-        },
-        guardian: null,
-        approvalStatus: "approved" as const,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        user: {
-          id: "talent-demo-id-4",
-          role: "talent" as const,
-          email: "jt@5t.com",
-          firstName: "James",
-          lastName: "Thompson",
-          phone: null,
-          profileImageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-          status: "active" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      },
-      {
-        id: "i0774e6g-366e-8g2i-c8f8-d0f5f153i967",
-        userId: "talent-demo-id-5",
-        stageName: "Aria P.",
-        categories: ["Runway", "Editorial", "Cultural"],
-        skills: ["Runway", "Editorial", "Cultural Representation", "Fashion", "Beauty"],
-        bio: "Rising star in the fashion industry with a passion for diverse representation. Experienced in runway shows, editorial shoots, and cultural campaigns that celebrate authenticity and inclusion.",
-        location: "New York, NY",
-        unionStatus: "Non-Union",
-        measurements: {
-          height: "5'9\"",
-          weight: "",
-          bust: "34\"",
-          waist: "26\"",
-          hips: "36\"",
-          shoe: "8",
-          hair: "Black",
-          eyes: "Brown"
-        },
-        rates: {
-          hourly: 140,
-          halfDay: 550,
-          day: 900
-        },
-        mediaUrls: [],
-        resumeUrls: [],
-        social: {
-          instagram: "@ariapatel"
-        },
-        guardian: null,
-        approvalStatus: "approved" as const,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        user: {
-          id: "talent-demo-id-5",
-          role: "talent" as const,
-          email: "aria@5t.com",
-          firstName: "Aria",
-          lastName: "Patel",
-          phone: null,
-          profileImageUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-          status: "active" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      }
-    ];
+    // Create demo talent users first
+    const sarahUser = await this.createUser({
+      email: "sarah@5t.com",
+      password: await hashPassword("sarah123"),
+      firstName: "Sarah",
+      lastName: "Chen", 
+      role: "talent",
+    });
 
-    // Create each talent user and profile
-    for (const talentData of demoTalents) {
-      // Create user
-      const talentUser = await this.upsertUser({
-        id: talentData.user.id,
-        role: talentData.user.role,
-        email: talentData.user.email,
-        firstName: talentData.user.firstName,
-        lastName: talentData.user.lastName,
-        phone: talentData.user.phone,
-        profileImageUrl: talentData.user.profileImageUrl,
-        status: talentData.user.status,
-      });
+    const marcusUser = await this.createUser({
+      email: "marcus@5t.com", 
+      password: await hashPassword("marcus123"),
+      firstName: "Marcus",
+      lastName: "Rodriguez",
+      role: "talent",
+    });
 
-      // Create talent profile
-      await this.createTalentProfile({
-        userId: talentUser.id,
-        stageName: talentData.stageName,
-        categories: talentData.categories,
-        skills: talentData.skills,
-        bio: talentData.bio,
-        location: talentData.location,
-        unionStatus: talentData.unionStatus as "SAG-AFTRA" | "Non-Union" | "Other" | null,
-        measurements: talentData.measurements,
-        rates: talentData.rates,
-        social: talentData.social,
-        approvalStatus: talentData.approvalStatus,
-      });
-    }
+    const elenaUser = await this.createUser({
+      email: "elena@5t.com",
+      password: await hashPassword("elena123"), 
+      firstName: "Elena",
+      lastName: "Castillo",
+      role: "talent",
+    });
 
-    const clientUser = await this.upsertUser({
-      id: "client-demo-id",
+    // Create a demo client user
+    const clientUser = await this.createUser({
+      email: "client@5t.com",
+      password: await hashPassword("client123"),
+      firstName: "John",
+      lastName: "Client",
       role: "client",
-      email: "client@5t.com", 
-      firstName: "Client",
-      lastName: "User",
-      status: "active",
     });
 
-    // Create demo booking
-    const demoBooking = await this.createBooking({
-      clientId: clientUser.id,
-      title: "Brand X Spring Campaign",
-      location: "New York Studio",
-      startDate: new Date("2024-03-15"),
-      endDate: new Date("2024-03-17"),
-      rate: "3200.00",
-      status: "signed",
-      createdBy: adminUser.id,
-      notes: "Fashion campaign for spring collection",
+    // Create talent profiles
+    await this.createTalentProfile({
+      userId: sarahUser.id,
+      stageName: "Sarah J.",
+      categories: ["Commercial", "Runway", "Editorial"],
+      skills: ["Acting", "Modeling", "Dance", "Spanish", "Yoga"],
+      bio: "Professional model and actress with over 5 years of experience in fashion, commercial, and editorial work. Specializes in high-fashion runway shows and brand campaigns.",
+      location: "New York, NY",
+      unionStatus: "SAG-AFTRA",
+      measurements: {
+        height: "5'8\"",
+        weight: "",
+        bust: "34\"",
+        waist: "26\"",
+        hips: "36\"",
+        shoe: "8.5",
+        hair: "Brown",
+        eyes: "Hazel"
+      },
+      rates: {
+        hourly: 125,
+        halfDay: 500,
+        day: 800
+      },
+      social: {
+        instagram: "@sarahjmodel"
+      },
+      approvalStatus: "approved",
     });
 
-    // Add first talent to booking (Sarah J.)
-    await this.addTalentToBooking(demoBooking.id, "talent-demo-id-1");
-
-    // Create demo tasks
-    await this.createTask({
-      scope: "booking",
-      bookingId: demoBooking.id,
-      title: "Review talent contracts for March shoots",
-      description: "Ensure all contracts are signed and filed",
-      status: "todo",
-      assigneeId: adminUser.id,
-      createdBy: adminUser.id,
-      dueAt: new Date("2024-03-14"),
+    await this.createTalentProfile({
+      userId: marcusUser.id,
+      stageName: "Marcus R.",
+      categories: ["Commercial", "Print", "Fitness"],
+      skills: ["Fitness Modeling", "Acting", "Stunt Work", "Boxing", "Swimming"],
+      bio: "Athletic model and actor specializing in fitness, sports, and action roles. Former professional athlete with extensive experience in commercial campaigns and fitness brands.",
+      location: "Los Angeles, CA",
+      unionStatus: "SAG-AFTRA",
+      measurements: {
+        height: "6'2\"",
+        weight: "185 lbs",
+        chest: "42\"",
+        waist: "32\"",
+        shoe: "11",
+        hair: "Black",
+        eyes: "Brown"
+      },
+      rates: {
+        hourly: 150,
+        halfDay: 600,
+        day: 950
+      },
+      social: {
+        instagram: "@marcusfitmodel"
+      },
+      approvalStatus: "approved",
     });
 
-    await this.createTask({
-      scope: "talent",
-      talentId: "talent-demo-id-1",
-      title: "Update portfolio photos",
-      description: "Add recent headshots to portfolio",
-      status: "in_progress",
-      assigneeId: "talent-demo-id-1",
-      createdBy: adminUser.id,
+    await this.createTalentProfile({
+      userId: elenaUser.id,
+      stageName: "Elena C.",
+      categories: ["Editorial", "High Fashion", "Beauty"],
+      skills: ["Runway", "Editorial", "Beauty", "Fashion", "Posing"],
+      bio: "High fashion model with international runway experience. Featured in major fashion magazines and campaigns for luxury brands. Specializes in avant-garde and editorial work.",
+      location: "Miami, FL",
+      unionStatus: "Non-Union",
+      measurements: {
+        height: "5'10\"",
+        weight: "",
+        bust: "32\"",
+        waist: "24\"",
+        hips: "34\"",
+        shoe: "9",
+        hair: "Dark Brown",
+        eyes: "Brown"
+      },
+      rates: {
+        hourly: 175,
+        halfDay: 700,
+        day: 1200
+      },
+      social: {
+        instagram: "@elenacouture"
+      },
+      approvalStatus: "approved",
     });
 
-    console.log("Demo data seeded successfully");
+    console.log("Demo data seeded successfully!");
   }
 }
 
