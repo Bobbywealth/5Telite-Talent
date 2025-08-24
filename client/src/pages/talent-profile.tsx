@@ -212,7 +212,7 @@ export default function TalentProfile() {
                 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button asChild>
-                    <Link href="/book">Book Now</Link>
+                    <Link href={`/book?talent=${talent.id}`}>Book Now</Link>
                   </Button>
                   <Button variant="outline" asChild>
                     <Link href="/talent">Back to Directory</Link>
@@ -332,7 +332,7 @@ export default function TalentProfile() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Button className="w-full" asChild>
-                <Link href="/book">Book This Talent</Link>
+                <Link href={`/book?talent=${talent.id}`}>Book This Talent</Link>
               </Button>
               <p className="text-sm text-slate-600 text-center">
                 Ready to work together? Click above to start the booking process.

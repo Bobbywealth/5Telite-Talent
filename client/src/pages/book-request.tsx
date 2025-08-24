@@ -1,10 +1,12 @@
 
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import ClientNavbar from "@/components/layout/client-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +16,13 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function BookRequest() {
   const { toast } = useToast();
+  const { isAuthenticated, user } = useAuth();
+  const [showClientSignup, setShowClientSignup] = useState(false);
+  
+  // Get talent ID from URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const talentId = urlParams.get('talent');
+  
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -26,34 +35,81 @@ export default function BookRequest() {
     clientEmail: "",
     clientPhone: "",
     budget: "",
+    talentId: talentId || "",
   });
+  
+  // Fetch selected talent data
+  const { data: selectedTalent, isLoading: talentLoading } = useQuery({
+    queryKey: ["/api/talents", talentId],
+    queryFn: async () => {
+      if (!talentId) return null;
+      const response = await fetch(`/api/talents/${talentId}`);
+      if (!response.ok) throw new Error("Failed to fetch talent");
+      return response.json();
+    },
+    enabled: !!talentId,
+    retry: false,
+  });
+  
+  // Pre-populate form with talent data
+  useEffect(() => {
+    if (selectedTalent) {
+      setFormData(prev => ({
+        ...prev,
+        category: selectedTalent.category || "",
+        title: `Project with ${selectedTalent.firstName} ${selectedTalent.lastName}`,
+      }));
+    }
+  }, [selectedTalent]);
+  
+  // Check if user needs to create client account
+  useEffect(() => {
+    if (isAuthenticated && user && user.role !== 'client') {
+      setShowClientSignup(true);
+    }
+  }, [isAuthenticated, user]);
 
+  // Convert user to client mutation
+  const convertToClientMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/auth/switch-role", { role: "client" });
+    },
+    onSuccess: () => {
+      setShowClientSignup(false);
+      toast({
+        title: "Account converted to client!",
+        description: "You can now proceed with your booking request.",
+      });
+      // Refresh the page to update user role
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error converting account",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
   const bookingMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return apiRequest("POST", "/api/bookings", {
+      return apiRequest("POST", "/api/booking-requests", {
         ...data,
-        rate: data.budget ? parseFloat(data.budget) : undefined,
-        status: "inquiry",
+        budget: data.budget ? parseFloat(data.budget) : undefined,
+        status: "pending",
+        talentId: data.talentId,
       });
     },
     onSuccess: () => {
       toast({
         title: "Booking request submitted successfully!",
-        description: "We'll review your request and get back to you within 24 hours.",
+        description: "We'll review your request and get back to you within 24 hours. You'll receive a contract to sign once approved.",
       });
-      setFormData({
-        title: "",
-        category: "",
-        startDate: "",
-        endDate: "",
-        location: "",
-        description: "",
-        deliverables: "",
-        clientName: "",
-        clientEmail: "",
-        clientPhone: "",
-        budget: "",
-      });
+      // Redirect to client dashboard or contracts page
+      if (user?.role === 'client') {
+        window.location.href = "/client";
+      }
     },
     onError: (error) => {
       toast({
@@ -66,16 +122,78 @@ export default function BookRequest() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if user is authenticated and is a client
+    if (!isAuthenticated) {
+      toast({
+        title: "Please sign in first",
+        description: "You need to sign in to submit a booking request.",
+        variant: "destructive",
+      });
+      // Store form data before redirect
+      localStorage.setItem('booking_form_data', JSON.stringify(formData));
+      window.location.href = "/api/login";
+      return;
+    }
+    
+    if (user?.role !== 'client') {
+      setShowClientSignup(true);
+      return;
+    }
+    
     bookingMutation.mutate(formData);
+  };
+  
+  const handleConvertToClient = () => {
+    convertToClientMutation.mutate();
+  };
+  
+  const handleSignupAsClient = () => {
+    // Store the current form data to localStorage so we can restore it after login
+    localStorage.setItem('booking_form_data', JSON.stringify(formData));
+    window.location.href = "/api/logout";
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+  
+  // Restore form data after login if it exists
+  useEffect(() => {
+    const savedData = localStorage.getItem('booking_form_data');
+    if (savedData && isAuthenticated) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setFormData(prev => ({ ...prev, ...parsedData }));
+        localStorage.removeItem('booking_form_data');
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+      }
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
+
+      {/* Selected Talent Banner */}
+      {selectedTalent && (
+        <div className="bg-primary text-white p-4">
+          <div className="max-w-4xl mx-auto flex items-center gap-4">
+            {selectedTalent.profileImageUrl && (
+              <img 
+                src={selectedTalent.profileImageUrl} 
+                alt={`${selectedTalent.firstName} ${selectedTalent.lastName}`}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            )}
+            <div>
+              <h2 className="font-semibold">Booking: {selectedTalent.firstName} {selectedTalent.lastName}</h2>
+              <p className="text-sm opacity-90">{selectedTalent.category}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section with Brand Gradient */}
       <section className="relative bg-gradient-hero-enhanced overflow-hidden py-16">
@@ -99,15 +217,17 @@ export default function BookRequest() {
           </div>
           
           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Request a
+            {selectedTalent ? `Book ${selectedTalent.firstName}` : "Request a"}
             <span className="block bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
-              Booking
+              {selectedTalent ? selectedTalent.lastName : "Booking"}
             </span>
           </h1>
           
           <p className="text-lg lg:text-xl text-slate-200 max-w-3xl mx-auto leading-relaxed">
-            Tell us about your project and we'll connect you with the perfect talent. 
-            Our team will review your request and provide a customized proposal within 24 hours.
+            {selectedTalent 
+              ? `Tell us about your project and we'll connect you with ${selectedTalent.firstName}. Our team will review your request and provide a customized proposal within 24 hours.`
+              : "Tell us about your project and we'll connect you with the perfect talent. Our team will review your request and provide a customized proposal within 24 hours."
+            }
           </p>
         </div>
       </section>
@@ -124,6 +244,28 @@ export default function BookRequest() {
             </CardHeader>
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Selected Talent Display */}
+                {selectedTalent && (
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 mb-2">Selected Talent</h3>
+                    <div className="flex items-center gap-3">
+                      {selectedTalent.profileImageUrl && (
+                        <img 
+                          src={selectedTalent.profileImageUrl} 
+                          alt={`${selectedTalent.firstName} ${selectedTalent.lastName}`}
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium">{selectedTalent.firstName} {selectedTalent.lastName}</p>
+                        <p className="text-sm text-slate-600">{selectedTalent.category}</p>
+                        {selectedTalent.location && (
+                          <p className="text-sm text-slate-500">{selectedTalent.location}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {/* Project Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -301,7 +443,7 @@ export default function BookRequest() {
                     type="submit" 
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
                     size="lg"
-                    disabled={bookingMutation.isPending}
+                    disabled={bookingMutation.isPending || talentLoading}
                     data-testid="button-submit-booking"
                   >
                     {bookingMutation.isPending ? (
@@ -309,10 +451,15 @@ export default function BookRequest() {
                         <i className="fas fa-spinner fa-spin mr-3"></i>
                         Submitting Request...
                       </>
+                    ) : talentLoading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin mr-3"></i>
+                        Loading...
+                      </>
                     ) : (
                       <>
                         <i className="fas fa-paper-plane mr-3"></i>
-                        Submit Booking Request
+                        {selectedTalent ? `Book ${selectedTalent.firstName} ${selectedTalent.lastName}` : "Submit Booking Request"}
                       </>
                     )}
                   </Button>
@@ -327,6 +474,59 @@ export default function BookRequest() {
       </section>
 
       <Footer />
+      
+      {/* Client Signup Modal */}
+      {showClientSignup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold mb-4">Setup Client Account</h3>
+            <p className="text-slate-600 mb-6">
+              To book talent, you need a client account. You can either:
+            </p>
+            
+            <div className="space-y-4">
+              {user ? (
+                <>
+                  <Button 
+                    onClick={handleConvertToClient}
+                    disabled={convertToClientMutation.isPending}
+                    className="w-full"
+                  >
+                    {convertToClientMutation.isPending ? "Converting..." : "Convert Current Account to Client"}
+                  </Button>
+                  
+                  <div className="text-center text-sm text-slate-500">
+                    or
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={handleSignupAsClient}
+                    className="w-full"
+                  >
+                    Sign Up as New Client
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  onClick={handleSignupAsClient}
+                  className="w-full"
+                >
+                  Sign Up as Client
+                </Button>
+              )}
+              
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowClientSignup(false)}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
