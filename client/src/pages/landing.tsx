@@ -77,7 +77,7 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative bg-gradient-hero-enhanced overflow-hidden">
         {/* Dynamic animated background elements */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 pointer-events-none">
           {/* Floating geometric shapes */}
           <div className="floating-shape shape-1"></div>
           <div className="floating-shape shape-2"></div>
@@ -116,7 +116,7 @@ export default function Landing() {
         </div>
 
         {/* Content overlay with subtle pattern */}
-        <div className="absolute inset-0 bg-black bg-opacity-20">
+        <div className="absolute inset-0 bg-black bg-opacity-20 pointer-events-none">
           <div className="absolute inset-0 hero-pattern opacity-5"></div>
         </div>
 
