@@ -226,8 +226,6 @@ export default function Landing() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
       </section>
 
       {/* What We Do Section */}
