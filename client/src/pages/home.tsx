@@ -155,7 +155,7 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{talentsData?.total || 0}</div>
+                    <div className="text-2xl font-bold">{talentsData?.total ? parseInt(talentsData.total) : 0}</div>
                     <p className="text-xs text-slate-500">Active profiles</p>
                   </CardContent>
                 </Card>
@@ -168,7 +168,7 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{bookingsData?.total || 0}</div>
+                    <div className="text-2xl font-bold">{bookingsData?.total ? parseInt(bookingsData.total) : 0}</div>
                     <p className="text-xs text-slate-500">This month</p>
                   </CardContent>
                 </Card>
