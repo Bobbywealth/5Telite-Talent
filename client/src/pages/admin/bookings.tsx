@@ -234,6 +234,9 @@ export default function AdminBookings() {
     if (talentsData?.talents) {
       let filtered = talentsData.talents;
 
+      // Only show approved talents
+      filtered = filtered.filter((talent: any) => talent.approvalStatus === 'approved');
+
       // Search filter
       if (talentSearch) {
         filtered = filtered.filter((talent: any) => {
@@ -251,7 +254,11 @@ export default function AdminBookings() {
         );
       }
 
+      console.log("Filtered talents:", filtered.length, "out of", talentsData.talents.length);
       setFilteredTalents(filtered);
+    } else {
+      console.log("No talents data available");
+      setFilteredTalents([]);
     }
   }, [talentsData, talentSearch, talentCategoryFilter]);
 
@@ -551,6 +558,7 @@ export default function AdminBookings() {
                             : 'border-slate-200 hover:border-slate-300'
                         }`}
                         onClick={() => {
+                          console.log("Talent clicked:", talent.user.firstName, talent.user.lastName);
                           if (selectedTalents.includes(talent.userId)) {
                             setSelectedTalents(selectedTalents.filter(id => id !== talent.userId));
                           } else {
