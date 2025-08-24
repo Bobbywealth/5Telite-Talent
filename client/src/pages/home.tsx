@@ -61,10 +61,10 @@ export default function Home() {
 
           <div className="flex items-center gap-3 mb-6">
             <Badge variant={user?.status === 'active' ? 'default' : 'secondary'} className="text-sm px-3 py-1">
-              {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)} Account
+              {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'} Account
             </Badge>
             <Badge variant={user?.status === 'active' ? 'default' : 'destructive'} className="text-sm px-3 py-1">
-              {user?.status?.charAt(0).toUpperCase() + user?.status?.slice(1)}
+              {user?.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Unknown'}
             </Badge>
           </div>
         </div>

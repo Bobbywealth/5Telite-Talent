@@ -201,7 +201,7 @@ export default function TalentProfileEdit() {
     setFormData(prev => ({
       ...prev,
       [section]: {
-        ...prev[section as keyof typeof prev],
+        ...(prev[section as keyof typeof prev] as any),
         [field]: value,
       },
     }));

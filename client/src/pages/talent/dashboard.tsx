@@ -108,38 +108,6 @@ export default function TalentDashboard() {
             </div>
           </div>
 
-          {/* Profile Status */}
-          {user?.talentProfile && (
-            <Card className="mb-6">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                      <i className="fas fa-user text-primary text-2xl"></i>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-900">Profile Status</h3>
-                      <p className="text-slate-600">
-                        {user.talentProfile.approvalStatus === 'approved' && "Your profile is live and visible in the directory."}
-                        {user.talentProfile.approvalStatus === 'rejected' && "Your profile needs updates. Please contact support."}
-                        {user.talentProfile.approvalStatus === 'pending' && "Your profile is under review."}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge 
-                    variant={getStatusBadgeVariant(user.talentProfile.approvalStatus)} 
-                    className="text-sm px-3 py-1"
-                    data-testid="badge-profile-status"
-                  >
-                    {user.talentProfile.approvalStatus === 'approved' && <i className="fas fa-check mr-1"></i>}
-                    {user.talentProfile.approvalStatus === 'rejected' && <i className="fas fa-times mr-1"></i>}
-                    {user.talentProfile.approvalStatus === 'pending' && <i className="fas fa-clock mr-1"></i>}
-                    {user.talentProfile.approvalStatus?.charAt(0).toUpperCase() + user.talentProfile.approvalStatus?.slice(1)}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Dashboard Grid */}
