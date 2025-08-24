@@ -58,7 +58,7 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">For Talent</h3>
             <ul className="space-y-3 text-white/80">
               <li>
-                <a href="/api/login" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <a href="/register" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <i className="fas fa-plus-circle mr-2 text-green-400"></i>Join Our Roster
                 </a>
               </li>

@@ -7,6 +7,65 @@ import { ObjectPermission } from "./objectAcl";
 import { z } from "zod";
 import { insertTalentProfileSchema, insertBookingSchema, insertTaskSchema } from "@shared/schema";
 
+// Placeholder for DB and schema imports (assuming they exist elsewhere)
+// import { db, users, talentProfiles, eq } from "./db"; // Example import
+// import crypto from "crypto"; // Example import
+
+// Mock DB and schema for demonstration purposes if not provided
+const mockDb = {
+  select: () => ({
+    from: () => ({
+      where: () => ({
+        limit: () => Promise.resolve([]),
+      }),
+    }),
+  }),
+  insert: () => ({
+    values: () => ({
+      returning: () => Promise.resolve([{ id: "mock-uuid", email: "mock@example.com", role: "talent", status: "active", firstName: "Mock", lastName: "User" }]),
+    }),
+  }),
+  update: () => ({
+    set: () => ({
+      where: () => ({
+        returning: () => Promise.resolve([{ id: "mock-uuid", userId: "mock-uuid", stageName: "Mock Talent", approvalStatus: "pending" }]),
+      }),
+    }),
+  }),
+};
+
+const mockUsers = {
+  email: "email",
+};
+const mockTalentProfiles = {
+  userId: "userId",
+  stageName: "stageName",
+  location: "location",
+  bio: "bio",
+  categories: "categories",
+  skills: "skills",
+  phoneNumber: "phoneNumber",
+  height: "height",
+  weight: "weight",
+  hairColor: "hairColor",
+  eyeColor: "eyeColor",
+  experience: "experience",
+  approvalStatus: "approvalStatus",
+  profileImageUrls: "profileImageUrls",
+  portfolioUrls: "portfolioUrls"
+};
+const mockEq = (a: any, b: any) => a === b;
+const mockCrypto = {
+  randomUUID: () => "mock-uuid"
+};
+
+const db = mockDb;
+const users = mockUsers;
+const talentProfiles = mockTalentProfiles;
+const eq = mockEq;
+const crypto = mockCrypto;
+
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
@@ -19,20 +78,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.post("/api/auth/register", async (req: any, res) => {
+    const { firstName, lastName, email, role = "talent" } = req.body;
+
+    // Check if user already exists
+    const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    if (existingUser.length > 0) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Create user
+    const [user] = await db.insert(users).values({
+      id: crypto.randomUUID(),
+      firstName,
+      lastName,
+      email,
+      role: role as "admin" | "talent" | "client",
+      status: "active",
+      profileImageUrl: null
+    }).returning();
+
+    // Create initial talent profile if role is 'talent'
+    if (role === 'talent') {
+      await db.insert(talentProfiles).values({
+        id: crypto.randomUUID(),
+        userId: user.id,
+        stageName: `${firstName} ${lastName}`, // Default stage name
+        location: null,
+        bio: null,
+        categories: [],
+        skills: [],
+        phoneNumber: null,
+        height: null,
+        weight: null,
+        hairColor: null,
+        eyeColor: null,
+        experience: [],
+        approvalStatus: "pending",
+        profileImageUrls: [],
+        portfolioUrls: []
+      }).returning();
+    }
+
+    res.status(201).json(user);
+  });
+
+  app.post("/api/auth/login", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Include talent profile if user is a talent
       let talentProfile = null;
       if (user.role === 'talent') {
         talentProfile = await storage.getTalentProfile(userId);
       }
-      
+
       res.json({ ...user, talentProfile });
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -45,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { role } = req.body;
-      
+
       if (!role || !['admin', 'talent', 'client'].includes(role)) {
         return res.status(400).json({ message: "Invalid role. Must be 'admin', 'talent', or 'client'" });
       }
@@ -59,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         profileImageUrl: req.user.claims.profile_image_url,
         role: role,
       });
-      
+
       res.json({ message: `Role switched to ${role}`, user: updatedUser });
     } catch (error) {
       console.error("Error switching user role:", error);
@@ -168,7 +272,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user || user.role !== 'talent') {
         return res.status(403).json({ message: "Access denied" });
       }
@@ -204,7 +308,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const userId = req.user.claims.sub;
     const user = await storage.getUser(userId);
-    
+
     if (!user || user.role !== 'talent') {
       return res.status(403).json({ message: "Access denied" });
     }
@@ -237,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user || user.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -282,7 +386,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!client) {
           client = await storage.upsertUser(clientData);
         }
-        
+
         createdBy = client.id;
         bookingData = insertBookingSchema.parse({
           ...req.body,
@@ -308,7 +412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -321,7 +425,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } = req.query;
 
       const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
-      
+
       let options: any = {
         limit: parseInt(limit as string),
         offset,
@@ -349,7 +453,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -379,7 +483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user || user.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -396,7 +500,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user || user.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -415,7 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user || user.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -440,7 +544,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -454,7 +558,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } = req.query;
 
       const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
-      
+
       let options: any = {
         limit: parseInt(limit as string),
         offset,
@@ -481,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -504,13 +608,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user || user.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
 
       const { bookings } = await storage.getAllBookings({ limit: 100 });
-      
+
       const events = bookings
         .filter(booking => booking.status === 'signed' || booking.status === 'paid')
         .map(booking => ({

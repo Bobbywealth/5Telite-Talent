@@ -11,13 +11,18 @@ import Home from "@/pages/home";
 import TalentDirectory from "@/pages/talent-directory";
 import TalentProfile from "@/pages/talent-profile";
 import BookRequest from "@/pages/book-request";
+import Register from "@/pages/register";
+import NotFound from "@/pages/not-found";
+
+// Admin Pages
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminTasks from "@/pages/admin/tasks";
+
+// Talent Pages
 import TalentDashboard from "@/pages/talent/dashboard";
 import TalentProfileEdit from "@/pages/talent/profile-edit";
-import NotFound from "@/pages/not-found";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -38,6 +43,7 @@ function Router() {
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
           <Route path="/book" component={BookRequest} />
+          <Route path="/register" component={Register} />
         </>
       ) : (
         <>
@@ -45,7 +51,8 @@ function Router() {
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
           <Route path="/book" component={BookRequest} />
-          
+          <Route path="/register" component={Register} />
+
           {/* Admin routes */}
           {user?.role === 'admin' && (
             <>
@@ -55,7 +62,7 @@ function Router() {
               <Route path="/admin/tasks" component={AdminTasks} />
             </>
           )}
-          
+
           {/* Talent routes */}
           {user?.role === 'talent' && (
             <>
