@@ -91,11 +91,65 @@ export default function TalentProfileEdit() {
     },
   });
 
+  // Populate form with existing data when profile loads
+  useEffect(() => {
+    if (profileData?.talentProfile) {
+      const profile = profileData.talentProfile;
+      setFormData({
+        stageName: profile.stageName || "",
+        categories: profile.categories || [],
+        skills: profile.skills || [],
+        bio: profile.bio || "",
+        location: profile.location || "",
+        unionStatus: profile.unionStatus || "",
+        measurements: profile.measurements || {
+          height: "",
+          weight: "",
+          bust: "",
+          waist: "",
+          hips: "",
+          jacket: "",
+          inseam: "",
+          shoe: "",
+          hair: "",
+          eyes: "",
+        },
+        rates: {
+          day: profile.rates?.day?.toString() || "",
+          halfDay: profile.rates?.halfDay?.toString() || "",
+          hourly: profile.rates?.hourly?.toString() || "",
+        },
+        social: profile.social || {
+          instagram: "",
+          tiktok: "",
+          youtube: "",
+          website: "",
+        },
+        guardian: profile.guardian || {
+          name: "",
+          email: "",
+          phone: "",
+        },
+      });
+    }
+  }, [profileData]);
+
   // Authentication is handled by the Router component
 
   // Fetch current profile data
   const { data: profileData, isLoading: profileLoading } = useQuery({
     queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      const userData = await apiRequest("GET", "/api/auth/user");
+      // Try to fetch talent profile
+      try {
+        const talentProfile = await apiRequest("GET", `/api/talents/${userData.id}`);
+        return { ...userData, talentProfile };
+      } catch (error) {
+        // Profile doesn't exist yet, return user data only
+        return { ...userData, talentProfile: null };
+      }
+    },
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
   });
@@ -111,7 +165,15 @@ export default function TalentProfileEdit() {
           hourly: data.rates.hourly ? parseFloat(data.rates.hourly) : undefined,
         },
       };
-      return apiRequest("POST", "/api/talents/me", payload);
+      
+      // Check if profile exists first
+      if (profileData?.talentProfile) {
+        // Update existing profile
+        return apiRequest("PATCH", `/api/talents/${user?.id}`, payload);
+      } else {
+        // Create new profile
+        return apiRequest("POST", "/api/talents", payload);
+      }
     },
     onSuccess: () => {
       toast({
@@ -168,8 +230,8 @@ export default function TalentProfileEdit() {
     if (result.successful && result.successful.length > 0) {
       const uploadedFile = result.successful[0];
       try {
-        await apiRequest("PUT", "/api/talents/me/media", {
-          mediaUrl: uploadedFile.uploadURL,
+        await apiRequest("PATCH", `/api/talents/${user?.id}`, {
+          mediaUrls: [...(profileData?.talentProfile?.mediaUrls || []), uploadedFile.uploadURL],
         });
         toast({
           title: "Media uploaded successfully!",
