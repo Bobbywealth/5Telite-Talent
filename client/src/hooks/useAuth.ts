@@ -9,44 +9,45 @@ let authResult: { user: User | null; timestamp: number } | null = null;
 export function useAuth() {
   const { data: user, isLoading, error } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
-    queryFn: async (...args) => {
-      // If auth check is already in progress, wait for it
-      if (authCheckInProgress) {
-        return new Promise((resolve) => {
-          const checkInterval = setInterval(() => {
-            if (!authCheckInProgress && authResult) {
-              clearInterval(checkInterval);
-              resolve(authResult.user);
-            }
-          }, 10);
-        });
-      }
-
-      // If we have recent cached result (less than 5 minutes old), use it
+    queryFn: async () => {
+      // If we have recent cached result, use it
       if (authResult && (Date.now() - authResult.timestamp) < 5 * 60 * 1000) {
         return authResult.user;
       }
 
-      // Set flag to prevent concurrent requests
+      // Only make one request if none in progress
+      if (authCheckInProgress) {
+        return authResult?.user || null;
+      }
+
       authCheckInProgress = true;
 
       try {
-        const result = await getQueryFn({ on401: "returnNull" })(...args);
+        const response = await fetch("/api/auth/user", {
+          credentials: "include",
+        });
 
-        // Cache the result
+        let result = null;
+        if (response.ok) {
+          result = await response.json();
+        }
+
         authResult = {
           user: result,
           timestamp: Date.now(),
         };
 
         return result;
+      } catch (error) {
+        return null;
       } finally {
         authCheckInProgress = false;
       }
     },
+    enabled: !authResult || (Date.now() - authResult.timestamp) > 5 * 60 * 1000,
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: Infinity,
+    gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,
