@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import AdminSidebar from "@/components/layout/admin-sidebar";
+import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -63,43 +63,10 @@ export default function AdminSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      <AdminSidebar 
-        isMobileOpen={isMobileSidebarOpen} 
-        onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-      />
+    <div className="min-h-screen bg-slate-50">
+      <AdminNavbar />
       
       <div className="flex-1">
-        {/* Mobile Header */}
-        <header className="xl:hidden bg-white shadow-sm border-b border-slate-200 px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsMobileSidebarOpen(true)}
-                className="p-2"
-                data-testid="button-mobile-sidebar-toggle"
-              >
-                <i className="fas fa-bars text-lg"></i>
-              </Button>
-              <img 
-                src="/attached_assets/5t-logo.png" 
-                alt="5T Talent Platform" 
-                className="h-8 w-auto"
-              />
-              <h1 className="text-lg font-bold text-slate-900">Settings</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <NotificationBell />
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-semibold">
-                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
 
         {/* Desktop Header */}
         <header className="hidden xl:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">

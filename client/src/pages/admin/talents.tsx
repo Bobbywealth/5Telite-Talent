@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import type { UploadResult } from "@uppy/core";
 import AdminSidebar from "@/components/layout/admin-sidebar";
+import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,11 +26,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Menu } from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell";
 
 export default function AdminTalents() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
     category: "",
@@ -57,8 +61,8 @@ export default function AdminTalents() {
 
   // Categories for talent selection
   const categories = [
-    "Actor", "Model", "Dancer", "Singer", "Musician", "Voice Over", 
-    "Comedian", "Host", "Stunt Performer", "Writer", "Poet", 
+    "Actor", "Model", "Dancer", "Singer", "Musician", "Voice Over",
+    "Comedian", "Host", "Stunt Performer", "Writer", "Poet",
     "Visual Artist", "Motivational Speaker"
   ];
 
@@ -66,7 +70,7 @@ export default function AdminTalents() {
   const handleCategoryChange = (category: string, checked: boolean) => {
     setNewTalentData(prev => ({
       ...prev,
-      categories: checked 
+      categories: checked
         ? [...prev.categories, category]
         : prev.categories.filter(c => c !== category)
     }));
@@ -84,7 +88,7 @@ export default function AdminTalents() {
   const handleImageUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
     if (result.successful && result.successful.length > 0) {
       const uploadedUrl = result.successful[0].uploadURL;
-      
+
       // Process the uploaded image and add to collection
       apiRequest("PUT", "/api/talents/me/media", {
         mediaUrl: uploadedUrl
@@ -265,7 +269,7 @@ export default function AdminTalents() {
       window.location.href = '/api/login';
       return null;
     }
-    
+
     // Show unauthorized message if wrong role
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -278,17 +282,17 @@ export default function AdminTalents() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      <AdminSidebar />
-      
+    <div className="min-h-screen bg-slate-50">
+      <AdminNavbar />
+
       <div className="flex-1">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <img 
-                src="/attached_assets/5t-logo.png" 
-                alt="5T Talent Platform" 
+              <img
+                src="/attached_assets/5t-logo.png"
+                alt="5T Talent Platform"
                 className="h-12 w-auto"
               />
               <h1 className="text-2xl font-bold text-slate-900">Talent Management</h1>
@@ -346,8 +350,8 @@ export default function AdminTalents() {
                   </Select>
                 </div>
                 <div>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setFilters({ search: "", category: "", approvalStatus: "", page: 1 })}
                     data-testid="button-clear-filters"
                   >
@@ -402,8 +406,8 @@ export default function AdminTalents() {
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             {talent.user.profileImageUrl ? (
-                              <img 
-                                src={talent.user.profileImageUrl} 
+                              <img
+                                src={talent.user.profileImageUrl}
                                 alt={`${talent.user.firstName} ${talent.user.lastName}`}
                                 className="w-10 h-10 rounded-full object-cover"
                               />
@@ -474,21 +478,21 @@ export default function AdminTalents() {
                                       <p className="text-sm text-slate-600">{talent.location || "Not specified"}</p>
                                     </div>
                                   </div>
-                                  
+
                                   {talent.bio && (
                                     <div>
                                       <h4 className="font-medium">Bio</h4>
                                       <p className="text-sm text-slate-600">{talent.bio}</p>
                                     </div>
                                   )}
-                                  
+
                                   <div className="flex space-x-2">
                                     {talent.approvalStatus === 'pending' && (
                                       <>
                                         <Button
-                                          onClick={() => approveTalentMutation.mutate({ 
-                                            talentId: talent.userId, 
-                                            status: 'approved' 
+                                          onClick={() => approveTalentMutation.mutate({
+                                            talentId: talent.userId,
+                                            status: 'approved'
                                           })}
                                           disabled={approveTalentMutation.isPending}
                                           data-testid={`button-approve-${talent.id}`}
@@ -497,9 +501,9 @@ export default function AdminTalents() {
                                         </Button>
                                         <Button
                                           variant="destructive"
-                                          onClick={() => approveTalentMutation.mutate({ 
-                                            talentId: talent.userId, 
-                                            status: 'rejected' 
+                                          onClick={() => approveTalentMutation.mutate({
+                                            talentId: talent.userId,
+                                            status: 'rejected'
                                           })}
                                           disabled={approveTalentMutation.isPending}
                                           data-testid={`button-reject-${talent.id}`}
@@ -510,9 +514,9 @@ export default function AdminTalents() {
                                     )}
                                     {talent.approvalStatus === 'rejected' && (
                                       <Button
-                                        onClick={() => approveTalentMutation.mutate({ 
-                                          talentId: talent.userId, 
-                                          status: 'approved' 
+                                        onClick={() => approveTalentMutation.mutate({
+                                          talentId: talent.userId,
+                                          status: 'approved'
                                         })}
                                         disabled={approveTalentMutation.isPending}
                                         data-testid={`button-approve-${talent.id}`}
@@ -528,9 +532,9 @@ export default function AdminTalents() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          onClick={() => approveTalentMutation.mutate({ 
-                                            talentId: talent.userId, 
-                                            status: 'rejected' 
+                                          onClick={() => approveTalentMutation.mutate({
+                                            talentId: talent.userId,
+                                            status: 'rejected'
                                           })}
                                           disabled={approveTalentMutation.isPending}
                                           data-testid={`button-revoke-${talent.id}`}
@@ -594,7 +598,7 @@ export default function AdminTalents() {
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">Email Address *</Label>
@@ -642,7 +646,7 @@ export default function AdminTalents() {
             {/* Professional Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-slate-900">Professional Information</h3>
-              
+
               <div>
                 <Label>Talent Categories * (Select all that apply)</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
@@ -684,8 +688,8 @@ export default function AdminTalents() {
 
               <div>
                 <Label htmlFor="experience">Years of Experience</Label>
-                <Select 
-                  value={newTalentData.experience} 
+                <Select
+                  value={newTalentData.experience}
                   onValueChange={(value) => setNewTalentData(prev => ({ ...prev, experience: value }))}
                 >
                   <SelectTrigger>
@@ -774,7 +778,7 @@ export default function AdminTalents() {
             <Button variant="outline" onClick={() => setShowAddForm(false)}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => addTalentMutation.mutate(newTalentData)}
               disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email || newTalentData.categories.length === 0}
             >

@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
+import AdminNavbar from "@/components/layout/admin-navbar"; // Import AdminNavbar
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -49,18 +50,18 @@ export default function AdminBookings() {
     status: "",
     page: 1,
   });
-  
+
   // Booking request modal states
   const [showCreateRequest, setShowCreateRequest] = useState(false);
   const [showTalentSelection, setShowTalentSelection] = useState(false);
   const [selectedTalents, setSelectedTalents] = useState<string[]>([]);
   const [newBookingId, setNewBookingId] = useState<string>("");
-  
+
   // Talent search and filtering states
   const [talentSearch, setTalentSearch] = useState("");
   const [talentCategoryFilter, setTalentCategoryFilter] = useState("");
   const [filteredTalents, setFilteredTalents] = useState<any[]>([]);
-  
+
   // Form for creating booking requests
   const form = useForm<z.infer<typeof bookingRequestSchema>>({
     resolver: zodResolver(bookingRequestSchema),
@@ -230,7 +231,7 @@ export default function AdminBookings() {
   useEffect(() => {
     if (talentsData?.talents) {
       let filtered = talentsData.talents;
-      
+
       // Search filter
       if (talentSearch) {
         filtered = filtered.filter((talent: any) => {
@@ -240,14 +241,14 @@ export default function AdminBookings() {
           return fullName.includes(searchTerm) || stageName.includes(searchTerm);
         });
       }
-      
+
       // Category filter
       if (talentCategoryFilter) {
         filtered = filtered.filter((talent: any) => 
           talent.categories?.includes(talentCategoryFilter)
         );
       }
-      
+
       setFilteredTalents(filtered);
     }
   }, [talentsData, talentSearch, talentCategoryFilter]);
@@ -301,7 +302,7 @@ export default function AdminBookings() {
       window.location.href = '/api/login';
       return null;
     }
-    
+
     // Show unauthorized message if wrong role
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -314,9 +315,9 @@ export default function AdminBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      <AdminSidebar />
-      
+    <div className="min-h-screen bg-slate-50">
+      <AdminNavbar />
+
       <div className="flex-1">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
@@ -348,7 +349,7 @@ export default function AdminBookings() {
                       Create a new booking and send requests to talents
                     </DialogDescription>
                   </DialogHeader>
-                  
+
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit((data) => createBookingRequestMutation.mutate(data))} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -365,7 +366,7 @@ export default function AdminBookings() {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name="location"
@@ -395,7 +396,7 @@ export default function AdminBookings() {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name="endDate"
@@ -486,7 +487,7 @@ export default function AdminBookings() {
                 Search and browse the talent directory to select who should receive this booking request
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
               {/* Search and Filter Controls */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
@@ -568,7 +569,7 @@ export default function AdminBookings() {
                             data-testid={`checkbox-talent-${talent.userId}`}
                           />
                         </div>
-                        
+
                         {/* Location and Contact */}
                         <div className="space-y-1 mb-3">
                           {talent.location && (
@@ -848,21 +849,21 @@ export default function AdminBookings() {
                                       </p>
                                     </div>
                                   </div>
-                                  
+
                                   {booking.description && (
                                     <div>
                                       <h4 className="font-medium">Description</h4>
                                       <p className="text-sm text-slate-600">{booking.description}</p>
                                     </div>
                                   )}
-                                  
+
                                   {booking.rate && (
                                     <div>
                                       <h4 className="font-medium">Rate</h4>
                                       <p className="text-sm text-slate-600">${booking.rate}</p>
                                     </div>
                                   )}
-                                  
+
                                   <div>
                                     <h4 className="font-medium">Update Status</h4>
                                     <div className="flex flex-wrap gap-2 mt-2">

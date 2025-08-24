@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
+import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -77,10 +78,10 @@ export default function AdminTasks() {
       });
       if (!response.ok) throw new Error("Failed to fetch tasks");
       const data = await response.json();
-      
+
       // Client-side filtering and sorting for search and other features
       let filteredTasks = data.tasks || [];
-      
+
       // Apply search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
@@ -92,11 +93,11 @@ export default function AdminTasks() {
           `${task.assignee?.firstName} ${task.assignee?.lastName}`.toLowerCase().includes(searchLower)
         );
       }
-      
+
       // Apply sorting
       filteredTasks.sort((a: any, b: any) => {
         let aValue, bValue;
-        
+
         switch (sortBy) {
           case 'title':
             aValue = a.title.toLowerCase();
@@ -118,14 +119,14 @@ export default function AdminTasks() {
             aValue = a.createdAt;
             bValue = b.createdAt;
         }
-        
+
         if (sortOrder === 'asc') {
           return aValue > bValue ? 1 : -1;
         } else {
           return aValue < bValue ? 1 : -1;
         }
       });
-      
+
       return {
         ...data,
         tasks: filteredTasks,
@@ -328,7 +329,7 @@ export default function AdminTasks() {
       window.location.href = '/api/login';
       return null;
     }
-    
+
     // Show unauthorized message if wrong role
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -341,9 +342,9 @@ export default function AdminTasks() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      <AdminSidebar />
-      
+    <div className="min-h-screen bg-slate-50">
+      <AdminNavbar />
+
       <div className="flex-1">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
@@ -384,7 +385,7 @@ export default function AdminTasks() {
                         data-testid="input-task-title"
                       />
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="description">Description</Label>
                       <Textarea
@@ -521,7 +522,7 @@ export default function AdminTasks() {
                     className="w-full"
                   />
                 </div>
-                
+
                 {/* Status Filter */}
                 <div>
                   <Select value={filters.status} onValueChange={(value) => updateFilter('status', value === "all" ? "" : value)}>
@@ -624,7 +625,7 @@ export default function AdminTasks() {
 
           {/* Views Container */}
           <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'kanban' | 'list')}>
-            
+
             {/* Kanban View */}
             <TabsContent value="kanban" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -659,7 +660,7 @@ export default function AdminTasks() {
                             {task.description && (
                               <p className="text-sm text-slate-600 mb-2 line-clamp-2">{task.description}</p>
                             )}
-                            
+
                             <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                               <div className="flex space-x-1">
                                 {task.booking && (
@@ -916,7 +917,7 @@ export default function AdminTasks() {
                 View and manage task information
               </DialogDescription>
             </DialogHeader>
-            
+
             {selectedTask && (
               <div className="space-y-6">
                 {/* Task Header */}
@@ -941,7 +942,7 @@ export default function AdminTasks() {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Status Quick Actions */}
                   <div className="flex space-x-2">
                     {['todo', 'in_progress', 'blocked', 'done'].map((status) => (
@@ -978,7 +979,7 @@ export default function AdminTasks() {
                   {/* Assignment & Relations */}
                   <div className="space-y-4">
                     <h4 className="font-medium text-slate-900">Assignment & Relations</h4>
-                    
+
                     <div className="space-y-3">
                       {/* Assignee */}
                       <div>
@@ -1034,7 +1035,7 @@ export default function AdminTasks() {
                   {/* Dates & Timeline */}
                   <div className="space-y-4">
                     <h4 className="font-medium text-slate-900">Timeline</h4>
-                    
+
                     <div className="space-y-3">
                       <div>
                         <Label className="text-sm font-medium text-slate-700">Created</Label>
