@@ -150,20 +150,20 @@ export default function Landing() {
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up-delay-3">
               <Link href="/talent">
-                <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 btn-text-lg" data-testid="button-browse-talent">
-                  <i className="fas fa-search icon-lg mr-3"></i>Browse 500+ Talents
-                  <i className="fas fa-arrow-right icon-base ml-3"></i>
+                <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
+                  <i className="fas fa-search text-lg mr-3"></i>Browse 500+ Talents
+                  <i className="fas fa-arrow-right ml-3"></i>
                 </Button>
               </Link>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 btn-text-lg"
+                className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
                 onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
                 data-testid="button-request-booking"
               >
-                <i className="fas fa-calendar icon-lg mr-3"></i>Start Booking
-                <i className="fas fa-sparkles icon-base ml-3"></i>
+                <i className="fas fa-calendar text-lg mr-3"></i>Start Booking
+                <i className="fas fa-sparkles ml-3"></i>
               </Button>
             </div>
 
