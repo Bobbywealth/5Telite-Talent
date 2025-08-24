@@ -40,7 +40,7 @@ export default function TalentNavbar() {
           <div className="flex items-center">
             <Link href="/dashboard" className="flex items-center" data-testid="link-logo-talent">
               <img 
-                src={logoImage} 
+                src="/attached_assets/5t-logo.png" 
                 alt="5T Talent Platform" 
                 className="h-24 w-auto hover:scale-105 transition-transform duration-200"
               />

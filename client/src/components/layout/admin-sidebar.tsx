@@ -52,7 +52,7 @@ export default function AdminSidebar() {
       <div className="p-6 border-b border-slate-200 flex justify-center">
         <Link href="/" data-testid="link-logo-admin">
           <img 
-            src={logoImage} 
+            src="/attached_assets/5t-logo.png" 
             alt="5T Talent Platform" 
             className="h-28 w-auto hover:scale-105 transition-transform duration-200"
           />

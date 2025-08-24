@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
+import express from "express";
 import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
@@ -19,6 +21,9 @@ import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema"
 import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve static files from attached_assets
+  app.use('/attached_assets', express.static(path.resolve(process.cwd(), 'attached_assets')));
+  
   // Auth middleware
   await setupAuth(app);
 
