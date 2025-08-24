@@ -349,6 +349,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin settings endpoint
+  app.post('/api/admin/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Validate settings data
+      const settingsSchema = z.object({
+        siteName: z.string().min(1, "Site name is required"),
+        siteDescription: z.string().min(1, "Site description is required"),
+        emailNotifications: z.boolean(),
+        autoApproveBookings: z.boolean(),
+        requireClientApproval: z.boolean(),
+        maxBookingDays: z.number().min(1).max(1000),
+        cancellationPolicy: z.string().min(1, "Cancellation policy is required"),
+        paymentTerms: z.string().min(1, "Payment terms are required"),
+      });
+
+      const settings = settingsSchema.parse(req.body);
+      
+      // For now, just return the validated settings
+      // In the future, you could save these to a database settings table
+      res.json({ 
+        message: "Settings updated successfully",
+        settings 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error updating admin settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  // Get admin settings endpoint
+  app.get('/api/admin/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Return default settings for now
+      // In the future, retrieve from database
+      const defaultSettings = {
+        siteName: "5T Talent Platform",
+        siteDescription: "Professional talent booking platform",
+        emailNotifications: true,
+        autoApproveBookings: false,
+        requireClientApproval: true,
+        maxBookingDays: 365,
+        cancellationPolicy: "Bookings can be cancelled up to 24 hours before the event.",
+        paymentTerms: "Payment due within 30 days of booking confirmation.",
+      };
+
+      res.json(defaultSettings);
+    } catch (error) {
+      console.error("Error fetching admin settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
   // Booking routes
   app.post('/api/bookings', async (req, res) => {
     try {

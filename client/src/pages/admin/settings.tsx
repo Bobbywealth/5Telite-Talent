@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,26 @@ export default function AdminSettings() {
     cancellationPolicy: "Bookings can be cancelled up to 24 hours before the event.",
     paymentTerms: "Payment due within 30 days of booking confirmation.",
   });
+
+  // Fetch current settings
+  const { data: currentSettings, isLoading: settingsLoading } = useQuery({
+    queryKey: ["/api/admin/settings"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/settings", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch settings");
+      return response.json();
+    },
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  // Update settings when data is loaded
+  useEffect(() => {
+    if (currentSettings) {
+      setSettings(currentSettings);
+    }
+  }, [currentSettings]);
 
   if (!isAuthenticated || user?.role !== 'admin') {
     window.location.href = '/api/login';
