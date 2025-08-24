@@ -44,17 +44,17 @@ export default function Home() {
                 {getRoleDescription()}
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href={getDashboardLink()}>
-                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-dashboard">
+                <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-dashboard" asChild>
+                  <Link href={getDashboardLink()}>
                     <i className="fas fa-tachometer-alt mr-2"></i>
                     Go to {user?.role === 'admin' ? 'Admin' : ''} Dashboard
-                  </Button>
-                </Link>
-                <Link href="/talent">
-                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-browse-talent">
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-browse-talent" asChild>
+                  <Link href="/talent">
                     <i className="fas fa-users mr-2"></i>Browse Talent
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -73,8 +73,8 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {user?.role === 'admin' && (
             <>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href="/admin/talents">
+              <Link href="/admin/talents">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-primary/10 rounded-lg">
@@ -86,11 +86,11 @@ export default function Home() {
                   <CardContent>
                     <p className="text-slate-600">Review applications, approve profiles, and manage talent roster.</p>
                   </CardContent>
-                </Link>
-              </Card>
+                </Card>
+              </Link>
 
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href="/admin/bookings">
+              <Link href="/admin/bookings">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-secondary/10 rounded-lg">
@@ -102,11 +102,11 @@ export default function Home() {
                   <CardContent>
                     <p className="text-slate-600">Create bookings, track status, and manage client relationships.</p>
                   </CardContent>
-                </Link>
-              </Card>
+                </Card>
+              </Link>
 
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href="/admin/tasks">
+              <Link href="/admin/tasks">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-accent/10 rounded-lg">
@@ -118,15 +118,15 @@ export default function Home() {
                   <CardContent>
                     <p className="text-slate-600">Assign tasks, track progress, and manage workflows.</p>
                   </CardContent>
-                </Link>
-              </Card>
+                </Card>
+              </Link>
             </>
           )}
 
           {user?.role === 'talent' && (
             <>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href="/dashboard/profile">
+              <Link href="/dashboard/profile">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-primary/10 rounded-lg">
@@ -138,11 +138,11 @@ export default function Home() {
                   <CardContent>
                     <p className="text-slate-600">Update your profile, add photos, and manage availability.</p>
                   </CardContent>
-                </Link>
-              </Card>
+                </Card>
+              </Link>
 
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href="/dashboard">
+              <Link href="/dashboard">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-secondary/10 rounded-lg">
@@ -154,14 +154,14 @@ export default function Home() {
                   <CardContent>
                     <p className="text-slate-600">View upcoming bookings and track your schedule.</p>
                   </CardContent>
-                </Link>
-              </Card>
+                </Card>
+              </Link>
             </>
           )}
 
           {/* Common cards for all users */}
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/talent">
+          <Link href="/talent">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -173,11 +173,11 @@ export default function Home() {
               <CardContent>
                 <p className="text-slate-600">Explore our directory of professional talent across all categories.</p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/book">
+          <Link href="/book">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
@@ -189,8 +189,8 @@ export default function Home() {
               <CardContent>
                 <p className="text-slate-600">Submit a new booking request for your upcoming project.</p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
         </div>
 
         {/* Profile Status for Talents */}
