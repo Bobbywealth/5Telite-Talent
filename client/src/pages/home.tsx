@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import TalentNavbar from "@/components/layout/talent-navbar";
 import AdminNavbar from "@/components/layout/admin-navbar";
+import ClientNavbar from "@/components/layout/client-navbar";
 import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,6 +111,7 @@ export default function Home() {
   const renderNavbar = () => {
     if (user?.role === 'talent') return <TalentNavbar />;
     if (user?.role === 'admin') return <AdminNavbar />;
+    if (user?.role === 'client') return <ClientNavbar />;
     return <Navbar />;
   };
 
