@@ -165,7 +165,18 @@ export function setupAuth(app: Express) {
   app.get("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
-      res.redirect("/");
+      // Send HTML with JavaScript redirect to ensure client-side routing works
+      res.send(`
+        <html>
+          <head>
+            <meta http-equiv="refresh" content="0; url=/">
+            <script>window.location.href = "/";</script>
+          </head>
+          <body>
+            <p>Logging out... If you are not redirected, <a href="/">click here</a>.</p>
+          </body>
+        </html>
+      `);
     });
   });
 
