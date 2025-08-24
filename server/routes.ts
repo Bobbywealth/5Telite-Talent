@@ -601,17 +601,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get pending booking requests for talent
+  // Get booking requests for talent or admin
   app.get('/api/booking-requests', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
 
-      if (!user || user.role !== 'talent') {
-        return res.status(403).json({ message: "Talent access required" });
+      if (!user || !['talent', 'admin'].includes(user.role)) {
+        return res.status(403).json({ message: "Talent or admin access required" });
       }
 
-      const requests = await storage.getPendingBookingRequests(userId);
+      let requests;
+      if (user.role === 'admin') {
+        // Admins can see all pending booking requests (limited for dashboard)
+        const { status = 'pending', limit } = req.query;
+        requests = await storage.getAllBookingRequests({ 
+          status: status as string,
+          limit: limit ? parseInt(limit as string) : undefined 
+        });
+      } else {
+        // Talents only see their own requests
+        requests = await storage.getPendingBookingRequests(userId);
+      }
+      
       res.json({ requests });
     } catch (error) {
       console.error("Error fetching booking requests:", error);

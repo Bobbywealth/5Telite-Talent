@@ -91,7 +91,9 @@ export default function AdminDashboard() {
       return apiRequest("PATCH", `/api/admin/talents/${talentId}/approve`, { status });
     },
     onSuccess: (_, variables) => {
+      // Invalidate all talent-related queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/talents", { approvalStatus: "pending" }] });
       toast({
         title: "Success",
         description: `Talent ${variables.status} successfully!`,
@@ -237,10 +239,13 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-600">Pending Approvals</p>
-                    <p className="text-3xl font-bold text-slate-900" data-testid="text-pending-approvals">
-                      {pendingTalentsLoading ? <Skeleton className="h-8 w-16" /> : 
-                       (pendingTalentsData?.talents?.length || 0)}
-                    </p>
+                    {pendingTalentsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-slate-900" data-testid="text-pending-approvals">
+                        {pendingTalentsData?.talents?.length || 0}
+                      </p>
+                    )}
                   </div>
                   <div className="bg-orange-100 rounded-lg p-3">
                     <i className="fas fa-user-clock text-orange-600 text-xl"></i>

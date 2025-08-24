@@ -53,6 +53,7 @@ export interface IStorage {
   
   // Booking request operations
   getPendingBookingRequests(talentId: string): Promise<(BookingTalent & { booking: Booking & { client: User } })[]>;
+  getAllBookingRequests(options?: { status?: string; limit?: number }): Promise<(BookingTalent & { booking: Booking; talent: TalentProfile & { user: User } })[]>;
   respondToBookingRequest(requestId: string, talentId: string, status: 'accepted' | 'declined', message?: string): Promise<BookingTalent>;
 
   // Task operations
@@ -366,6 +367,46 @@ export class DatabaseStorage implements IStorage {
       booking: {
         ...r.booking,
         client: r.client,
+      },
+    }));
+  }
+
+  async getAllBookingRequests(options: { status?: string; limit?: number } = {}): Promise<(BookingTalent & { booking: Booking; talent: TalentProfile & { user: User } })[]> {
+    const { status = 'pending', limit = 10 } = options;
+    
+    const requests = await db
+      .select({
+        id: bookingTalents.id,
+        bookingId: bookingTalents.bookingId,
+        talentId: bookingTalents.talentId,
+        requestStatus: bookingTalents.requestStatus,
+        responseMessage: bookingTalents.responseMessage,
+        respondedAt: bookingTalents.respondedAt,
+        createdAt: bookingTalents.createdAt,
+        booking: bookings,
+        talent: talentProfiles,
+        user: users,
+      })
+      .from(bookingTalents)
+      .innerJoin(bookings, eq(bookingTalents.bookingId, bookings.id))
+      .innerJoin(talentProfiles, eq(bookingTalents.talentId, talentProfiles.userId))
+      .innerJoin(users, eq(talentProfiles.userId, users.id))
+      .where(eq(bookingTalents.requestStatus, status as "pending" | "accepted" | "declined"))
+      .orderBy(desc(bookingTalents.createdAt))
+      .limit(limit);
+
+    return requests.map(r => ({
+      id: r.id,
+      bookingId: r.bookingId,
+      talentId: r.talentId,
+      requestStatus: r.requestStatus,
+      responseMessage: r.responseMessage,
+      respondedAt: r.respondedAt,
+      createdAt: r.createdAt,
+      booking: r.booking,
+      talent: {
+        ...r.talent,
+        user: r.user,
       },
     }));
   }
