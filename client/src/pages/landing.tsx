@@ -143,18 +143,18 @@ export default function Landing() {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up-delay-3">
-              <Link href="/talent">
-                <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in-up-delay-3">
+              <Link href="/talent" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
                   <i className="fas fa-search text-lg mr-3"></i>Browse 500+ Talents
                   <i className="fas fa-arrow-right ml-3"></i>
                 </Button>
               </Link>
-              <Link href="/book-request">
+              <Link href="/book-request" className="w-full sm:w-auto">
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
+                  className="w-full sm:w-auto border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
                   data-testid="button-request-booking"
                 >
                 <i className="fas fa-calendar text-lg mr-3"></i>Start Booking
