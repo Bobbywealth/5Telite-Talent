@@ -120,107 +120,104 @@ export default function Landing() {
           <div className="absolute inset-0 hero-pattern opacity-5"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Main content */}
-            <div className="text-center">
-              {/* Badge */}
-              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6 animate-fade-in-up">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                500+ Professional Talents Available
-              </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Badge */}
+            <div className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-8 animate-fade-in-up">
+              <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+              500+ Professional Talents Available
+            </div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up-delay-1">
-                Book <span className="text-gradient-white relative">
-                  Exceptional
-                  <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transform scale-x-0 animate-underline"></div>
-                </span> Talent
-              </h1>
+            {/* Main heading */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up-delay-1">
+              Book <span className="text-gradient-white relative">
+                Exceptional
+                <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transform scale-x-0 animate-underline"></div>
+              </span>
+              <br />Talent
+            </h1>
 
-              <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-xl mx-auto animate-fade-in-up-delay-2">
-                Connect with professional models, actors, and performers for your next project. 
-                <span className="text-yellow-300 font-semibold">Book with confidence</span> through our comprehensive talent platform.
-              </p>
+            {/* Subtitle */}
+            <p className="text-lg sm:text-xl lg:text-2xl text-slate-200 mb-10 max-w-3xl mx-auto animate-fade-in-up-delay-2 leading-relaxed">
+              Connect with professional models, actors, and performers for your next project. 
+              <span className="text-yellow-300 font-semibold block sm:inline">Book with confidence</span> through our comprehensive talent platform.
+            </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in-up-delay-3">
-                <Link href="/talent">
-                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl" data-testid="button-browse-talent">
-                    <i className="fas fa-search mr-2"></i>Browse 500+ Talents
-                    <i className="fas fa-arrow-right ml-2"></i>
-                  </Button>
-                </Link>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm"
-                  onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  data-testid="button-request-booking"
-                >
-                  <i className="fas fa-calendar mr-2"></i>Start Booking
-                  <i className="fas fa-sparkles ml-2"></i>
+            {/* Action buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up-delay-3">
+              <Link href="/talent">
+                <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
+                  <i className="fas fa-search mr-3"></i>Browse 500+ Talents
+                  <i className="fas fa-arrow-right ml-3"></i>
                 </Button>
-              </div>
+              </Link>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
+                onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-request-booking"
+              >
+                <i className="fas fa-calendar mr-3"></i>Start Booking
+                <i className="fas fa-sparkles ml-3"></i>
+              </Button>
+            </div>
 
-              {/* Stats */}
-              <div className="flex flex-wrap gap-6 justify-center text-white animate-fade-in-up-delay-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold">500+</div>
-                  <div className="text-sm text-slate-200">Active Talents</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">1000+</div>
-                  <div className="text-sm text-slate-200">Completed Projects</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">50+</div>
-                  <div className="text-sm text-slate-200">Cities Worldwide</div>
+            {/* Stats - improved layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto text-white animate-fade-in-up-delay-4">
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold mb-1">500+</div>
+                <div className="text-sm text-slate-200 uppercase tracking-wide">Active Talents</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold mb-1">1000+</div>
+                <div className="text-sm text-slate-200 uppercase tracking-wide">Completed Projects</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold mb-1">50+</div>
+                <div className="text-sm text-slate-200 uppercase tracking-wide">Cities Worldwide</div>
+              </div>
+            </div>
+
+            {/* Floating visual elements - repositioned for better balance */}
+            <div className="hidden lg:block absolute top-1/2 left-8 transform -translate-y-1/2">
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-3 hover:rotate-0 transition-all duration-500 floating-card-1">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <i className="fas fa-star text-white"></i>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-800">Top Rated</div>
+                    <div className="text-sm text-gray-600">5.0 ★ Rating</div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right side - Visual elements */}
-            <div className="hidden lg:block relative">
-              <div className="relative">
-                {/* Floating cards */}
-                <div className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-3 hover:rotate-0 transition-all duration-500 floating-card-1">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <i className="fas fa-star text-white"></i>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-800">Top Rated</div>
-                      <div className="text-sm text-gray-600">5.0 ★ Rating</div>
-                    </div>
+            <div className="hidden lg:block absolute top-1/3 right-8">
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-500 floating-card-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                    <i className="fas fa-check text-white"></i>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-800">Verified</div>
+                    <div className="text-sm text-gray-600">Professional</div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="absolute top-20 left-0 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-500 floating-card-2">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
-                      <i className="fas fa-check text-white"></i>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-800">Verified</div>
-                      <div className="text-sm text-gray-600">Professional</div>
-                    </div>
+            <div className="hidden lg:block absolute bottom-1/4 right-16">
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-500 floating-card-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                    <i className="fas fa-bolt text-white"></i>
                   </div>
-                </div>
-
-                <div className="absolute bottom-0 right-10 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-500 floating-card-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                      <i className="fas fa-bolt text-white"></i>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-800">Fast Response</div>
-                      <div className="text-sm text-gray-600">&lt; 24 hours</div>
-                    </div>
+                  <div>
+                    <div className="font-semibold text-gray-800">Fast Response</div>
+                    <div className="text-sm text-gray-600">&lt; 24 hours</div>
                   </div>
-                </div>
-
-                {/* Central icon */}
-                <div className="mx-auto w-48 h-48 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 pulse-animation">
-                  <i className="fas fa-users text-6xl text-white"></i>
                 </div>
               </div>
             </div>
