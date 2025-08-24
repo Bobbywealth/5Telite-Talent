@@ -62,8 +62,7 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
           <img 
             src="/attached_assets/5t-logo.png" 
             alt="5T Talent Platform" 
-            className="h-16 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
-            style={{ maxHeight: '4rem', minWidth: 'auto' }}
+            className="h-20 w-auto object-contain hover:scale-105 transition-transform duration-200"
           />
         </Link>
       </div>
