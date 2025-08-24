@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
+import { Plus, Search, Calendar, DollarSign, ClipboardList, Clock, CalendarCheck } from "lucide-react";
 
 export default function ClientDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -116,17 +117,17 @@ export default function ClientDashboard() {
             <div className="flex flex-wrap gap-3">
               <Link href="/book">
                 <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105" data-testid="button-create-booking">
-                  <i className="fas fa-plus mr-2"></i>New Booking
+                  <Plus className="w-4 h-4 mr-2" />New Booking
                 </Button>
               </Link>
               <Link href="/talent">
                 <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
-                  <i className="fas fa-search mr-2"></i>Browse Talent
+                  <Search className="w-4 h-4 mr-2" />Browse Talent
                 </Button>
               </Link>
               <Link href="/bookings">
                 <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
-                  <i className="fas fa-calendar mr-2"></i>My Bookings
+                  <Calendar className="w-4 h-4 mr-2" />My Bookings
                 </Button>
               </Link>
               <RoleSwitcher />
@@ -149,7 +150,7 @@ export default function ClientDashboard() {
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
-                  <i className="fas fa-calendar text-white text-xl"></i>
+                  <Calendar className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div className="text-sm text-slate-600">
@@ -171,7 +172,7 @@ export default function ClientDashboard() {
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
-                  <i className="fas fa-dollar-sign text-white text-xl"></i>
+                  <DollarSign className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div className="text-sm text-slate-600">
@@ -193,7 +194,7 @@ export default function ClientDashboard() {
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-3 shadow-lg">
-                  <i className="fas fa-tasks text-white text-xl"></i>
+                  <ClipboardList className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div className="text-sm text-slate-600">
@@ -215,7 +216,7 @@ export default function ClientDashboard() {
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-3 shadow-lg">
-                  <i className="fas fa-clock text-white text-xl"></i>
+                  <Clock className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div className="text-sm text-slate-600">
@@ -287,7 +288,7 @@ export default function ClientDashboard() {
                 ) : (
                   <div className="p-6 text-center">
                     <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <i className="fas fa-calendar text-slate-400 text-xl"></i>
+                      <Calendar className="w-5 h-5 text-slate-400" />
                     </div>
                     <h3 className="text-sm font-medium text-slate-900">No bookings yet</h3>
                     <p className="text-sm text-slate-500 mt-1">Start by creating your first booking request.</p>
@@ -312,19 +313,19 @@ export default function ClientDashboard() {
               <CardContent className="space-y-3">
                 <Link href="/book">
                   <Button className="w-full justify-start" variant="outline" data-testid="button-quick-book">
-                    <i className="fas fa-plus mr-3"></i>
+                    <Plus className="w-4 h-4 mr-3" />
                     Create New Booking
                   </Button>
                 </Link>
                 <Link href="/talent">
                   <Button className="w-full justify-start" variant="outline" data-testid="button-quick-browse-talent">
-                    <i className="fas fa-search mr-3"></i>
+                    <Search className="w-4 h-4 mr-3" />
                     Browse Talent
                   </Button>
                 </Link>
                 <Link href="/client/bookings">
                   <Button className="w-full justify-start" variant="outline" data-testid="button-quick-manage-bookings">
-                    <i className="fas fa-calendar-alt mr-3"></i>
+                    <CalendarCheck className="w-4 h-4 mr-3" />
                     Manage Bookings
                   </Button>
                 </Link>

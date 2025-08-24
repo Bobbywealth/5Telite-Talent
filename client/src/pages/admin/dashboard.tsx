@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationBell } from "@/components/ui/notification-bell";
+import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock } from "lucide-react";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -175,7 +176,7 @@ export default function AdminDashboard() {
                 className="p-2"
                 data-testid="button-mobile-sidebar-toggle"
               >
-                <i className="fas fa-bars text-lg"></i>
+                <Menu className="w-5 h-5" />
               </Button>
               <img 
                 src="/attached_assets/5t-logo.png" 
@@ -250,19 +251,19 @@ export default function AdminDashboard() {
               <div className="flex flex-wrap gap-3">
                 <Link href="/admin/talents">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
-                    <i className="fas fa-users mr-2"></i>
+                    <Users className="w-4 h-4 mr-2" />
                     Manage Talents
                   </Button>
                 </Link>
                 <Link href="/admin/bookings">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
-                    <i className="fas fa-calendar mr-2"></i>
+                    <Calendar className="w-4 h-4 mr-2" />
                     View Bookings
                   </Button>
                 </Link>
                 <Link href="/admin/tasks">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
-                    <i className="fas fa-tasks mr-2"></i>
+                    <ClipboardList className="w-4 h-4 mr-2" />
                     Task Manager
                   </Button>
                 </Link>
@@ -289,7 +290,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-users text-white text-xl"></i>
+                    <Users className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -322,7 +323,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-calendar text-white text-xl"></i>
+                    <Calendar className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -351,7 +352,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-dollar-sign text-white text-xl"></i>
+                    <DollarSign className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -389,7 +390,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-user-clock text-white text-xl"></i>
+                    <Clock className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -484,7 +485,7 @@ export default function AdminDashboard() {
                               disabled={quickApproveTalentMutation.isPending}
                               data-testid={`button-quick-reject-${talent.id}`}
                             >
-                              <i className="fas fa-times mr-1"></i>Reject
+                              <X className="w-4 h-4 mr-1" />Reject
                             </Button>
                             <Button
                               size="sm"
@@ -495,7 +496,7 @@ export default function AdminDashboard() {
                               disabled={quickApproveTalentMutation.isPending}
                               data-testid={`button-quick-approve-${talent.id}`}
                             >
-                              <i className="fas fa-check mr-1"></i>Approve
+                              <Check className="w-4 h-4 mr-1" />Approve
                             </Button>
                           </div>
                         </div>
@@ -510,7 +511,7 @@ export default function AdminDashboard() {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <i className="fas fa-check-circle text-green-500 text-3xl mb-2"></i>
+                      <CheckCircle className="w-12 h-12 text-green-500 mb-2" />
                       <p className="text-slate-500">No pending talent approvals</p>
                     </div>
                   )}
@@ -574,7 +575,7 @@ export default function AdminDashboard() {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <i className="fas fa-inbox text-slate-400 text-3xl mb-2"></i>
+                      <Inbox className="w-12 h-12 text-slate-400 mb-2" />
                       <p className="text-slate-500">No pending booking requests</p>
                     </div>
                   )}

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserPen, Search, Calendar, User, DollarSign, MapPin, CalendarDays, ClipboardList, Plus } from "lucide-react";
 
 export default function TalentDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -199,17 +200,17 @@ export default function TalentDashboard() {
               <div className="flex flex-wrap gap-3">
                 <Link href="/dashboard/profile">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105" data-testid="button-edit-profile">
-                    <i className="fas fa-user-edit mr-2"></i>Edit Profile
+                    <UserPen className="w-4 h-4 mr-2" />Edit Profile
                   </Button>
                 </Link>
                 <Link href="/talent">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105" data-testid="button-browse-directory">
-                    <i className="fas fa-search mr-2"></i>Browse Directory
+                    <Search className="w-4 h-4 mr-2" />Browse Directory
                   </Button>
                 </Link>
                 <Link href="/bookings">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
-                    <i className="fas fa-calendar mr-2"></i>View Bookings
+                    <Calendar className="w-4 h-4 mr-2" />View Bookings
                   </Button>
                 </Link>
               </div>
@@ -234,7 +235,7 @@ export default function TalentDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-user text-white text-xl"></i>
+                    <User className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="text-sm text-slate-600">
@@ -256,7 +257,7 @@ export default function TalentDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-dollar-sign text-white text-xl"></i>
+                    <DollarSign className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="text-sm text-slate-600">
@@ -278,7 +279,7 @@ export default function TalentDashboard() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-3 shadow-lg">
-                    <i className="fas fa-calendar text-white text-xl"></i>
+                    <Calendar className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="text-sm text-slate-600">
@@ -331,7 +332,7 @@ export default function TalentDashboard() {
                       </p>
                       {booking.location && (
                         <p className="text-xs text-slate-500">
-                          <i className="fas fa-map-marker-alt mr-1"></i>
+                          <MapPin className="w-3 h-3 mr-1" />
                           {booking.location}
                         </p>
                       )}
@@ -347,7 +348,7 @@ export default function TalentDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <i className="fas fa-calendar text-slate-300 text-4xl mb-4"></i>
+                  <CalendarDays className="w-16 h-16 text-slate-300 mb-4" />
                   <h3 className="text-lg font-medium text-slate-900 mb-2">No bookings yet</h3>
                   <p className="text-slate-500 mb-4">
                     Your booking requests will appear here once submitted.
@@ -435,7 +436,7 @@ export default function TalentDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <i className="fas fa-tasks text-slate-300 text-4xl mb-4"></i>
+                  <ClipboardList className="w-16 h-16 text-slate-300 mb-4" />
                   <h3 className="text-lg font-medium text-slate-900 mb-2">No tasks assigned</h3>
                   <p className="text-slate-500">
                     Tasks related to your bookings will appear here.
@@ -454,7 +455,7 @@ export default function TalentDashboard() {
               <Link href="/dashboard/profile">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <i className="fas fa-user-edit text-primary text-xl"></i>
+                    <UserPen className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-medium text-slate-900 mb-2">Update Profile</h3>
                   <p className="text-sm text-slate-600">Edit your bio, add photos, and update rates</p>
@@ -466,7 +467,7 @@ export default function TalentDashboard() {
               <Link href="/talent">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <i className="fas fa-search text-green-600 text-xl"></i>
+                    <Search className="w-5 h-5 text-green-600" />
                   </div>
                   <h3 className="font-medium text-slate-900 mb-2">Browse Directory</h3>
                   <p className="text-sm text-slate-600">See how your profile appears to clients</p>
@@ -478,7 +479,7 @@ export default function TalentDashboard() {
               <Link href="/book">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <i className="fas fa-calendar-plus text-blue-600 text-xl"></i>
+                    <Plus className="w-5 h-5 text-blue-600" />
                   </div>
                   <h3 className="font-medium text-slate-900 mb-2">Request Booking</h3>
                   <p className="text-sm text-slate-600">Submit a booking request form</p>
