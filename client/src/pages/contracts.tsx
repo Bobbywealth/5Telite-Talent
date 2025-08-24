@@ -10,6 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { FileText, Plus, Clock, CheckCircle, XCircle } from "lucide-react";
+import AdminSidebar from "@/components/layout/admin-sidebar";
+import TalentNavbar from "@/components/layout/talent-navbar";
+import ClientNavbar from "@/components/layout/client-navbar";
 
 interface Contract {
   id: string;
@@ -51,7 +54,6 @@ interface Booking {
   bookingTalents: Array<{
     id: string;
     talent: {
-      id: string;
       firstName: string;
       lastName: string;
       email: string;
@@ -115,7 +117,7 @@ export default function ContractsPage() {
       case "cancelled":
         return <XCircle className="h-4 w-4 text-red-500" />;
       default:
-        return <FileText className="h-4 w-4 text-yellow-500" />;
+        return <Clock className="h-4 w-4 text-slate-400" />;
     }
   };
 
@@ -126,9 +128,8 @@ export default function ContractsPage() {
       case "sent":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
       case "expired":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       case "cancelled":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       default:
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
     }
@@ -161,8 +162,9 @@ export default function ContractsPage() {
     );
   }
 
-  return (
-    <div className="container mx-auto p-6 space-y-6">
+  // Content component to avoid duplication
+  const ContractsContent = () => (
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Contracts</h1>
@@ -303,6 +305,7 @@ export default function ContractsPage() {
 
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={() => setSelectedContract(contract)}
                       data-testid={`button-view-contract-${contract.id}`}
                     >
@@ -320,17 +323,65 @@ export default function ContractsPage() {
       <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Contract Details</DialogTitle>
+            <DialogTitle>{selectedContract?.title}</DialogTitle>
+            <DialogDescription>
+              Contract details and signature status
+            </DialogDescription>
           </DialogHeader>
           {selectedContract && (
-            <ContractViewer
+            <ContractViewer 
               contract={selectedContract}
               currentUserId={user?.id || ""}
-              canSign={user?.role === "talent"}
             />
           )}
         </DialogContent>
       </Dialog>
     </div>
   );
+
+  // Render with appropriate layout based on user role
+  if (user?.role === 'admin') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex">
+        <AdminSidebar />
+        <div className="flex-1">
+          <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Contracts</h1>
+                <p className="text-slate-600">Manage and monitor contract signing progress</p>
+              </div>
+            </div>
+          </header>
+          <main className="p-6">
+            <ContractsContent />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (user?.role === 'talent') {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <TalentNavbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ContractsContent />
+        </div>
+      </div>
+    );
+  }
+
+  if (user?.role === 'client') {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <ClientNavbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ContractsContent />
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
