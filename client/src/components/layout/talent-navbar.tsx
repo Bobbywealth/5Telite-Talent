@@ -42,7 +42,7 @@ export default function TalentNavbar() {
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
-                className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-24 w-auto hover:scale-105 transition-transform duration-200"
               />
             </Link>
           </div>
