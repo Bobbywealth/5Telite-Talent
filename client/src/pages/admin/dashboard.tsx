@@ -7,6 +7,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminCalendar from "@/components/admin/admin-calendar";
+import AdminNavbar from "@/components/layout/admin-navbar"; // Assuming AdminNavbar is imported
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -158,84 +159,15 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Replaced AdminSidebar with AdminNavbar or equivalent top navigation component */}
-      {/* Assuming AdminNavbar is intended here and handles mobile toggle */}
-      {/* For now, keeping the structure but acknowledging the change needed */}
-      {/* If AdminNavbar doesn't have isMobileOpen or onMobileToggle, this part needs adjustment */}
-      {/* For this fix, we'll assume AdminNavbar is a drop-in replacement for layout purposes */}
-      {/* If the actual AdminNavbar component needs different props, adjust accordingly */}
-      
-      {/* Placeholder for AdminNavbar - actual implementation might differ */}
-      {/* <AdminNavbar isMobileOpen={isMobileSidebarOpen} onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} /> */}
-      
-      {/* Keeping the AdminSidebar component for now as the change requested is about moving it to the top, not replacing the component itself without a replacement. The provided changes only address closing tags */}
-      <AdminSidebar 
+    <div className="min-h-screen bg-slate-50">
+      <AdminNavbar 
         isMobileOpen={isMobileSidebarOpen} 
         onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />
 
-      <div className="flex-1">
-        {/* Mobile Header */}
-        <header className="xl:hidden bg-white shadow-sm border-b border-slate-200 px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsMobileSidebarOpen(true)}
-                className="p-2"
-                data-testid="button-mobile-sidebar-toggle"
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
-              <img 
-                src="/attached_assets/5t-logo.png" 
-                alt="5T Talent Platform" 
-                className="h-8 w-auto object-contain"
-              />
-              <h1 className="text-lg font-bold text-slate-900">Admin Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <NotificationBell />
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-semibold">
-                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Desktop Header */}
-        <header className="hidden xl:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <img 
-                src="/attached_assets/5t-logo.png" 
-                alt="5T Talent Platform" 
-                className="h-10 w-auto object-contain"
-              />
-              <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <NotificationBell />
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">
-                    {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-                  </span>
-                </div>
-                <span className="text-sm font-medium text-slate-900" data-testid="text-admin-user">
-                  {user?.firstName} {user?.lastName}
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Dashboard Content */}
-        <main className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+      <div className="flex flex-col xl:flex-row min-h-screen">
+        {/* Main Content Area */}
+        <main className="flex-1 p-6 bg-gradient-to-br from-slate-50 to-slate-100 overflow-y-auto">
           {/* Hero Section */}
           <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-8 mb-8 overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-black/10"></div>
