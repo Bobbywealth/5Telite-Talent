@@ -58,11 +58,12 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
     <>
       {/* Header */}
       <div className="p-6 border-b border-slate-200 flex justify-center">
-        <Link href="/" data-testid="link-logo-admin">
+        <Link href="/" data-testid="link-logo-admin" className="block">
           <img 
             src="/attached_assets/5t-logo.png" 
             alt="5T Talent Platform" 
-            className="h-20 md:h-24 w-auto hover:scale-105 transition-transform duration-200"
+            className="h-16 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
+            style={{ maxHeight: '4rem', minWidth: 'auto' }}
           />
         </Link>
       </div>

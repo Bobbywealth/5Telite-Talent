@@ -181,7 +181,8 @@ export default function AdminDashboard() {
               <img 
                 src="/attached_assets/5t-logo.png" 
                 alt="5T Talent Platform" 
-                className="h-8 w-auto"
+                className="h-8 w-auto max-w-full object-contain"
+                style={{ maxHeight: '2rem', minWidth: 'auto' }}
               />
               <h1 className="text-lg font-bold text-slate-900">Dashboard</h1>
             </div>
@@ -203,7 +204,8 @@ export default function AdminDashboard() {
               <img 
                 src="/attached_assets/5t-logo.png" 
                 alt="5T Talent Platform" 
-                className="h-12 w-auto"
+                className="h-12 w-auto max-w-full object-contain"
+                style={{ maxHeight: '3rem', minWidth: 'auto' }}
               />
               <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
             </div>
