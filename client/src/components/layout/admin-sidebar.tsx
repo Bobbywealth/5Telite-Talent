@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoImage from "@assets/5t-logo.png";
 
 const sidebarItems = [
   {
@@ -39,6 +40,13 @@ export default function AdminSidebar() {
     <div className="w-64 bg-white shadow-lg min-h-screen">
       {/* Header */}
       <div className="p-6 border-b border-slate-200">
+        <Link href="/" className="flex items-center mb-3" data-testid="link-logo-admin">
+          <img 
+            src={logoImage} 
+            alt="5T Talent Platform" 
+            className="h-12 w-auto hover:scale-105 transition-transform duration-200"
+          />
+        </Link>
         <div className="text-xl font-bold text-primary">5T Admin</div>
         <p className="text-sm text-slate-600">Talent Management</p>
       </div>
