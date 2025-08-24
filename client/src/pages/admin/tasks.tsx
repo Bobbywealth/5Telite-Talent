@@ -41,35 +41,7 @@ export default function AdminTasks() {
   });
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  // Redirect to home if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  // Check if user is admin
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && user?.role !== 'admin') {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, user, toast]);
+  // Authentication is handled by the Router component
 
   // Fetch tasks with filters
   const { data: tasksData, isLoading: tasksLoading, error } = useQuery({

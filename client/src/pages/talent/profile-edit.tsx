@@ -91,35 +91,7 @@ export default function TalentProfileEdit() {
     },
   });
 
-  // Redirect to home if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  // Check if user is talent
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && user?.role !== 'talent') {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, user, toast]);
+  // Authentication is handled by the Router component
 
   // Fetch current profile data
   const { data: profileData, isLoading: profileLoading } = useQuery({

@@ -12,35 +12,7 @@ export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
 
-  // Redirect to home if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  // Check if user is admin
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && user?.role !== 'admin') {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access the admin dashboard.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, user, toast]);
+  // Authentication is handled by the Router component
 
   // Fetch dashboard stats
   const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
