@@ -130,7 +130,7 @@ export default function ContractsPage() {
     }
   };
 
-  const selectedBookingData = (bookings as Booking[]).find((b: Booking) => b.id === selectedBooking);
+  const selectedBookingData = Array.isArray(bookings) ? bookings.find((b: Booking) => b.id === selectedBooking) : undefined;
 
   const handleCreateContract = () => {
     if (!selectedBooking || !selectedBookingTalent) {
@@ -187,11 +187,11 @@ export default function ContractsPage() {
                       <SelectValue placeholder="Choose a booking" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(bookings as Booking[]).map((booking: Booking) => (
+                      {Array.isArray(bookings) ? bookings.map((booking: Booking) => (
                         <SelectItem key={booking.id} value={booking.id}>
                           {booking.title} ({booking.code})
                         </SelectItem>
-                      ))}
+                      )) : null}
                     </SelectContent>
                   </Select>
                 </div>
@@ -204,7 +204,7 @@ export default function ContractsPage() {
                         <SelectValue placeholder="Choose a talent" />
                       </SelectTrigger>
                       <SelectContent>
-                        {selectedBookingData.bookingTalents.map((bt: any) => (
+                        {selectedBookingData.bookingTalents?.map((bt: any) => (
                           <SelectItem key={bt.id} value={bt.id}>
                             {bt.talent.firstName} {bt.talent.lastName} ({bt.talent.email})
                           </SelectItem>
@@ -238,7 +238,7 @@ export default function ContractsPage() {
       </div>
 
       <div className="grid gap-6">
-        {(contracts as Contract[]).length === 0 ? (
+        {(!Array.isArray(contracts) || contracts.length === 0) ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <FileText className="h-12 w-12 text-slate-400 mb-4" />
@@ -256,7 +256,7 @@ export default function ContractsPage() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {(contracts as Contract[]).map((contract: Contract) => (
+            {Array.isArray(contracts) ? contracts.map((contract: Contract) => (
               <Card key={contract.id} className="cursor-pointer hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
@@ -301,7 +301,7 @@ export default function ContractsPage() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            )) : null}
           </div>
         )}
       </div>
