@@ -37,6 +37,7 @@ import ClientBookings from "@/pages/client/bookings";
 // Shared Pages
 import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
+import Contracts from "@/pages/contracts";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -102,6 +103,7 @@ function Router() {
           {/* Shared routes for all authenticated users */}
           <Route path="/profile" component={Profile} />
           <Route path="/settings" component={Settings} />
+          <Route path="/contracts" component={Contracts} />
         </>
       )}
       <Route component={NotFound} />

@@ -28,6 +28,7 @@ export default function TalentNavbar() {
     { href: "/dashboard/profile", label: "My Profile", icon: "fas fa-user" },
     { href: "/dashboard/bookings", label: "My Bookings", icon: "fas fa-calendar" },
     { href: "/dashboard/tasks", label: "My Tasks", icon: "fas fa-tasks" },
+    { href: "/contracts", label: "My Contracts", icon: "fas fa-file-contract" },
     { href: "/talent", label: "Browse Talent", icon: "fas fa-users" },
   ];
 

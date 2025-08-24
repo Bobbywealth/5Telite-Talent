@@ -25,6 +25,11 @@ const sidebarItems = [
     href: "/admin/tasks",
     icon: "fas fa-tasks",
   },
+  {
+    title: "Contracts",
+    href: "/contracts",
+    icon: "fas fa-file-contract",
+  },
 ];
 
 export default function AdminSidebar() {

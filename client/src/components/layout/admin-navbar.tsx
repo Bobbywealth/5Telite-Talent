@@ -27,6 +27,7 @@ export default function AdminNavbar() {
     { href: "/admin/talents", label: "Manage Talents", icon: "fas fa-users" },
     { href: "/admin/bookings", label: "Manage Bookings", icon: "fas fa-calendar" },
     { href: "/admin/tasks", label: "Task Management", icon: "fas fa-tasks" },
+    { href: "/contracts", label: "Contracts", icon: "fas fa-file-contract" },
     { href: "/talent", label: "View Directory", icon: "fas fa-search" },
   ];
 

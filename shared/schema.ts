@@ -115,6 +115,9 @@ export const bookingTalents = pgTable("booking_talents", {
 export const taskStatusEnum = pgEnum("task_status", ["todo", "in_progress", "blocked", "done"]);
 export const taskScopeEnum = pgEnum("task_scope", ["booking", "talent"]);
 
+export const contractStatusEnum = pgEnum("contract_status", ["draft", "sent", "signed", "expired", "cancelled"]);
+export const signatureStatusEnum = pgEnum("signature_status", ["pending", "signed", "expired"]);
+
 // Tasks
 export const tasks = pgTable("tasks", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -132,6 +135,34 @@ export const tasks = pgTable("tasks", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Contracts
+export const contracts = pgTable("contracts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bookingId: varchar("booking_id").references(() => bookings.id).notNull(),
+  bookingTalentId: varchar("booking_talent_id").references(() => bookingTalents.id).notNull(),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(), // Generated contract content
+  pdfUrl: varchar("pdf_url"), // Stored PDF file path
+  status: contractStatusEnum("status").notNull().default("draft"),
+  dueDate: timestamp("due_date"), // When contract expires
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Signatures
+export const signatures = pgTable("signatures", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  contractId: varchar("contract_id").references(() => contracts.id).notNull(),
+  signerId: varchar("signer_id").references(() => users.id).notNull(),
+  signatureImageUrl: varchar("signature_image_url"), // Base64 or file path
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  status: signatureStatusEnum("status").notNull().default("pending"),
+  signedAt: timestamp("signed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   talentProfile: one(talentProfiles, {
@@ -143,6 +174,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   bookingTalents: many(bookingTalents),
   assignedTasks: many(tasks, { relationName: "assignedTasks" }),
   createdTasks: many(tasks, { relationName: "createdTasks" }),
+  contracts: many(contracts),
+  signatures: many(signatures),
 }));
 
 export const talentProfilesRelations = relations(talentProfiles, ({ one }) => ({
@@ -165,9 +198,10 @@ export const bookingsRelations = relations(bookings, ({ one, many }) => ({
   }),
   bookingTalents: many(bookingTalents),
   tasks: many(tasks),
+  contracts: many(contracts),
 }));
 
-export const bookingTalentsRelations = relations(bookingTalents, ({ one }) => ({
+export const bookingTalentsRelations = relations(bookingTalents, ({ one, many }) => ({
   booking: one(bookings, {
     fields: [bookingTalents.bookingId],
     references: [bookings.id],
@@ -176,6 +210,7 @@ export const bookingTalentsRelations = relations(bookingTalents, ({ one }) => ({
     fields: [bookingTalents.talentId],
     references: [users.id],
   }),
+  contracts: many(contracts),
 }));
 
 export const tasksRelations = relations(tasks, ({ one }) => ({
@@ -196,6 +231,33 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
     fields: [tasks.createdBy],
     references: [users.id],
     relationName: "createdTasks",
+  }),
+}));
+
+export const contractsRelations = relations(contracts, ({ one, many }) => ({
+  booking: one(bookings, {
+    fields: [contracts.bookingId],
+    references: [bookings.id],
+  }),
+  bookingTalent: one(bookingTalents, {
+    fields: [contracts.bookingTalentId],
+    references: [bookingTalents.id],
+  }),
+  createdBy: one(users, {
+    fields: [contracts.createdBy],
+    references: [users.id],
+  }),
+  signatures: many(signatures),
+}));
+
+export const signaturesRelations = relations(signatures, ({ one }) => ({
+  contract: one(contracts, {
+    fields: [signatures.contractId],
+    references: [contracts.id],
+  }),
+  signer: one(users, {
+    fields: [signatures.signerId],
+    references: [users.id],
   }),
 }));
 
@@ -230,6 +292,17 @@ export const insertBookingTalentSchema = createInsertSchema(bookingTalents).omit
   createdAt: true,
 });
 
+export const insertContractSchema = createInsertSchema(contracts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSignatureSchema = createInsertSchema(signatures).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -242,3 +315,7 @@ export type Task = typeof tasks.$inferSelect;
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type BookingTalent = typeof bookingTalents.$inferSelect;
 export type InsertBookingTalent = z.infer<typeof insertBookingTalentSchema>;
+export type Contract = typeof contracts.$inferSelect;
+export type InsertContract = z.infer<typeof insertContractSchema>;
+export type Signature = typeof signatures.$inferSelect;
+export type InsertSignature = z.infer<typeof insertSignatureSchema>;

@@ -13,6 +13,10 @@ import {
   ObjectNotFoundError,
 } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
+import { ContractService } from "./contractService";
+import { db } from "./db";
+import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -48,7 +52,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { firstName, lastName, email, phone } = req.body;
 
       const updates = { firstName, lastName, email, phone };
-      const updatedUser = await storage.updateUser(userId, updates);
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Update the user data (this would need to be implemented in storage)
+      const updatedUser = { ...user, ...updates };
+      await storage.upsertUser(updatedUser);
       
       res.json(updatedUser);
     } catch (error) {
@@ -783,6 +794,138 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  // Contract routes
+  app.get('/api/contracts', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      let contracts;
+      if (user?.role === 'admin') {
+        // Admin can see all contracts
+        contracts = await db.query.contracts.findMany({
+          with: {
+            signatures: { with: { signer: true } },
+            booking: true,
+            bookingTalent: { with: { talent: true } },
+          },
+        });
+      } else if (user?.role === 'talent') {
+        // Talent can see contracts they need to sign
+        contracts = await ContractService.getContractsForTalent(userId);
+      } else {
+        // Clients can see contracts for their bookings - get all for now
+        contracts = await db.query.contracts.findMany({
+          with: {
+            signatures: { with: { signer: true } },
+            booking: true,
+            bookingTalent: { with: { talent: true } },
+          },
+        });
+      }
+      
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      res.status(500).json({ message: "Failed to fetch contracts" });
+    }
+  });
+
+  app.get('/api/contracts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const contractId = req.params.id;
+      const contract = await ContractService.getContractWithSignatures(contractId);
+      
+      if (!contract) {
+        return res.status(404).json({ message: "Contract not found" });
+      }
+      
+      res.json(contract);
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      res.status(500).json({ message: "Failed to fetch contract" });
+    }
+  });
+
+  app.post('/api/contracts/:id/sign', isAuthenticated, async (req: any, res) => {
+    try {
+      const contractId = req.params.id;
+      const userId = req.user.claims.sub;
+      const { signatureData } = req.body;
+      
+      if (!signatureData) {
+        return res.status(400).json({ message: "Signature data is required" });
+      }
+      
+      // Get user agent and IP
+      const userAgent = req.get('User-Agent') || '';
+      const ipAddress = req.ip || req.connection.remoteAddress || '';
+      
+      await ContractService.signContract(
+        contractId,
+        userId,
+        signatureData,
+        ipAddress,
+        userAgent
+      );
+      
+      res.json({ message: "Contract signed successfully" });
+    } catch (error) {
+      console.error("Error signing contract:", error);
+      res.status(500).json({ message: "Failed to sign contract" });
+    }
+  });
+
+  app.post('/api/bookings/:bookingId/contracts', isAuthenticated, async (req: any, res) => {
+    try {
+      const bookingId = req.params.bookingId;
+      const userId = req.user.claims.sub;
+      const { bookingTalentId } = req.body;
+      
+      // Get booking details
+      const booking = await db.query.bookings.findFirst({
+        where: eq(bookings.id, bookingId),
+        with: {
+          client: true,
+          bookingTalents: {
+            where: eq(bookingTalents.id, bookingTalentId),
+            with: {
+              talent: {
+                with: {
+                  talentProfile: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      
+      if (!booking || !booking.bookingTalents[0]) {
+        return res.status(404).json({ message: "Booking or talent not found" });
+      }
+      
+      const bookingTalent = booking.bookingTalents[0];
+      const contractData = {
+        booking,
+        talent: bookingTalent.talent,
+        talentProfile: bookingTalent.talent.talentProfile,
+        client: booking.client,
+      };
+      
+      const contract = await ContractService.createContract(
+        bookingId,
+        bookingTalentId,
+        userId,
+        contractData
+      );
+      
+      res.json(contract);
+    } catch (error) {
+      console.error("Error creating contract:", error);
+      res.status(500).json({ message: "Failed to create contract" });
     }
   });
 

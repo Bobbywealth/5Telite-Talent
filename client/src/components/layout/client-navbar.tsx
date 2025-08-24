@@ -23,6 +23,7 @@ export default function ClientNavbar() {
     { href: "/", label: "Dashboard", icon: "fas fa-tachometer-alt" },
     { href: "/talent", label: "Find Talent", icon: "fas fa-search" },
     { href: "/book", label: "Book Now", icon: "fas fa-plus-circle" },
+    { href: "/contracts", label: "My Contracts", icon: "fas fa-file-contract" },
   ];
 
   const isActive = (href: string) => {
