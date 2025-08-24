@@ -179,9 +179,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/talents/:id', async (req, res) => {
+  // Dashboard endpoint for talent users
+  app.get('/api/talents/dashboard', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'talent') {
+        return res.status(403).json({ message: "Talent access required" });
+      }
+
+      // Get talent profile (may not exist yet)
+      let profile = null;
+      try {
+        profile = await storage.getTalentProfile(userId);
+      } catch (error) {
+        // Profile doesn't exist yet, that's fine
+      }
+
+      res.json({ user, talentProfile: profile });
+    } catch (error) {
+      console.error("Error fetching talent dashboard:", error);
+      res.status(500).json({ message: "Failed to fetch talent dashboard" });
+    }
+  });
+
+  app.get('/api/talents/:id', async (req: any, res) => {
     try {
       const id = req.params.id;
+      const requestingUserId = req.user?.claims?.sub;
       let user = null;
       let profile = null;
 
@@ -197,7 +223,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // If not found by talent profile ID, try by user ID
         user = await storage.getUser(id);
         if (user && user.role === 'talent') {
-          profile = await storage.getTalentProfile(id);
+          try {
+            profile = await storage.getTalentProfile(id);
+          } catch (error) {
+            // Profile doesn't exist yet
+          }
         }
       }
 
@@ -205,6 +235,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Talent not found" });
       }
 
+      // If requesting their own profile, always allow access
+      if (requestingUserId === id) {
+        return res.json({ ...profile, user, talentProfile: profile });
+      }
+
+      // For public viewing, only show approved profiles
       if (!profile || profile.approvalStatus !== 'approved') {
         return res.status(404).json({ message: "Talent profile not found or not approved" });
       }
