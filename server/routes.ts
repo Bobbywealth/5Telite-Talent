@@ -41,6 +41,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user profile
+  app.patch('/api/auth/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { firstName, lastName, email, phone } = req.body;
+
+      const updates = { firstName, lastName, email, phone };
+      const updatedUser = await storage.updateUser(userId, updates);
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   // Role switching for testing purposes
   app.post('/api/auth/switch-role', isAuthenticated, async (req: any, res) => {
     try {
@@ -399,14 +415,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get booking requests for talent or admin
+  // Get booking requests for talent, admin, or client
   app.get('/api/booking-requests', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
 
-      if (!user || !['talent', 'admin'].includes(user.role)) {
-        return res.status(403).json({ message: "Talent or admin access required" });
+      if (!user || !['talent', 'admin', 'client'].includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
       }
 
       let requests;
@@ -417,9 +433,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: status as string,
           limit: limit ? parseInt(limit as string) : undefined 
         });
-      } else {
+      } else if (user.role === 'talent') {
         // Talents only see their own requests
         requests = await storage.getPendingBookingRequests(userId);
+      } else if (user.role === 'client') {
+        // Clients see booking requests for their own bookings
+        const clientBookings = await storage.getAllBookings({ clientId: userId });
+        // For now, return empty array for clients until we add booking request filtering by client
+        requests = [];
       }
       
       res.json({ requests });

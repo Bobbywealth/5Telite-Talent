@@ -114,7 +114,7 @@ export default function ClientNavbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/bookings" className="w-full cursor-pointer">
+                  <Link href="/client/bookings" className="w-full cursor-pointer">
                     <i className="fas fa-calendar mr-2"></i>
                     My Bookings
                   </Link>

@@ -27,6 +27,14 @@ import TalentProfileEdit from "@/pages/talent/profile-edit";
 import TalentBookings from "@/pages/talent/bookings";
 import TalentTasks from "@/pages/talent/tasks";
 
+// Client Pages
+import ClientDashboard from "@/pages/client/dashboard";
+import ClientBookings from "@/pages/client/bookings";
+
+// Shared Pages
+import Profile from "@/pages/profile";
+import Settings from "@/pages/settings";
+
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
@@ -79,6 +87,18 @@ function Router() {
               <Route path="/dashboard/tasks" component={TalentTasks} />
             </>
           )}
+
+          {/* Client routes */}
+          {user?.role === 'client' && (
+            <>
+              <Route path="/client" component={ClientDashboard} />
+              <Route path="/client/bookings" component={ClientBookings} />
+            </>
+          )}
+
+          {/* Shared routes for all authenticated users */}
+          <Route path="/profile" component={Profile} />
+          <Route path="/settings" component={Settings} />
         </>
       )}
       <Route component={NotFound} />

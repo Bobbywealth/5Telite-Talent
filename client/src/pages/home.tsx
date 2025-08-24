@@ -275,7 +275,16 @@ export default function Home() {
 
           {/* Enhanced Client Dashboard */}
           {user?.role === 'client' && (
-            <div className="col-span-full">
+            <div className="col-span-full mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-slate-900">Client Overview</h2>
+                <Link href="/client">
+                  <Button variant="outline" size="sm">
+                    Go to Client Dashboard
+                  </Button>
+                </Link>
+              </div>
+              
               {/* Client Stats Overview */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <Card>
@@ -293,7 +302,7 @@ export default function Home() {
                     </div>
                     <div className="mt-4 flex items-center text-sm">
                       <span className="text-blue-600">
-                        {bookingsData?.bookings?.filter((b: any) => b.status === 'pending').length || 0} pending
+                        {bookingsData?.bookings?.filter((b: any) => ['inquiry', 'proposed'].includes(b.status)).length || 0} pending
                       </span>
                     </div>
                   </CardContent>
@@ -305,7 +314,7 @@ export default function Home() {
                       <div>
                         <p className="text-sm font-medium text-slate-600">Active Projects</p>
                         <p className="text-3xl font-bold text-slate-900" data-testid="text-active-projects">
-                          {bookingsLoading ? "..." : bookingsData?.bookings?.filter((b: any) => ['confirmed', 'in_progress'].includes(b.status)).length || 0}
+                          {bookingsLoading ? "..." : bookingsData?.bookings?.filter((b: any) => ['signed', 'invoiced', 'paid'].includes(b.status)).length || 0}
                         </p>
                       </div>
                       <div className="bg-green-100 rounded-lg p-3">
