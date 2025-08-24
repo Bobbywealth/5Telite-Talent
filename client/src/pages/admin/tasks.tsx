@@ -168,15 +168,19 @@ export default function AdminTasks() {
   // Create task mutation
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: typeof newTask) => {
-      return apiRequest("POST", "/api/tasks", {
-        ...taskData,
-        // Convert empty strings to undefined for optional fields
-        bookingId: taskData.bookingId || undefined,
-        talentId: taskData.talentId || undefined,
-        assigneeId: taskData.assigneeId || undefined,
-        description: taskData.description || undefined,
-        dueAt: taskData.dueAt ? taskData.dueAt : undefined,
-      });
+      // Clean and validate the data before sending
+      const cleanedData = {
+        title: taskData.title.trim(),
+        description: taskData.description?.trim() || null,
+        scope: taskData.scope,
+        bookingId: taskData.bookingId || null,
+        talentId: taskData.talentId || null,
+        assigneeId: taskData.assigneeId || null,
+        dueAt: taskData.dueAt || null,
+      };
+      
+      console.log("Sending task data:", cleanedData);
+      return apiRequest("POST", "/api/tasks", cleanedData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
@@ -378,6 +382,14 @@ export default function AdminTasks() {
                   </DialogHeader>
                   <form onSubmit={(e) => {
                     e.preventDefault();
+                    if (!newTask.title.trim()) {
+                      toast({
+                        title: "Validation Error",
+                        description: "Title is required",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
                     createTaskMutation.mutate(newTask);
                   }} className="space-y-4">
                     <div>
