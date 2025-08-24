@@ -228,6 +228,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
+      </section>
 
       {/* What We Do Section */}
         <section className="py-24 bg-gradient-to-br from-slate-50 to-white relative overflow-hidden">
