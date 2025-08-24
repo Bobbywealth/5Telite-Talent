@@ -65,7 +65,7 @@ export default function Footer() {
             <ul className="space-y-2 text-slate-400">
               <li className="flex items-center">
                 <i className="fas fa-map-marker-alt mr-2"></i>
-                New York, NY 10001
+                122 W 26th St., Suite 902, New York, NY 10001
               </li>
               <li className="flex items-center">
                 <i className="fas fa-phone mr-2"></i>
