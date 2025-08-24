@@ -176,7 +176,7 @@ export default function AdminTasks() {
         bookingId: taskData.bookingId || null,
         talentId: taskData.talentId || null,
         assigneeId: taskData.assigneeId || null,
-        dueAt: taskData.dueAt || null,
+        dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : null,
       };
       
       console.log("Sending task data:", cleanedData);
@@ -373,7 +373,7 @@ export default function AdminTasks() {
                     <i className="fas fa-plus mr-2"></i>Create Task
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto task-management-modal">
                   <DialogHeader>
                     <DialogTitle>Create New Task</DialogTitle>
                     <DialogDescription>

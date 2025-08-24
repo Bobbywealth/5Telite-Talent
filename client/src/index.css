@@ -42,10 +42,22 @@
 /* Fix modal dialog overlay issues */
 [data-radix-dialog-overlay] {
   z-index: 9998 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 [data-radix-dialog-content] {
   z-index: 9999 !important;
+  position: fixed !important;
+}
+
+/* Ensure modal content is above everything */
+.task-management-modal {
+  z-index: 10000 !important;
+}
+
+/* Hide background content when modal is open */
+body:has([data-radix-dialog-overlay]) .task-filters {
+  visibility: hidden !important;
 }
 
 .dark {
