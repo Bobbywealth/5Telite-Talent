@@ -56,6 +56,11 @@ export default function AdminBookings() {
   const [selectedTalents, setSelectedTalents] = useState<string[]>([]);
   const [newBookingId, setNewBookingId] = useState<string>("");
   
+  // Talent search and filtering states
+  const [talentSearch, setTalentSearch] = useState("");
+  const [talentCategoryFilter, setTalentCategoryFilter] = useState("");
+  const [filteredTalents, setFilteredTalents] = useState<any[]>([]);
+  
   // Form for creating booking requests
   const form = useForm<z.infer<typeof bookingRequestSchema>>({
     resolver: zodResolver(bookingRequestSchema),
@@ -219,6 +224,42 @@ export default function AdminBookings() {
       [key]: value,
       page: 1, // Reset page when filters change
     }));
+  };
+
+  // Filter talents based on search and category
+  useEffect(() => {
+    if (talentsData?.talents) {
+      let filtered = talentsData.talents;
+      
+      // Search filter
+      if (talentSearch) {
+        filtered = filtered.filter((talent: any) => {
+          const fullName = `${talent.user.firstName} ${talent.user.lastName}`.toLowerCase();
+          const stageName = talent.stageName?.toLowerCase() || "";
+          const searchTerm = talentSearch.toLowerCase();
+          return fullName.includes(searchTerm) || stageName.includes(searchTerm);
+        });
+      }
+      
+      // Category filter
+      if (talentCategoryFilter) {
+        filtered = filtered.filter((talent: any) => 
+          talent.categories?.includes(talentCategoryFilter)
+        );
+      }
+      
+      setFilteredTalents(filtered);
+    }
+  }, [talentsData, talentSearch, talentCategoryFilter]);
+
+  // Get unique categories for filter dropdown
+  const getUniqueCategories = () => {
+    if (!talentsData?.talents) return [];
+    const categories = new Set<string>();
+    talentsData.talents.forEach((talent: any) => {
+      talent.categories?.forEach((category: string) => categories.add(category));
+    });
+    return Array.from(categories).sort();
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -417,67 +458,170 @@ export default function AdminBookings() {
 
         {/* Talent Selection Modal */}
         <Dialog open={showTalentSelection} onOpenChange={setShowTalentSelection}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden flex flex-col">
             <DialogHeader>
               <DialogTitle>Select Talents for Booking Request</DialogTitle>
               <DialogDescription>
-                Choose which talents to send this booking request to
+                Search and browse the talent directory to select who should receive this booking request
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-4">
-              {talentsData?.talents?.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {talentsData.talents.map((talent: any) => (
-                    <div 
-                      key={talent.userId} 
-                      className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-slate-50"
-                    >
-                      <Checkbox
-                        id={talent.userId}
-                        checked={selectedTalents.includes(talent.userId)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedTalents([...selectedTalents, talent.userId]);
-                          } else {
+            <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+              {/* Search and Filter Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
+                <div>
+                  <Label htmlFor="talent-search" className="text-sm font-medium">Search Talents</Label>
+                  <Input
+                    id="talent-search"
+                    placeholder="Search by name or stage name..."
+                    value={talentSearch}
+                    onChange={(e) => setTalentSearch(e.target.value)}
+                    className="mt-1"
+                    data-testid="input-talent-search"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="category-filter" className="text-sm font-medium">Filter by Category</Label>
+                  <Select value={talentCategoryFilter} onValueChange={setTalentCategoryFilter}>
+                    <SelectTrigger className="mt-1" data-testid="select-talent-category">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Categories</SelectItem>
+                      {getUniqueCategories().map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Results Summary */}
+              <div className="flex justify-between items-center px-2">
+                <p className="text-sm text-slate-600">
+                  Showing {filteredTalents.length} talent{filteredTalents.length !== 1 ? 's' : ''}
+                  {talentSearch && ` matching "${talentSearch}"`}
+                  {talentCategoryFilter && ` in ${talentCategoryFilter}`}
+                </p>
+                <p className="text-sm font-medium text-primary">
+                  {selectedTalents.length} selected
+                </p>
+              </div>
+
+              {/* Talent Directory Grid */}
+              <div className="flex-1 overflow-y-auto">
+                {filteredTalents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-1">
+                    {filteredTalents.map((talent: any) => (
+                      <div 
+                        key={talent.userId} 
+                        className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                          selectedTalents.includes(talent.userId) 
+                            ? 'border-primary bg-primary/5 shadow-sm' 
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                        onClick={() => {
+                          if (selectedTalents.includes(talent.userId)) {
                             setSelectedTalents(selectedTalents.filter(id => id !== talent.userId));
+                          } else {
+                            setSelectedTalents([...selectedTalents, talent.userId]);
                           }
                         }}
-                        data-testid={`checkbox-talent-${talent.userId}`}
-                      />
-                      <div className="flex-1">
-                        <label 
-                          htmlFor={talent.userId}
-                          className="font-medium text-slate-900 cursor-pointer"
-                        >
-                          {talent.user.firstName} {talent.user.lastName}
-                        </label>
-                        {talent.stageName && (
-                          <p className="text-sm text-slate-600">"{talent.stageName}"</p>
-                        )}
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {talent.categories?.slice(0, 3).map((category: string, index: number) => (
+                        data-testid={`card-talent-${talent.userId}`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-slate-900">
+                              {talent.user.firstName} {talent.user.lastName}
+                            </h4>
+                            {talent.stageName && (
+                              <p className="text-sm text-slate-600 italic">"{talent.stageName}"</p>
+                            )}
+                          </div>
+                          <Checkbox
+                            checked={selectedTalents.includes(talent.userId)}
+                            onChange={() => {}} // Handled by card click
+                            className="pointer-events-none"
+                            data-testid={`checkbox-talent-${talent.userId}`}
+                          />
+                        </div>
+                        
+                        {/* Location and Contact */}
+                        <div className="space-y-1 mb-3">
+                          {talent.location && (
+                            <p className="text-xs text-slate-500">📍 {talent.location}</p>
+                          )}
+                          <p className="text-xs text-slate-500">✉️ {talent.user.email}</p>
+                        </div>
+
+                        {/* Categories */}
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {talent.categories?.slice(0, 4).map((category: string, index: number) => (
                             <Badge key={index} variant="secondary" className="text-xs">
                               {category}
                             </Badge>
                           ))}
+                          {talent.categories?.length > 4 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{talent.categories.length - 4} more
+                            </Badge>
+                          )}
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-slate-500 py-8">No approved talents found</p>
-              )}
 
-              <div className="flex justify-between items-center pt-4 border-t">
-                <p className="text-sm text-slate-600">
-                  {selectedTalents.length} talent{selectedTalents.length !== 1 ? 's' : ''} selected
-                </p>
+                        {/* Experience Level */}
+                        {talent.experienceLevel && (
+                          <div className="text-xs text-slate-600">
+                            <span className="font-medium">Experience:</span> {talent.experienceLevel}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="text-4xl mb-4">🔍</div>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No talents found</h3>
+                    <p className="text-slate-600 mb-4">
+                      {talentSearch || talentCategoryFilter 
+                        ? "Try adjusting your search or filters" 
+                        : "No approved talents are available"}
+                    </p>
+                    {(talentSearch || talentCategoryFilter) && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setTalentSearch("");
+                          setTalentCategoryFilter("");
+                        }}
+                        className="mt-2"
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex justify-between items-center pt-4 border-t bg-white">
+                <div className="text-sm text-slate-600">
+                  {selectedTalents.length > 0 && (
+                    <span>
+                      Ready to send booking request to {selectedTalents.length} talent{selectedTalents.length !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
                 <div className="flex space-x-2">
                   <Button 
                     variant="outline" 
-                    onClick={() => setShowTalentSelection(false)}
+                    onClick={() => {
+                      setShowTalentSelection(false);
+                      setTalentSearch("");
+                      setTalentCategoryFilter("");
+                      setSelectedTalents([]);
+                    }}
                   >
                     Cancel
                   </Button>
@@ -492,8 +636,9 @@ export default function AdminBookings() {
                     }}
                     disabled={selectedTalents.length === 0 || sendRequestsMutation.isPending}
                     data-testid="button-send-requests"
+                    className="min-w-[140px]"
                   >
-                    {sendRequestsMutation.isPending ? "Sending..." : `Send Requests (${selectedTalents.length})`}
+                    {sendRequestsMutation.isPending ? "Sending..." : selectedTalents.length > 0 ? `Send to ${selectedTalents.length}` : "Select Talents"}
                   </Button>
                 </div>
               </div>
