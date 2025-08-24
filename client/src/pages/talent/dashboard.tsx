@@ -83,6 +83,34 @@ export default function TalentDashboard() {
     retry: false,
   });
 
+  // Fetch booking requests for this talent
+  const { data: bookingRequestsData, isLoading: bookingRequestsLoading } = useQuery({
+    queryKey: ["/api/booking-requests"],
+    queryFn: async () => {
+      const response = await fetch("/api/booking-requests", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch booking requests");
+      return response.json();
+    },
+    enabled: isAuthenticated && user?.role === 'talent',
+    retry: false,
+  });
+
+  // Fetch talent profile for completion status
+  const { data: talentProfile, isLoading: profileLoading } = useQuery({
+    queryKey: ["/api/talents", user?.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/talents/${user?.id}`, {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch profile");
+      return response.json();
+    },
+    enabled: isAuthenticated && user?.role === 'talent' && user?.id,
+    retry: false,
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -116,6 +144,23 @@ export default function TalentDashboard() {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const calculateProfileCompletion = (profile: any) => {
+    if (!profile) return 0;
+    const fields = ['bio', 'categories', 'skills', 'basedIn', 'hourlyRate'];
+    const completed = fields.filter(field => {
+      const value = profile[field];
+      return value && (Array.isArray(value) ? value.length > 0 : value.toString().trim().length > 0);
+    }).length;
+    return Math.round((completed / fields.length) * 100);
+  };
+
+  const calculateEarnings = () => {
+    if (!bookingsData?.bookings) return 0;
+    return bookingsData.bookings
+      .filter((booking: any) => booking.status === 'completed')
+      .reduce((total: number, booking: any) => total + (booking.totalAmount || 0), 0);
   };
 
   return (
