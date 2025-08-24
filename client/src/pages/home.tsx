@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
+import TalentNavbar from "@/components/layout/talent-navbar";
 import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,9 +66,16 @@ export default function Home() {
     return 'Welcome to 5T Talent Platform';
   };
 
+  const renderNavbar = () => {
+    if (user?.role === 'talent') return <TalentNavbar />;
+    // TODO: Add AdminNavbar when created
+    // if (user?.role === 'admin') return <AdminNavbar />;
+    return <Navbar />;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <Navbar />
+      {renderNavbar()}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
