@@ -174,73 +174,100 @@ export default function Home() {
           )}
 
           {user?.role === 'talent' && (
-            <>
-              <Link href="/dashboard/profile">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <div className="col-span-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Quick Stats Cards - No duplicates with navbar */}
+                <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <i className="fas fa-user-edit text-primary text-xl"></i>
-                      </div>
-                      <CardTitle className="text-lg">Edit Profile</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Active Bookings</CardTitle>
+                      <i className="fas fa-calendar-check text-primary"></i>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">Update your profile, add photos, and manage availability.</p>
+                    <div className="text-2xl font-bold">0</div>
+                    <p className="text-xs text-slate-500">This month</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Pending Tasks</CardTitle>
+                      <i className="fas fa-tasks text-secondary"></i>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">0</div>
+                    <p className="text-xs text-slate-500">Need attention</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Profile Views</CardTitle>
+                      <i className="fas fa-eye text-green-600"></i>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">--</div>
+                    <p className="text-xs text-slate-500">This week</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Account Status</CardTitle>
+                      <i className="fas fa-check-circle text-green-600"></i>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold text-green-600">Active</div>
+                    <p className="text-xs text-slate-500">Ready for bookings</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {/* Client-specific cards only */}
+          {user?.role === 'client' && (
+            <>
+              <Link href="/talent">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <i className="fas fa-search text-green-600 text-xl"></i>
+                      </div>
+                      <CardTitle className="text-lg">Browse Talent</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-600">Explore our directory of professional talent across all categories.</p>
                   </CardContent>
                 </Card>
               </Link>
 
-              <Link href="/dashboard">
+              <Link href="/book">
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-secondary/10 rounded-lg">
-                        <i className="fas fa-calendar-alt text-secondary text-xl"></i>
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <i className="fas fa-plus-circle text-blue-600 text-xl"></i>
                       </div>
-                      <CardTitle className="text-lg">My Bookings</CardTitle>
+                      <CardTitle className="text-lg">Request Booking</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">View upcoming bookings and track your schedule.</p>
+                    <p className="text-slate-600">Submit a new booking request for your upcoming project.</p>
                   </CardContent>
                 </Card>
               </Link>
             </>
           )}
-
-          {/* Common cards for all users */}
-          <Link href="/talent">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader className="pb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <i className="fas fa-search text-green-600 text-xl"></i>
-                  </div>
-                  <CardTitle className="text-lg">Browse Talent</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">Explore our directory of professional talent across all categories.</p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/book">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader className="pb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <i className="fas fa-plus-circle text-blue-600 text-xl"></i>
-                  </div>
-                  <CardTitle className="text-lg">Request Booking</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">Submit a new booking request for your upcoming project.</p>
-              </CardContent>
-            </Card>
-          </Link>
         </div>
 
         {/* Role Switcher for Testing */}
