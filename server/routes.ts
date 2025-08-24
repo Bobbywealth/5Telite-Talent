@@ -4,7 +4,7 @@ import path from "path";
 import express from "express";
 import { z } from "zod";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import {
   insertTalentProfileSchema,
   insertBookingSchema,
@@ -38,22 +38,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth routes are now handled in auth.ts
 
   // Update user profile
-  app.patch('/api/auth/profile', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { firstName, lastName, email, phone } = req.body;
 
       const updates = { firstName, lastName, email, phone };
@@ -62,11 +52,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
       
-      // Update the user data (this would need to be implemented in storage)
+      // Update the user data
       const updatedUser = { ...user, ...updates };
       await storage.upsertUser(updatedUser);
       
-      res.json(updatedUser);
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
     } catch (error) {
       console.error("Error updating profile:", error);
       res.status(500).json({ message: "Failed to update profile" });
@@ -76,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Role switching for testing purposes
   app.post('/api/auth/switch-role', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { role } = req.body;
 
       if (!role || !['admin', 'talent', 'client'].includes(role)) {
@@ -94,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User role management (placeholder - not implemented in storage yet)
   app.patch('/api/users/:id/role', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const currentUser = await storage.getUser(userId);
 
       if (!currentUser || currentUser.role !== 'admin') {
@@ -111,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Object storage routes
   app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = req.user?.id;
     const objectStorageService = new ObjectStorageService();
     try {
       const objectFile = await objectStorageService.getObjectEntityFile(
@@ -182,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard endpoint for talent users
   app.get('/api/talents/dashboard', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'talent') {
@@ -207,7 +199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/talents/:id', async (req: any, res) => {
     try {
       const id = req.params.id;
-      const requestingUserId = req.user?.claims?.sub;
+      const requestingUserId = req.user?.id;
       let user = null;
       let profile = null;
 
@@ -254,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/talents', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'talent') {
@@ -286,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/talents/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       const targetUserId = req.params.id;
 
@@ -337,7 +329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/admin/talents/:id/approve', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'admin') {
@@ -391,7 +383,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/bookings', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -432,7 +424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/bookings/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -462,7 +454,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/bookings/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'admin') {
@@ -480,7 +472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Send booking requests to talents
   app.post('/api/bookings/:id/send-requests', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'admin') {
@@ -514,7 +506,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get booking requests for talent, admin, or client
   app.get('/api/booking-requests', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || !['talent', 'admin', 'client'].includes(user.role)) {
@@ -549,7 +541,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Respond to booking request (accept/decline)
   app.patch('/api/booking-requests/:requestId/respond', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'talent') {
@@ -579,7 +571,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Task routes
   app.get('/api/tasks', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -623,7 +615,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/tasks', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'admin') {
@@ -647,7 +639,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/tasks/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -675,7 +667,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Notifications endpoint
   app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -888,7 +880,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contract routes
   app.get('/api/contracts', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       let contracts;
@@ -941,7 +933,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/contracts/:id/sign', isAuthenticated, async (req: any, res) => {
     try {
       const contractId = req.params.id;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { signatureData } = req.body;
       
       if (!signatureData) {
@@ -970,7 +962,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/bookings/:bookingId/contracts', isAuthenticated, async (req: any, res) => {
     try {
       const bookingId = req.params.bookingId;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { bookingTalentId } = req.body;
       
       // Get booking details

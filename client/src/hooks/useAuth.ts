@@ -8,7 +8,7 @@ let authResult: { user: User | null; timestamp: number } | null = null;
 
 export function useAuth() {
   const { data: user, isLoading, error } = useQuery<User | null>({
-    queryKey: ["/api/auth/user"],
+    queryKey: ["/api/user"],
     queryFn: async () => {
       // If we have recent cached result, use it
       if (authResult && (Date.now() - authResult.timestamp) < 5 * 60 * 1000) {
@@ -23,7 +23,7 @@ export function useAuth() {
       authCheckInProgress = true;
 
       try {
-        const response = await fetch("/api/auth/user", {
+        const response = await fetch("/api/user", {
           credentials: "include",
         });
 

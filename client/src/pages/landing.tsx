@@ -168,6 +168,16 @@ export default function Landing() {
                   <i className="fas fa-sparkles ml-3"></i>
                 </Link>
               </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full sm:w-auto border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
+                data-testid="button-sign-in"
+                onClick={() => window.location.href = "/auth"}
+              >
+                <i className="fas fa-sign-in-alt text-lg mr-3"></i>Sign In
+                <i className="fas fa-user ml-3"></i>
+              </Button>
             </div>
 
             {/* Stats - improved layout */}

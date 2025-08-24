@@ -12,6 +12,7 @@ import { TimezoneProvider } from "@/contexts/TimezoneContext";
 // Pages
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
+import Auth from "@/pages/auth";
 import TalentDirectory from "@/pages/talent-directory";
 import TalentProfile from "@/pages/talent-profile";
 import BookRequest from "@/pages/book-request";
@@ -60,6 +61,7 @@ function Router() {
       {!isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
+          <Route path="/auth" component={Auth} />
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
           <Route path="/book" component={BookRequest} />

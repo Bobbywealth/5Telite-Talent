@@ -68,11 +68,9 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="text-lg px-8 py-3">
-              <a href="/api/login">
-                <i className="fas fa-sign-in-alt mr-2"></i>
-                Sign In
-              </a>
+            <Button size="lg" onClick={() => window.location.href = "/auth"} className="text-lg px-8 py-3">
+              <i className="fas fa-sign-in-alt mr-2"></i>
+              Sign In
             </Button>
             <Button size="lg" variant="outline" asChild className="text-lg px-8 py-3">
               <a href="/talent">

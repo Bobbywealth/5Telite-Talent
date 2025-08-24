@@ -86,7 +86,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-3">
             {!isAuthenticated ? (
               <Button 
-                onClick={() => window.location.href = "/api/login"}
+                onClick={() => window.location.href = "/auth"}
                 variant="outline"
                 data-testid="button-sign-in"
               >

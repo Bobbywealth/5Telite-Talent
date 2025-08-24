@@ -30,11 +30,12 @@ export const sessions = pgTable(
 export const userRoleEnum = pgEnum("user_role", ["admin", "talent", "client"]);
 export const userStatusEnum = pgEnum("user_status", ["active", "pending", "suspended"]);
 
-// User storage table for Replit Auth
+// User storage table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   role: userRoleEnum("role").notNull().default("talent"),
-  email: varchar("email").unique(),
+  email: varchar("email").unique().notNull(),
+  password: varchar("password").notNull(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   phone: varchar("phone"),
@@ -294,6 +295,19 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
   dueAt: z.string().optional().nullable(),
 });
 
+export const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  role: z.enum(["admin", "talent", "client"]).default("talent"),
+});
+
 export const insertBookingTalentSchema = createInsertSchema(bookingTalents).omit({
   id: true,
   createdAt: true,
@@ -314,6 +328,8 @@ export const insertSignatureSchema = createInsertSchema(signatures).omit({
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type LoginUser = z.infer<typeof loginSchema>;
+export type RegisterUser = z.infer<typeof registerSchema>;
 export type TalentProfile = typeof talentProfiles.$inferSelect;
 export type InsertTalentProfile = z.infer<typeof insertTalentProfileSchema>;
 export type Booking = typeof bookings.$inferSelect;
