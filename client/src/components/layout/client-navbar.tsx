@@ -36,14 +36,25 @@ export default function ClientNavbar() {
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-24">
-          {/* Logo */}
-          <Link href="/" className="flex items-center" data-testid="link-logo">
-            <img 
-              src="/attached_assets/5t-logo.png" 
-              alt="5T Talent Platform" 
-              className="h-24 w-auto hover:scale-105 transition-transform duration-200"
-            />
-          </Link>
+          {/* Left: Mobile Menu Button + Logo */}
+          <div className="flex items-center space-x-2">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+              data-testid="button-mobile-menu-client"
+            >
+              <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`}></i>
+            </button>
+            
+            <Link href="/" className="flex items-center" data-testid="link-logo">
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-16 md:h-20 w-auto hover:scale-105 transition-transform duration-200"
+              />
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -87,7 +98,7 @@ export default function ClientNavbar() {
             {/* Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="button-user-menu-client">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.profileImageUrl || undefined} alt="Profile" />
                     <AvatarFallback className="bg-primary text-white text-sm">

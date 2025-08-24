@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from "@assets/5t-logo.png";
 
 const sidebarItems = [
@@ -37,7 +39,12 @@ const sidebarItems = [
   },
 ];
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  isMobileOpen?: boolean;
+  onMobileToggle?: () => void;
+}
+
+export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSidebarProps = {}) {
   const { user } = useAuth();
   const [location] = useLocation();
 
@@ -46,15 +53,15 @@ export default function AdminSidebar() {
     return location.startsWith(href);
   };
 
-  return (
-    <div className="w-64 bg-white shadow-lg min-h-screen">
+  const SidebarContent = () => (
+    <>
       {/* Header */}
       <div className="p-6 border-b border-slate-200 flex justify-center">
         <Link href="/" data-testid="link-logo-admin">
           <img 
             src="/attached_assets/5t-logo.png" 
             alt="5T Talent Platform" 
-            className="h-28 w-auto hover:scale-105 transition-transform duration-200"
+            className="h-20 md:h-24 w-auto hover:scale-105 transition-transform duration-200"
           />
         </Link>
       </div>
@@ -72,6 +79,7 @@ export default function AdminSidebar() {
                     : "text-slate-600 hover:bg-slate-100"
                 )}
                 data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+                onClick={onMobileToggle}
               >
                 <i className={`${item.icon} mr-3 w-4`}></i>
                 {item.title}
@@ -83,30 +91,38 @@ export default function AdminSidebar() {
 
       {/* User Info */}
       <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-slate-200">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-semibold">
-              {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+            <span className="text-white text-xs font-semibold">
+              {user?.firstName?.charAt(0) || 'A'}
             </span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-900 truncate" data-testid="text-admin-name">
-              {user?.firstName} {user?.lastName}
-            </p>
-            <p className="text-xs text-slate-500 truncate">Administrator</p>
+          <div className="ml-3">
+            <p className="text-sm font-medium text-slate-900">{user?.firstName}</p>
+            <p className="text-xs text-slate-500">Administrator</p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full mt-3 justify-start"
-          onClick={() => window.location.href = "/api/logout"}
-          data-testid="button-admin-logout"
-        >
-          <i className="fas fa-sign-out-alt mr-2 w-4"></i>
-          Sign Out
-        </Button>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex w-64 bg-white shadow-lg min-h-screen relative">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Sidebar */}
+      <div className="lg:hidden">
+        <Sheet open={isMobileOpen} onOpenChange={onMobileToggle}>
+          <SheetContent side="left" className="w-64 p-0">
+            <div className="relative h-full">
+              <SidebarContent />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 }

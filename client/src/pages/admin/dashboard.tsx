@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Authentication is handled by the Router component
 
@@ -156,11 +157,45 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <AdminSidebar />
+      <AdminSidebar 
+        isMobileOpen={isMobileSidebarOpen} 
+        onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+      />
       
       <div className="flex-1">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
+        {/* Mobile Header */}
+        <header className="lg:hidden bg-white shadow-sm border-b border-slate-200 px-4 py-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="p-2"
+                data-testid="button-mobile-sidebar-toggle"
+              >
+                <i className="fas fa-bars text-lg"></i>
+              </Button>
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-8 w-auto"
+              />
+              <h1 className="text-lg font-bold text-slate-900">Dashboard</h1>
+            </div>
+            <div className="flex items-center space-x-2">
+              <NotificationBell />
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-semibold">
+                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Desktop Header */}
+        <header className="hidden lg:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <img 
