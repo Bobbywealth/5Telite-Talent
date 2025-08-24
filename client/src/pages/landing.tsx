@@ -73,7 +73,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative bg-gradient-hero-enhanced overflow-hidden">
         {/* Dynamic animated background elements */}
@@ -84,7 +84,7 @@ export default function Landing() {
           <div className="floating-shape shape-3"></div>
           <div className="floating-shape shape-4"></div>
           <div className="floating-shape shape-5"></div>
-          
+
           {/* Animated particles */}
           <div className="floating-particles">
             <div className="particle particle-1"></div>
@@ -96,7 +96,7 @@ export default function Landing() {
             <div className="particle particle-7"></div>
             <div className="particle particle-8"></div>
           </div>
-          
+
           {/* Floating geometric elements */}
           <div className="geometric-elements">
             <div className="triangle triangle-1"></div>
@@ -106,7 +106,7 @@ export default function Landing() {
             <div className="square square-1"></div>
             <div className="square square-2"></div>
           </div>
-          
+
           {/* Animated gradient orbs */}
           <div className="gradient-orbs">
             <div className="orb orb-1"></div>
@@ -114,12 +114,12 @@ export default function Landing() {
             <div className="orb orb-3"></div>
           </div>
         </div>
-        
+
         {/* Content overlay with subtle pattern */}
         <div className="absolute inset-0 bg-black bg-opacity-20">
           <div className="absolute inset-0 hero-pattern opacity-5"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Main content */}
@@ -129,19 +129,19 @@ export default function Landing() {
                 <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                 500+ Professional Talents Available
               </div>
-              
+
               <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up-delay-1">
                 Book <span className="text-gradient-white relative">
                   Exceptional
                   <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transform scale-x-0 animate-underline"></div>
                 </span> Talent
               </h1>
-              
+
               <p className="text-xl lg:text-2xl text-slate-200 mb-8 max-w-xl mx-auto animate-fade-in-up-delay-2">
                 Connect with professional models, actors, and performers for your next project. 
                 <span className="text-yellow-300 font-semibold">Book with confidence</span> through our comprehensive talent platform.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in-up-delay-3">
                 <Link href="/talent">
                   <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl" data-testid="button-browse-talent">
@@ -160,7 +160,7 @@ export default function Landing() {
                   <i className="fas fa-sparkles ml-2"></i>
                 </Button>
               </div>
-              
+
               {/* Stats */}
               <div className="flex flex-wrap gap-6 justify-center text-white animate-fade-in-up-delay-4">
                 <div className="text-center">
@@ -177,7 +177,7 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            
+
             {/* Right side - Visual elements */}
             <div className="hidden lg:block relative">
               <div className="relative">
@@ -193,7 +193,7 @@ export default function Landing() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="absolute top-20 left-0 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-500 floating-card-2">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
@@ -205,7 +205,7 @@ export default function Landing() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="absolute bottom-0 right-10 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-500 floating-card-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
@@ -217,7 +217,7 @@ export default function Landing() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Central icon */}
                 <div className="mx-auto w-48 h-48 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 pulse-animation">
                   <i className="fas fa-users text-6xl text-white"></i>
@@ -229,8 +229,15 @@ export default function Landing() {
       </section>
 
       {/* What We Do Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 overflow-hidden">
+        {/* Brand floating elements */}
+        <div className="absolute inset-0">
+          <div className="floating-shape shape-2"></div>
+          <div className="floating-shape shape-4"></div>
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-5 brand-dot-pattern"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">What We Do</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
@@ -240,7 +247,7 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {/* Talent Acquisition */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90">
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 brand-card-hover">
               <CardContent className="p-8 text-center">
                 <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
                   <i className="fas fa-briefcase text-3xl text-white"></i>
@@ -257,7 +264,7 @@ export default function Landing() {
             </Card>
 
             {/* Strategic Consulting */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90">
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 brand-card-hover">
               <CardContent className="p-8 text-center">
                 <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
                   <i className="fas fa-chart-line text-3xl text-white"></i>
@@ -274,7 +281,7 @@ export default function Landing() {
             </Card>
 
             {/* Industry Specialization */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90">
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 brand-card-hover">
               <CardContent className="p-8 text-center">
                 <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-blue-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
                   <i className="fas fa-star text-3xl text-white"></i>
