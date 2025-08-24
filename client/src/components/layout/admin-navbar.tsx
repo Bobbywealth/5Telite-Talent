@@ -94,7 +94,7 @@ export default function AdminNavbar() {
           </div>
 
           {/* Center: Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-6 ml-8">
             {navigationItems.map((item) => (
               <Link 
                 key={item.href}
