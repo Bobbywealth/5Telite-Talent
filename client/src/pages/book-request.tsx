@@ -10,10 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useLocation } from "react-router-dom";
-
 export default function BookRequest() {
-  const navigate = useLocation()[1]; // This line seems to be incorrect as useLocation() returns an object, not an array with an index. Assuming it's a typo and should be removed or corrected if there's a specific routing library context.
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
