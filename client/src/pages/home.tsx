@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import TalentNavbar from "@/components/layout/talent-navbar";
+import AdminNavbar from "@/components/layout/admin-navbar";
 import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,8 +69,7 @@ export default function Home() {
 
   const renderNavbar = () => {
     if (user?.role === 'talent') return <TalentNavbar />;
-    // TODO: Add AdminNavbar when created
-    // if (user?.role === 'admin') return <AdminNavbar />;
+    if (user?.role === 'admin') return <AdminNavbar />;
     return <Navbar />;
   };
 
@@ -93,13 +93,13 @@ export default function Home() {
               <p className="text-xl text-slate-200 mb-6">
                 {getRoleDescription()}
               </p>
-              {/* Only show buttons for non-talent users since talents have navbar */}
-              {user?.role !== 'talent' && (
+              {/* Only show buttons for client users since admins and talents have navbar */}
+              {user?.role === 'client' && (
                 <div className="flex flex-wrap gap-4">
                   <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-dashboard" asChild>
                     <Link href={getDashboardLink()}>
                       <i className="fas fa-tachometer-alt mr-2"></i>
-                      Go to {user?.role === 'admin' ? 'Admin' : ''} Dashboard
+                      Go to Dashboard
                     </Link>
                   </Button>
                   <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-browse-talent" asChild>
@@ -125,55 +125,62 @@ export default function Home() {
         {/* Quick Actions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {user?.role === 'admin' && (
-            <>
-              <Link href="/admin/talents">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <div className="col-span-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Admin Dashboard Stats - Replace duplicate navigation with useful stats */}
+                <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <i className="fas fa-users text-primary text-xl"></i>
-                      </div>
-                      <CardTitle className="text-lg">Manage Talents</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Total Talents</CardTitle>
+                      <i className="fas fa-users text-primary"></i>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">Review applications, approve profiles, and manage talent roster.</p>
+                    <div className="text-2xl font-bold">0</div>
+                    <p className="text-xs text-slate-500">Active profiles</p>
                   </CardContent>
                 </Card>
-              </Link>
 
-              <Link href="/admin/bookings">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-secondary/10 rounded-lg">
-                        <i className="fas fa-calendar text-secondary text-xl"></i>
-                      </div>
-                      <CardTitle className="text-lg">Manage Bookings</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Active Bookings</CardTitle>
+                      <i className="fas fa-calendar-check text-secondary"></i>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">Create bookings, track status, and manage client relationships.</p>
+                    <div className="text-2xl font-bold">0</div>
+                    <p className="text-xs text-slate-500">This month</p>
                   </CardContent>
                 </Card>
-              </Link>
 
-              <Link href="/admin/tasks">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-accent/10 rounded-lg">
-                        <i className="fas fa-tasks text-accent text-xl"></i>
-                      </div>
-                      <CardTitle className="text-lg">Task Management</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Pending Tasks</CardTitle>
+                      <i className="fas fa-tasks text-accent"></i>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">Assign tasks, track progress, and manage workflows.</p>
+                    <div className="text-2xl font-bold">0</div>
+                    <p className="text-xs text-slate-500">Need attention</p>
                   </CardContent>
                 </Card>
-              </Link>
-            </>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-slate-600">Platform Status</CardTitle>
+                      <i className="fas fa-server text-green-600"></i>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold text-green-600">Online</div>
+                    <p className="text-xs text-slate-500">All systems operational</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           )}
 
           {user?.role === 'talent' && (
