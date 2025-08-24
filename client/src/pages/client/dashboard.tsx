@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTimezone } from "@/contexts/TimezoneContext";
 import { Link } from "wouter";
 import ClientNavbar from "@/components/layout/client-navbar";
 import Footer from "@/components/layout/footer";
@@ -11,6 +13,8 @@ import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export default function ClientDashboard() {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
+  const { formatDate: formatDateWithTimezone } = useTimezone();
 
   // Fetch client bookings
   const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
@@ -85,11 +89,11 @@ export default function ClientDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900" data-testid="heading-client-dashboard">
-              Client Dashboard
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100" data-testid="heading-client-dashboard">
+              {t("dashboard")}
             </h1>
-            <p className="text-slate-600 mt-1">
-              Welcome back, {user?.firstName || 'Client'}! Manage your bookings and projects.
+            <p className="text-slate-600 dark:text-slate-400 mt-1">
+              {t("welcome")}, {user?.firstName || 'Client'}! Manage your bookings and projects.
             </p>
           </div>
           <div className="flex items-center space-x-4">

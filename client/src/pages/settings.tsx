@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTimezone } from "@/contexts/TimezoneContext";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import TalentNavbar from "@/components/layout/talent-navbar";
@@ -18,6 +21,9 @@ import { Badge } from "@/components/ui/badge";
 export default function Settings() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
+  const { timezone, setTimezone, formatDateTime } = useTimezone();
   const [activeTab, setActiveTab] = useState("notifications");
 
   // Settings state
@@ -31,9 +37,6 @@ export default function Settings() {
   });
 
   const [preferences, setPreferences] = useState({
-    theme: 'light',
-    language: 'en',
-    timezone: 'America/New_York',
     currency: 'USD',
   });
 
@@ -46,6 +49,30 @@ export default function Settings() {
     toast({
       title: "Setting Updated",
       description: `${key.replace('_', ' ')} notifications ${value ? 'enabled' : 'disabled'}.`,
+    });
+  };
+
+  const handleThemeChange = (newTheme: "light" | "dark" | "auto") => {
+    setTheme(newTheme);
+    toast({
+      title: t("switchTheme"),
+      description: `Theme switched to ${newTheme}`,
+    });
+  };
+
+  const handleLanguageChange = (newLanguage: "en" | "es" | "fr") => {
+    setLanguage(newLanguage);
+    toast({
+      title: t("changeLanguage"),
+      description: `Language changed to ${newLanguage === 'en' ? 'English' : newLanguage === 'es' ? 'Español' : 'Français'}`,
+    });
+  };
+
+  const handleTimezoneChange = (newTimezone: "America/New_York" | "America/Chicago" | "America/Denver" | "America/Los_Angeles" | "UTC") => {
+    setTimezone(newTimezone);
+    toast({
+      title: t("updateTimezone"),
+      description: `Timezone updated. Current time: ${formatDateTime(new Date())}`,
     });
   };
 
@@ -85,11 +112,14 @@ export default function Settings() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900" data-testid="heading-settings">
-              Settings
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100" data-testid="heading-settings">
+              {t("settings")}
             </h1>
-            <p className="text-slate-600 mt-1">
+            <p className="text-slate-600 dark:text-slate-400 mt-1">
               Customize your experience and manage your preferences.
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">
+              Current time in {timezone}: {formatDateTime(new Date())}
             </p>
           </div>
           <Link href={getDashboardLink()}>
@@ -233,8 +263,8 @@ export default function Settings() {
                     <div className="space-y-2">
                       <Label>Theme</Label>
                       <Select 
-                        value={preferences.theme} 
-                        onValueChange={(value) => handlePreferenceChange('theme', value)}
+                        value={theme} 
+                        onValueChange={handleThemeChange}
                       >
                         <SelectTrigger data-testid="select-theme">
                           <SelectValue />
@@ -250,16 +280,16 @@ export default function Settings() {
                     <div className="space-y-2">
                       <Label>Language</Label>
                       <Select 
-                        value={preferences.language} 
-                        onValueChange={(value) => handlePreferenceChange('language', value)}
+                        value={language} 
+                        onValueChange={handleLanguageChange}
                       >
                         <SelectTrigger data-testid="select-language">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="en">English</SelectItem>
-                          <SelectItem value="es">Spanish</SelectItem>
-                          <SelectItem value="fr">French</SelectItem>
+                          <SelectItem value="es">Español</SelectItem>
+                          <SelectItem value="fr">Français</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -276,8 +306,8 @@ export default function Settings() {
                     <div className="space-y-2">
                       <Label>Timezone</Label>
                       <Select 
-                        value={preferences.timezone} 
-                        onValueChange={(value) => handlePreferenceChange('timezone', value)}
+                        value={timezone} 
+                        onValueChange={handleTimezoneChange}
                       >
                         <SelectTrigger data-testid="select-timezone">
                           <SelectValue />
