@@ -80,6 +80,8 @@ function Router() {
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
               <Route path="/admin/tasks" component={AdminTasks} />
+              <Route path="/admin/contracts" component={ContractsPage} />
+              <Route path="/admin/talent" component={TalentDirectory} />
               <Route path="/admin/settings" component={AdminSettings} />
             </>
           )}

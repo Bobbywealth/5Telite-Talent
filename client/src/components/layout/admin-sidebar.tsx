@@ -20,7 +20,7 @@ const sidebarItems = [
   },
   {
     title: "Browse Talent",
-    href: "/talent",
+    href: "/admin/talent",
     icon: Search,
   },
   {
@@ -35,7 +35,7 @@ const sidebarItems = [
   },
   {
     title: "Contracts",
-    href: "/contracts",
+    href: "/admin/contracts",
     icon: FileText,
   },
 ];

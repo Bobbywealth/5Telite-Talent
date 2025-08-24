@@ -175,7 +175,7 @@ export default function AdminTasks() {
         talentId: taskData.talentId || undefined,
         assigneeId: taskData.assigneeId || undefined,
         description: taskData.description || undefined,
-        dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : undefined,
+        dueAt: taskData.dueAt ? taskData.dueAt : undefined,
       });
     },
     onSuccess: () => {
