@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -32,6 +35,7 @@ export default function Register() {
     eyeColor: "",
     experience: "",
     agreeToTerms: false,
+    uploadedImages: [] as string[],
   });
 
   const categories = [
@@ -57,7 +61,8 @@ export default function Register() {
         },
         social: {
           phoneNumber: data.phoneNumber
-        }
+        },
+        mediaUrls: data.uploadedImages
       }));
 
       // Redirect to Replit Auth login to complete registration
@@ -81,6 +86,41 @@ export default function Register() {
         ? [...prev.categories, category]
         : prev.categories.filter(c => c !== category)
     }));
+  };
+
+  // Handle image uploads  
+  const handleGetUploadParameters = async () => {
+    const response = await apiRequest("POST", "/api/objects/upload", {});
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleImageUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    if (result.successful && result.successful.length > 0) {
+      const uploadedUrl = result.successful[0].uploadURL;
+      
+      // Process the uploaded image and add to collection
+      apiRequest("PUT", "/api/talents/me/media", {
+        mediaUrl: uploadedUrl
+      }).then((response) => {
+        setFormData(prev => ({
+          ...prev,
+          uploadedImages: [...prev.uploadedImages, response.objectPath]
+        }));
+        toast({
+          title: "Image uploaded successfully!",
+          description: "Your image has been added to your application.",
+        });
+      }).catch((error) => {
+        toast({
+          title: "Upload processing failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -314,6 +354,30 @@ export default function Register() {
                       placeholder="Brown"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Photo Upload */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-slate-900">Photos</h3>
+                <div className="flex flex-col space-y-4">
+                  <ObjectUploader
+                    maxNumberOfFiles={5}
+                    maxFileSize={10485760}
+                    onGetUploadParameters={handleGetUploadParameters}
+                    onComplete={handleImageUploadComplete}
+                    buttonClassName="w-full"
+                  >
+                    <div className="flex items-center gap-2">
+                      <i className="fas fa-camera"></i>
+                      <span>Upload Photos (up to 5)</span>
+                    </div>
+                  </ObjectUploader>
+                  {formData.uploadedImages.length > 0 && (
+                    <div className="text-sm text-green-600">
+                      {formData.uploadedImages.length} photo(s) uploaded successfully
+                    </div>
+                  )}
                 </div>
               </div>
 

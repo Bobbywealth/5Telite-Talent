@@ -4,11 +4,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,12 +41,71 @@ export default function AdminTalents() {
     firstName: "",
     lastName: "",
     email: "",
+    phoneNumber: "",
     stageName: "",
-    bio: "",
     location: "",
+    bio: "",
     categories: [] as string[],
     skills: "",
+    experience: "",
+    height: "",
+    weight: "",
+    hairColor: "",
+    eyeColor: "",
+    uploadedImages: [] as string[],
   });
+
+  // Categories for talent selection
+  const categories = [
+    "Actor", "Model", "Dancer", "Singer", "Musician", "Voice Over", 
+    "Comedian", "Host", "Stunt Performer", "Writer", "Poet", 
+    "Visual Artist", "Motivational Speaker"
+  ];
+
+  // Handle category selection
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    setNewTalentData(prev => ({
+      ...prev,
+      categories: checked 
+        ? [...prev.categories, category]
+        : prev.categories.filter(c => c !== category)
+    }));
+  };
+
+  // Handle image uploads
+  const handleGetUploadParameters = async () => {
+    const response = await apiRequest("POST", "/api/objects/upload", {});
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleImageUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    if (result.successful && result.successful.length > 0) {
+      const uploadedUrl = result.successful[0].uploadURL;
+      
+      // Process the uploaded image and add to collection
+      apiRequest("PUT", "/api/talents/me/media", {
+        mediaUrl: uploadedUrl
+      }).then((response) => {
+        setNewTalentData(prev => ({
+          ...prev,
+          uploadedImages: [...prev.uploadedImages, response.objectPath]
+        }));
+        toast({
+          title: "Image uploaded successfully!",
+          description: "Your image has been added to the talent profile.",
+        });
+      }).catch((error) => {
+        toast({
+          title: "Upload processing failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      });
+    }
+  };
 
   // Authentication is handled by the Router component
 
@@ -65,6 +129,17 @@ export default function AdminTalents() {
         bio: data.bio,
         categories: data.categories,
         skills: data.skills.split(",").map(s => s.trim()).filter(Boolean),
+        experience: data.experience,
+        measurements: {
+          height: data.height || null,
+          weight: data.weight || null,
+          hairColor: data.hairColor || null,
+          eyeColor: data.eyeColor || null
+        },
+        social: {
+          phoneNumber: data.phoneNumber
+        },
+        mediaUrls: data.uploadedImages,
         approvalStatus: "approved"
       });
     },
@@ -78,11 +153,18 @@ export default function AdminTalents() {
         firstName: "",
         lastName: "",
         email: "",
+        phoneNumber: "",
         stageName: "",
-        bio: "",
         location: "",
+        bio: "",
         categories: [],
         skills: "",
+        experience: "",
+        height: "",
+        weight: "",
+        hairColor: "",
+        eyeColor: "",
+        uploadedImages: [],
       });
       queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
     },
@@ -461,66 +543,204 @@ export default function AdminTalents() {
               Create a new talent profile that will be automatically approved.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+            {/* Personal Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">Personal Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input
+                    id="firstName"
+                    value={newTalentData.firstName}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, firstName: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    value={newTalentData.lastName}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, lastName: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={newTalentData.email}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={newTalentData.phoneNumber}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="stageName">Stage/Professional Name</Label>
+                  <Input
+                    id="stageName"
+                    value={newTalentData.stageName}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, stageName: e.target.value }))}
+                    placeholder="If different from legal name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={newTalentData.location}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, location: e.target.value }))}
+                    placeholder="City, State"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">Professional Information</h3>
+              
               <div>
-                <label className="text-sm font-medium">First Name</label>
+                <Label>Talent Categories * (Select all that apply)</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                  {categories.map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={category}
+                        checked={newTalentData.categories.includes(category)}
+                        onCheckedChange={(checked) => handleCategoryChange(category, !!checked)}
+                      />
+                      <Label htmlFor={category} className="text-sm">
+                        {category}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="skills">Skills & Specialties</Label>
                 <Input
-                  value={newTalentData.firstName}
-                  onChange={(e) => setNewTalentData(prev => ({ ...prev, firstName: e.target.value }))}
-                  placeholder="First name"
+                  id="skills"
+                  value={newTalentData.skills}
+                  onChange={(e) => setNewTalentData(prev => ({ ...prev, skills: e.target.value }))}
+                  placeholder="e.g., Ballet, Jazz Dance, Improv, Guitar, etc. (separate with commas)"
                 />
               </div>
+
               <div>
-                <label className="text-sm font-medium">Last Name</label>
-                <Input
-                  value={newTalentData.lastName}
-                  onChange={(e) => setNewTalentData(prev => ({ ...prev, lastName: e.target.value }))}
-                  placeholder="Last name"
+                <Label htmlFor="bio">Professional Bio</Label>
+                <Textarea
+                  id="bio"
+                  rows={4}
+                  value={newTalentData.bio}
+                  onChange={(e) => setNewTalentData(prev => ({ ...prev, bio: e.target.value }))}
+                  placeholder="Tell us about your background, experience, and what makes you unique..."
                 />
               </div>
+
+              <div>
+                <Label htmlFor="experience">Years of Experience</Label>
+                <Select 
+                  value={newTalentData.experience} 
+                  onValueChange={(value) => setNewTalentData(prev => ({ ...prev, experience: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select experience level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0-1">0-1 years</SelectItem>
+                    <SelectItem value="2-5">2-5 years</SelectItem>
+                    <SelectItem value="6-10">6-10 years</SelectItem>
+                    <SelectItem value="10+">10+ years</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Email</label>
-              <Input
-                type="email"
-                value={newTalentData.email}
-                onChange={(e) => setNewTalentData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="email@example.com"
-              />
+
+            {/* Physical Characteristics */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Physical Characteristics <span className="text-sm text-slate-500">(Optional, for modeling/acting)</span>
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <Label htmlFor="height">Height</Label>
+                  <Input
+                    id="height"
+                    value={newTalentData.height}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, height: e.target.value }))}
+                    placeholder="5'8&quot;"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="weight">Weight</Label>
+                  <Input
+                    id="weight"
+                    value={newTalentData.weight}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, weight: e.target.value }))}
+                    placeholder="150 lbs"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="hairColor">Hair Color</Label>
+                  <Input
+                    id="hairColor"
+                    value={newTalentData.hairColor}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, hairColor: e.target.value }))}
+                    placeholder="Brown"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="eyeColor">Eye Color</Label>
+                  <Input
+                    id="eyeColor"
+                    value={newTalentData.eyeColor}
+                    onChange={(e) => setNewTalentData(prev => ({ ...prev, eyeColor: e.target.value }))}
+                    placeholder="Brown"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Stage Name (Optional)</label>
-              <Input
-                value={newTalentData.stageName}
-                onChange={(e) => setNewTalentData(prev => ({ ...prev, stageName: e.target.value }))}
-                placeholder="Professional stage name"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Location</label>
-              <Input
-                value={newTalentData.location}
-                onChange={(e) => setNewTalentData(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="City, State"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Bio</label>
-              <textarea
-                className="w-full min-h-[100px] px-3 py-2 border border-input rounded-md"
-                value={newTalentData.bio}
-                onChange={(e) => setNewTalentData(prev => ({ ...prev, bio: e.target.value }))}
-                placeholder="Brief biography and experience"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Skills (comma-separated)</label>
-              <Input
-                value={newTalentData.skills}
-                onChange={(e) => setNewTalentData(prev => ({ ...prev, skills: e.target.value }))}
-                placeholder="Acting, Modeling, Dancing, etc."
-              />
+
+            {/* Photo Upload */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">Photos</h3>
+              <div className="flex flex-col space-y-4">
+                <ObjectUploader
+                  maxNumberOfFiles={5}
+                  maxFileSize={10485760}
+                  onGetUploadParameters={handleGetUploadParameters}
+                  onComplete={handleImageUploadComplete}
+                  buttonClassName="w-full"
+                >
+                  <div className="flex items-center gap-2">
+                    <i className="fas fa-camera"></i>
+                    <span>Upload Photos (up to 5)</span>
+                  </div>
+                </ObjectUploader>
+                {newTalentData.uploadedImages.length > 0 && (
+                  <div className="text-sm text-green-600">
+                    {newTalentData.uploadedImages.length} photo(s) uploaded successfully
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex justify-end gap-2">
@@ -529,7 +749,7 @@ export default function AdminTalents() {
             </Button>
             <Button 
               onClick={() => addTalentMutation.mutate(newTalentData)}
-              disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email}
+              disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email || newTalentData.categories.length === 0}
             >
               {addTalentMutation.isPending ? "Creating..." : "Add Talent"}
             </Button>
