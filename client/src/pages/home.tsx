@@ -235,6 +235,11 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* Role Switcher for Testing */}
+        <div className="mt-8">
+          <RoleSwitcher />
+        </div>
+
       </div>
 
       <Footer />
