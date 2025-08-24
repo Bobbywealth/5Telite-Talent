@@ -150,7 +150,7 @@ export default function Landing() {
                   <i className="fas fa-arrow-right ml-3"></i>
                 </Button>
               </Link>
-              <Link href="/book-request" className="w-full sm:w-auto">
+              <Link href="/book" className="w-full sm:w-auto">
                 <Button 
                   variant="outline" 
                   size="lg" 
