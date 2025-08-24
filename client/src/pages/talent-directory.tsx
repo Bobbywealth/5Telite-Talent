@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
-import AdminSidebar from "@/components/layout/admin-sidebar";
+import AdminNavbar from "@/components/layout/admin-navbar";
 import TalentNavbar from "@/components/layout/talent-navbar";
 import ClientNavbar from "@/components/layout/client-navbar";
 import Footer from "@/components/layout/footer";
@@ -180,14 +180,20 @@ export default function TalentDirectory() {
   // Render with appropriate navigation based on user role
   if (user?.role === 'admin') {
     return (
-      <div className="min-h-screen bg-slate-50 flex">
-        <AdminSidebar />
+      <div className="min-h-screen bg-slate-50">
+        <AdminNavbar />
+        
         <div className="flex-1">
+          {/* Header */}
           <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
             <div className="flex justify-between items-center">
-              <div>
+              <div className="flex items-center space-x-4">
+                <img 
+                  src="/attached_assets/5t-logo.png" 
+                  alt="5T Talent Platform" 
+                  className="h-12 w-auto"
+                />
                 <h1 className="text-2xl font-bold text-slate-900">Talent Directory</h1>
-                <p className="text-slate-600">Browse and discover talent profiles</p>
               </div>
             </div>
           </header>
