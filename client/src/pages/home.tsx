@@ -135,18 +135,19 @@ export default function Home() {
               <p className="text-xl text-slate-200 mb-6">
                 {getRoleDescription()}
               </p>
-              {/* Only show buttons for client users since admins and talents have navbar */}
+              {/* Quick action buttons for clients */}
               {user?.role === 'client' && (
                 <div className="flex flex-wrap gap-4">
-                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-dashboard" asChild>
-                    <Link href={getDashboardLink()}>
-                      <i className="fas fa-tachometer-alt mr-2"></i>
-                      Go to Dashboard
+                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-browse-talent" asChild>
+                    <Link href="/talent">
+                      <i className="fas fa-search mr-2"></i>
+                      Browse Talent
                     </Link>
                   </Button>
-                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-browse-talent" asChild>
-                    <Link href="/talent">
-                      <i className="fas fa-users mr-2"></i>Browse Talent
+                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-new-booking" asChild>
+                    <Link href="/book">
+                      <i className="fas fa-plus-circle mr-2"></i>
+                      New Booking Request
                     </Link>
                   </Button>
                 </div>
