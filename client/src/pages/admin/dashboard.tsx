@@ -178,6 +178,11 @@ export default function AdminDashboard() {
               >
                 <Menu className="w-5 h-5" />
               </Button>
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-8 w-auto object-contain"
+              />
               <h1 className="text-lg font-bold text-slate-900">Admin Dashboard</h1>
             </div>
             <div className="flex items-center space-x-2">
@@ -195,6 +200,11 @@ export default function AdminDashboard() {
         <header className="hidden xl:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-10 w-auto object-contain"
+              />
               <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
             </div>
             <div className="flex items-center space-x-4">
