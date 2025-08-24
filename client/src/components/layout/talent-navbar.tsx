@@ -54,7 +54,7 @@ export default function TalentNavbar() {
                   <img 
                     src="/attached_assets/5t-logo.png" 
                     alt="5T Talent Platform" 
-                    className="h-16 w-auto"
+                    className="h-12 w-auto max-w-full object-contain"
                   />
                 </div>
                 <nav className="mt-6">
@@ -84,7 +84,7 @@ export default function TalentNavbar() {
               <img 
                 src="/attached_assets/5t-logo.png" 
                 alt="5T Talent Platform" 
-                className="h-16 md:h-20 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-16 md:h-20 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
               />
             </Link>
           </div>

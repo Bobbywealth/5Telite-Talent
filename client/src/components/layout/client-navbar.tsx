@@ -52,7 +52,7 @@ export default function ClientNavbar() {
               <img 
                 src="/attached_assets/5t-logo.png" 
                 alt="5T Talent Platform" 
-                className="h-16 md:h-20 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-16 md:h-20 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
               />
             </Link>
           </div>

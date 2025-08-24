@@ -57,12 +57,12 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
   const SidebarContent = () => (
     <>
       {/* Header */}
-      <div className="p-6 border-b border-slate-200 flex justify-center">
+      <div className="p-4 border-b border-slate-200 flex justify-center">
         <Link href="/" data-testid="link-logo-admin" className="block">
           <img 
             src="/attached_assets/5t-logo.png" 
             alt="5T Talent Platform" 
-            className="h-16 w-auto object-contain hover:scale-105 transition-transform duration-200"
+            className="h-10 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
           />
         </Link>
       </div>
