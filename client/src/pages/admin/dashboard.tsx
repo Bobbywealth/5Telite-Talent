@@ -161,10 +161,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <AdminNavbar 
-        isMobileOpen={isMobileSidebarOpen} 
-        onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-      />
+      <AdminNavbar />
 
       <div className="flex flex-col xl:flex-row min-h-screen">
         {/* Main Content Area */}

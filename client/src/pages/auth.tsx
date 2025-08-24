@@ -67,18 +67,19 @@ export default function AuthPage() {
     mutationFn: async (data: LoginFormData) => {
       return await apiRequest("POST", "/api/login", data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
       // Redirect based on user role
-      const redirectPath = {
+      const redirectPaths: Record<string, string> = {
         admin: '/admin',
         talent: '/dashboard',
         client: '/client'
-      }[data.role] || '/';
+      };
+      const redirectPath = redirectPaths[data?.role] || '/';
       setLocation(redirectPath);
     },
     onError: (error: any) => {
@@ -94,18 +95,19 @@ export default function AuthPage() {
     mutationFn: async (data: RegisterFormData) => {
       return await apiRequest("POST", "/api/register", data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome to 5T Talent!",
         description: "Your account has been created successfully.",
       });
       // Redirect based on user role
-      const redirectPath = {
+      const redirectPaths: Record<string, string> = {
         admin: '/admin',
         talent: '/dashboard',
         client: '/client'
-      }[data.role] || '/';
+      };
+      const redirectPath = redirectPaths[data?.role] || '/';
       setLocation(redirectPath);
     },
     onError: (error: any) => {
