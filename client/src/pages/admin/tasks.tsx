@@ -373,7 +373,7 @@ export default function AdminTasks() {
                     <i className="fas fa-plus mr-2"></i>Create Task
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto task-management-modal">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Create New Task</DialogTitle>
                     <DialogDescription>
@@ -528,7 +528,7 @@ export default function AdminTasks() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+              <div className="filters-section grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
                 {/* Search */}
                 <div className="col-span-2">
                   <Input
