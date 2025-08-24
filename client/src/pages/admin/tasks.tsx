@@ -59,6 +59,10 @@ export default function AdminTasks() {
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'title' | 'dueAt' | 'status' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Drag and drop states
+  const [draggedTask, setDraggedTask] = useState<any>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
 
   // Authentication is handled by the Router component
 
@@ -259,6 +263,46 @@ export default function AdminTasks() {
       toast({ title: "Failed to update tasks", variant: "destructive" });
     },
   });
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, task: any) => {
+    setDraggedTask(task);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
+    e.dataTransfer.setData('text/plain', task.id);
+  };
+
+  const handleDragOver = (e: React.DragEvent, columnStatus: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverColumn(columnStatus);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only clear drag over if we're actually leaving the column
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverColumn(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetStatus: string) => {
+    e.preventDefault();
+    setDragOverColumn(null);
+    
+    if (draggedTask && draggedTask.status !== targetStatus) {
+      updateTaskMutation.mutate({
+        taskId: draggedTask.id,
+        updates: { status: targetStatus }
+      });
+    }
+    setDraggedTask(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedTask(null);
+    setDragOverColumn(null);
+  };
 
   const updateFilter = (key: string, value: string) => {
     setFilters(prev => ({
@@ -647,7 +691,15 @@ export default function AdminTasks() {
             <TabsContent value="kanban" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {statusColumns.map((column) => (
-                  <Card key={column.key} className={`border-t-4 ${column.color}`}>
+                  <Card 
+                    key={column.key} 
+                    className={`border-t-4 ${column.color} ${
+                      dragOverColumn === column.key ? 'ring-2 ring-blue-400 ring-opacity-75' : ''
+                    }`}
+                    onDragOver={(e) => handleDragOver(e, column.key)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, column.key)}
+                  >
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center justify-between">
                         {column.title}
@@ -669,8 +721,13 @@ export default function AdminTasks() {
                         tasksByStatus[column.key].map((task: any) => (
                           <div 
                             key={task.id} 
-                            className="p-3 bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                            className={`p-3 bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-move ${
+                              draggedTask?.id === task.id ? 'opacity-50 transform rotate-2' : ''
+                            }`}
                             data-testid={`task-card-${task.id}`}
+                            draggable={true}
+                            onDragStart={(e) => handleDragStart(e, task)}
+                            onDragEnd={handleDragEnd}
                             onClick={() => openTaskDetails(task)}
                           >
                             <h4 className="font-medium text-slate-900 mb-2">{task.title}</h4>
