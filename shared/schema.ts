@@ -285,6 +285,13 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  // Allow optional fields to be undefined instead of empty strings
+  bookingId: z.string().optional(),
+  talentId: z.string().optional(),
+  assigneeId: z.string().optional(),
+  description: z.string().optional(),
+  dueAt: z.string().datetime().optional(),
 });
 
 export const insertBookingTalentSchema = createInsertSchema(bookingTalents).omit({
