@@ -320,11 +320,18 @@ export default function Landing() {
       </section>
 
       {/* Featured Talents */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16 bg-gradient-hero-enhanced overflow-hidden">
+        {/* Brand floating elements */}
+        <div className="absolute inset-0">
+          <div className="floating-shape shape-1"></div>
+          <div className="floating-shape shape-3"></div>
+          <div className="floating-shape shape-5"></div>
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-10 brand-dot-pattern"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Featured Talent</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Featured Talent</h2>
+            <p className="text-lg text-slate-200 max-w-2xl mx-auto">
               Explore our diverse roster of professional talent across multiple categories
             </p>
           </div>
@@ -366,16 +373,22 @@ export default function Landing() {
       </section>
 
       {/* Booking Section */}
-      <section id="booking-section" className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="booking-section" className="relative py-16 bg-gradient-hero-enhanced overflow-hidden">
+        {/* Brand floating elements */}
+        <div className="absolute inset-0">
+          <div className="floating-shape shape-2"></div>
+          <div className="floating-shape shape-4"></div>
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-10 brand-dot-pattern"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Ready to Book?</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Ready to Book?</h2>
+            <p className="text-lg text-slate-200 max-w-2xl mx-auto">
               Start your booking process with our streamlined request system
             </p>
           </div>
 
-          <Card className="max-w-2xl mx-auto">
+          <Card className="max-w-2xl mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
             <CardContent className="p-8">
               <form onSubmit={handleBookingSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
