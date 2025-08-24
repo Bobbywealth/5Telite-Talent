@@ -95,7 +95,7 @@ export default function Footer() {
         <div className="border-t border-white/20 mt-12 pt-8 text-center">
           <div className="bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 inline-block">
             <p className="text-white/90 font-medium">
-              &copy; 2024 5T Talent Platform. All rights reserved.
+              &copy; 2025 5T Talent Platform. All rights reserved.
             </p>
           </div>
         </div>
