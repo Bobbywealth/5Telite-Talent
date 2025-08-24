@@ -64,6 +64,12 @@ export default function ContractsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<string>("");
   const [selectedBookingTalent, setSelectedBookingTalent] = useState<string>("");
+  
+  const handleCloseDialog = () => {
+    setShowCreateDialog(false);
+    setSelectedBooking("");
+    setSelectedBookingTalent("");
+  };
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -87,9 +93,7 @@ export default function ContractsPage() {
         title: "Contract Created",
         description: "The contract has been created successfully.",
       });
-      setShowCreateDialog(false);
-      setSelectedBooking("");
-      setSelectedBookingTalent("");
+      handleCloseDialog();
       queryClient.invalidateQueries({ queryKey: ["/api/contracts"] });
     },
     onError: (error: any) => {
@@ -168,16 +172,19 @@ export default function ContractsPage() {
         </div>
         
         {user?.role === "admin" && (
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <Dialog open={showCreateDialog} onOpenChange={handleCloseDialog}>
             <DialogTrigger asChild>
               <Button data-testid="button-create-contract">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Contract
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Create New Contract</DialogTitle>
+                <DialogDescription>
+                  Select a booking and talent to create a new contract for signature.
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
@@ -217,7 +224,7 @@ export default function ContractsPage() {
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
-                    onClick={() => setShowCreateDialog(false)}
+                    onClick={handleCloseDialog}
                     className="flex-1"
                   >
                     Cancel
@@ -247,7 +254,10 @@ export default function ContractsPage() {
                 Contracts will appear here once they are created for bookings.
               </p>
               {user?.role === "admin" && (
-                <Button onClick={() => setShowCreateDialog(true)}>
+                <Button 
+                  onClick={() => setShowCreateDialog(true)}
+                  data-testid="button-create-first-contract"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Contract
                 </Button>
