@@ -127,7 +127,7 @@ export default function Landing() {
                 500+ Diverse Professional Talents Available
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-8 leading-tight tracking-tight">
                 Book
                 <br />
                 <span className="relative inline-block">
@@ -140,46 +140,46 @@ export default function Landing() {
                 Talent
               </h1>
 
-              <p className="text-xl lg:text-2xl mb-12 text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
+              <p className="text-lg sm:text-xl lg:text-2xl mb-12 text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
                 Connect with diverse, multicultural performers who represent today's evolving global landscape.
                 <br />
-                <span className="font-bold text-yellow-300">Book with confidence</span> through our comprehensive talent platform.
+                <span className="font-semibold text-yellow-300 tracking-wide">Book with confidence</span> through our comprehensive talent platform.
               </p>
             </div>
 
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up-delay-3">
               <Link href="/talent">
-                <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" data-testid="button-browse-talent">
-                  <i className="fas fa-search mr-3"></i>Browse 500+ Talents
-                  <i className="fas fa-arrow-right ml-3"></i>
+                <Button size="lg" className="bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 btn-text-lg" data-testid="button-browse-talent">
+                  <i className="fas fa-search icon-lg mr-3"></i>Browse 500+ Talents
+                  <i className="fas fa-arrow-right icon-base ml-3"></i>
                 </Button>
               </Link>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
+                className="border-2 border-white text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 btn-text-lg"
                 onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
                 data-testid="button-request-booking"
               >
-                <i className="fas fa-calendar mr-3"></i>Start Booking
-                <i className="fas fa-sparkles ml-3"></i>
+                <i className="fas fa-calendar icon-lg mr-3"></i>Start Booking
+                <i className="fas fa-sparkles icon-base ml-3"></i>
               </Button>
             </div>
 
             {/* Stats - improved layout */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto text-white animate-fade-in-up-delay-4">
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold mb-1">500+</div>
-                <div className="text-sm text-slate-200 uppercase tracking-wide">Active Talents</div>
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">500+</div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Active Talents</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold mb-1">1000+</div>
-                <div className="text-sm text-slate-200 uppercase tracking-wide">Completed Projects</div>
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">1000+</div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Completed Projects</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold mb-1">50+</div>
-                <div className="text-sm text-slate-200 uppercase tracking-wide">Cities Worldwide</div>
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">50+</div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Cities Worldwide</div>
               </div>
             </div>
 
@@ -241,10 +241,10 @@ export default function Landing() {
 
           <div className="container mx-auto px-6 relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 mb-6">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight">
                 What We Do
               </h2>
-              <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
+              <p className="text-lg-plus sm:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium">
                 5T Elite Talent is the "everything" of talent and management agencies, focusing on the exquisite beauty and talent of predominantly multiracial-diverse-cultured performers who represent today's evolving global trends.
               </p>
             </div>
@@ -252,11 +252,11 @@ export default function Landing() {
             <div className="grid lg:grid-cols-4 gap-6 mb-12">
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6 text-center">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <i className="fas fa-graduation-cap text-white text-xl"></i>
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-full p-4 w-16 h-16 mx-auto mb-5 group-hover:scale-110 transition-transform duration-300">
+                    <i className="fas fa-graduation-cap text-white icon-2xl"></i>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-3">Educational Programming</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <h3 className="card-title text-slate-900 mb-3">Educational Programming</h3>
+                  <p className="card-body leading-relaxed">
                     School assemblies, afterschool programs, and educational content that enriches school communities.
                   </p>
                 </CardContent>
