@@ -136,9 +136,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/objects/upload", isAuthenticated, async (req, res) => {
-    const objectStorageService = new ObjectStorageService();
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    res.json({ uploadURL });
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ message: "Failed to get upload URL" });
+    }
   });
 
   // Talent routes
@@ -269,6 +274,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (user.role !== 'admin') {
         // Non-admin users cannot change approval status
         delete profileData.approvalStatus;
+      }
+
+      // Handle media URL uploads with ACL
+      if (profileData.mediaUrls) {
+        const objectStorageService = new ObjectStorageService();
+        for (const mediaUrl of profileData.mediaUrls) {
+          try {
+            await objectStorageService.trySetObjectEntityAclPolicy(mediaUrl, {
+              owner: userId,
+              visibility: "public", // Profile media should be public for viewing
+            });
+          } catch (error) {
+            console.error("Error setting ACL for media URL:", mediaUrl, error);
+          }
+        }
       }
 
       const profile = await storage.updateTalentProfile(targetUserId, profileData);
