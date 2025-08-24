@@ -478,6 +478,163 @@ export class DatabaseStorage implements IStorage {
       approvalStatus: "approved",
     });
 
+    // Create additional demo talents
+    const talent2User = await this.upsertUser({
+      id: "talent-demo-id-2",
+      role: "talent",
+      email: "marcus@5t.com",
+      firstName: "Marcus",
+      lastName: "Rivera",
+      status: "active",
+      profileImageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    });
+
+    await this.createTalentProfile({
+      userId: talent2User.id,
+      stageName: "Marcus R.",
+      categories: ["Commercial", "Print", "Fitness"],
+      skills: ["Acting", "Fitness Modeling", "Rock Climbing", "Spanish", "Guitar"],
+      bio: "Dynamic fitness model and actor specializing in athletic wear campaigns and outdoor adventure shoots. Former collegiate athlete with a passion for extreme sports photography.",
+      location: "Los Angeles, CA",
+      unionStatus: "Non-Union",
+      measurements: {
+        height: "6'1\"",
+        chest: "42\"",
+        waist: "32\"",
+        inseam: "34\"",
+        shoe: "11",
+        hair: "Black",
+        eyes: "Brown",
+      },
+      rates: {
+        day: 900,
+        halfDay: 550,
+        hourly: 150,
+      },
+      social: {
+        instagram: "@marcusriverafit",
+        tiktok: "@marcusadventures",
+      },
+      approvalStatus: "approved",
+    });
+
+    const talent3User = await this.upsertUser({
+      id: "talent-demo-id-3",
+      role: "talent",
+      email: "elena@5t.com",
+      firstName: "Elena",
+      lastName: "Chen",
+      status: "active",
+      profileImageUrl: "https://images.unsplash.com/photo-1494790108755-2616b612b5b5?w=400&h=400&fit=crop&crop=face",
+    });
+
+    await this.createTalentProfile({
+      userId: talent3User.id,
+      stageName: "Elena C.",
+      categories: ["Editorial", "High Fashion", "Beauty"],
+      skills: ["Modeling", "Ballet", "Mandarin", "French", "Piano"],
+      bio: "International editorial model with extensive experience in European and Asian markets. Specializes in luxury beauty campaigns and avant-garde fashion editorials.",
+      location: "Miami, FL",
+      unionStatus: "SAG-AFTRA",
+      measurements: {
+        height: "5'9\"",
+        bust: "32\"",
+        waist: "24\"",
+        hips: "34\"",
+        shoe: "8",
+        hair: "Black",
+        eyes: "Dark Brown",
+      },
+      rates: {
+        day: 1200,
+        halfDay: 700,
+        hourly: 175,
+      },
+      social: {
+        instagram: "@elenachenmodel",
+        website: "www.elenachen.com",
+      },
+      approvalStatus: "approved",
+    });
+
+    const talent4User = await this.upsertUser({
+      id: "talent-demo-id-4",
+      role: "talent",
+      email: "james@5t.com",
+      firstName: "James",
+      lastName: "Thompson",
+      status: "active",
+      profileImageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+    });
+
+    await this.createTalentProfile({
+      userId: talent4User.id,
+      stageName: "JT",
+      categories: ["Commercial", "Character", "Voice Over"],
+      skills: ["Acting", "Voice Acting", "Improv Comedy", "Singing", "Magic"],
+      bio: "Versatile character actor and voice talent with a background in comedy and theater. Known for memorable commercial campaigns and animated character voices.",
+      location: "Chicago, IL",
+      unionStatus: "SAG-AFTRA",
+      measurements: {
+        height: "5'10\"",
+        chest: "40\"",
+        waist: "34\"",
+        inseam: "32\"",
+        shoe: "10",
+        hair: "Blonde",
+        eyes: "Blue",
+      },
+      rates: {
+        day: 750,
+        halfDay: 450,
+        hourly: 100,
+      },
+      social: {
+        instagram: "@jtactor",
+        youtube: "JamesThompsonVO",
+      },
+      approvalStatus: "approved",
+    });
+
+    const talent5User = await this.upsertUser({
+      id: "talent-demo-id-5",
+      role: "talent",
+      email: "aria@5t.com",
+      firstName: "Aria",
+      lastName: "Patel",
+      status: "active",
+      profileImageUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+    });
+
+    await this.createTalentProfile({
+      userId: talent5User.id,
+      stageName: "Aria P.",
+      categories: ["Runway", "Editorial", "Cultural"],
+      skills: ["Modeling", "Classical Dance", "Hindi", "Yoga", "Jewelry Design"],
+      bio: "Rising star in the fashion world, known for bringing cultural authenticity to fashion campaigns. Trained classical dancer with a strong presence on both runway and editorial shoots.",
+      location: "New York, NY",
+      unionStatus: "Non-Union",
+      measurements: {
+        height: "5'7\"",
+        bust: "33\"",
+        waist: "25\"",
+        hips: "35\"",
+        shoe: "7.5",
+        hair: "Black",
+        eyes: "Dark Brown",
+      },
+      rates: {
+        day: 650,
+        halfDay: 400,
+        hourly: 85,
+      },
+      social: {
+        instagram: "@ariapatelmodel",
+        linkedin: "aria-patel-model",
+      },
+      approvalStatus: "approved",
+    });
+
     // Create demo booking
     const demoBooking = await this.createBooking({
       clientId: clientUser.id,
