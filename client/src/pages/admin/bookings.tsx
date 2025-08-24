@@ -200,7 +200,7 @@ export default function AdminBookings() {
   // Send booking requests to selected talents
   const sendRequestsMutation = useMutation({
     mutationFn: async ({ bookingId, talentIds }: { bookingId: string; talentIds: string[] }) => {
-      return apiRequest("POST", `/api/bookings/${bookingId}/request-talents`, { talentIds });
+      return apiRequest("POST", `/api/bookings/${bookingId}/send-requests`, { talentIds });
     },
     onSuccess: () => {
       setShowTalentSelection(false);

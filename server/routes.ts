@@ -477,7 +477,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Send booking requests to talents (placeholder)
+  // Send booking requests to talents
   app.post('/api/bookings/:id/send-requests', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -487,8 +487,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      // This feature would require additional storage methods
-      res.status(501).json({ message: "Feature not yet implemented" });
+      const { talentIds } = req.body;
+      if (!talentIds || !Array.isArray(talentIds) || talentIds.length === 0) {
+        return res.status(400).json({ message: "Talent IDs are required" });
+      }
+
+      const bookingId = req.params.id;
+      
+      // Add each talent to the booking
+      const bookingTalents = [];
+      for (const talentId of talentIds) {
+        const bookingTalent = await storage.addTalentToBooking(bookingId, talentId);
+        bookingTalents.push(bookingTalent);
+      }
+
+      res.json({ 
+        message: `Booking requests sent to ${talentIds.length} talent${talentIds.length > 1 ? 's' : ''}`,
+        bookingTalents 
+      });
     } catch (error) {
       console.error("Error sending booking requests:", error);
       res.status(500).json({ message: "Failed to send booking requests" });
