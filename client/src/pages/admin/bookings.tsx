@@ -32,7 +32,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 // Form schemas
 const bookingRequestSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  clientId: z.string().min(1, "Client is required"),
+  clientId: z.string().optional(), // Made optional since it's set automatically in the mutation
   location: z.string().optional(),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
@@ -159,9 +159,11 @@ export default function AdminBookings() {
         code: `BK-${Date.now()}`,
         startDate: new Date(data.startDate).toISOString(),
         endDate: new Date(data.endDate).toISOString(),
-        rate: data.rate ? parseFloat(data.rate) : undefined,
+        rate: data.rate && data.rate.trim() ? parseFloat(data.rate) : null,
         status: "inquiry",
       };
+      
+      console.log("Final booking data being sent:", bookingData);
 
       return apiRequest("POST", "/api/bookings", bookingData);
     },
@@ -351,7 +353,11 @@ export default function AdminBookings() {
                   </DialogHeader>
 
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit((data) => createBookingRequestMutation.mutate(data))} className="space-y-4">
+                    <form onSubmit={form.handleSubmit((data) => {
+                      console.log("Form data being submitted:", data);
+                      console.log("Form errors:", form.formState.errors);
+                      createBookingRequestMutation.mutate(data);
+                    })} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
