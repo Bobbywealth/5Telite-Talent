@@ -47,41 +47,38 @@ export default function Navbar() {
 
           {/* Center: Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/">
-              <a 
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive("/") && location === "/" 
-                    ? "text-white bg-primary shadow-md" 
-                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
-                }`}
-                data-testid="link-home"
-              >
-                Home
-              </a>
+            <Link 
+              href="/"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isActive("/") && location === "/" 
+                  ? "text-white bg-primary shadow-md" 
+                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+              }`}
+              data-testid="link-home"
+            >
+              Home
             </Link>
-            <Link href="/talent">
-              <a 
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive("/talent") 
-                    ? "text-white bg-primary shadow-md" 
-                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
-                }`}
-                data-testid="link-find-talent"
-              >
-                Find Talent
-              </a>
+            <Link 
+              href="/talent"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isActive("/talent") 
+                  ? "text-white bg-primary shadow-md" 
+                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+              }`}
+              data-testid="link-find-talent"
+            >
+              Find Talent
             </Link>
-            <Link href="/book">
-              <a 
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive("/book") 
-                    ? "text-white bg-primary shadow-md" 
-                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
-                }`}
-                data-testid="link-book"
-              >
-                Book Now
-              </a>
+            <Link 
+              href="/book"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isActive("/book") 
+                  ? "text-white bg-primary shadow-md" 
+                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+              }`}
+              data-testid="link-book"
+            >
+              Book Now
             </Link>
           </div>
 
@@ -100,8 +97,8 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full" data-testid="button-user-menu">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={user?.profileImageUrl} alt={`${user?.firstName} ${user?.lastName}`} />
-                      <AvatarFallback>{getInitials(user?.firstName, user?.lastName)}</AvatarFallback>
+                      <AvatarImage src={user?.profileImageUrl || undefined} alt={`${user?.firstName || ''} ${user?.lastName || ''}`} />
+                      <AvatarFallback>{getInitials(user?.firstName || undefined, user?.lastName || undefined)}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>

@@ -50,8 +50,8 @@ export default function Footer() {
                 <a href="/api/login" className="hover:text-white">Join Our Roster</a>
               </li>
               <li>
-                <Link href="/dashboard">
-                  <a className="hover:text-white">Talent Portal</a>
+                <Link href="/dashboard" className="hover:text-white">
+                  Talent Portal
                 </Link>
               </li>
               <li><a href="#" className="hover:text-white">Resources</a></li>
