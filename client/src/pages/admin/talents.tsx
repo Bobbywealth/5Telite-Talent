@@ -500,17 +500,23 @@ export default function AdminTalents() {
                                       </Button>
                                     )}
                                     {talent.approvalStatus === 'approved' && (
-                                      <Button
-                                        variant="destructive"
-                                        onClick={() => approveTalentMutation.mutate({ 
-                                          talentId: talent.userId, 
-                                          status: 'rejected' 
-                                        })}
-                                        disabled={approveTalentMutation.isPending}
-                                        data-testid={`button-reject-${talent.id}`}
-                                      >
-                                        <i className="fas fa-times mr-2"></i>Reject
-                                      </Button>
+                                      <div className="flex items-center space-x-2">
+                                        <Badge variant="default" className="bg-green-100 text-green-800">
+                                          <i className="fas fa-check mr-1"></i>Approved
+                                        </Badge>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => approveTalentMutation.mutate({ 
+                                            talentId: talent.userId, 
+                                            status: 'rejected' 
+                                          })}
+                                          disabled={approveTalentMutation.isPending}
+                                          data-testid={`button-revoke-${talent.id}`}
+                                        >
+                                          <i className="fas fa-user-times mr-2"></i>Revoke Approval
+                                        </Button>
+                                      </div>
                                     )}
                                   </div>
                                 </div>
