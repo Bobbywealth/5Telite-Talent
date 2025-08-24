@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import TalentNavbar from "@/components/layout/talent-navbar";
@@ -13,6 +14,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TalentDirectory() {
   const { isAuthenticated, user } = useAuth();
+  const [location, navigate] = useLocation();
+  
+  // Redirect admin users to proper admin URL
+  useEffect(() => {
+    if (user?.role === 'admin' && location === '/talent') {
+      navigate('/admin/talent');
+    }
+  }, [user, location, navigate]);
+
   const [filters, setFilters] = useState({
     search: "",
     category: "",

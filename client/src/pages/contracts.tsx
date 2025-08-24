@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,14 @@ export default function ContractsPage() {
     setSelectedBookingTalent("");
   };
   const { user } = useAuth();
+  const [location, navigate] = useLocation();
+  
+  // Redirect admin users to proper admin URL
+  useEffect(() => {
+    if (user?.role === 'admin' && location === '/contracts') {
+      navigate('/admin/contracts');
+    }
+  }, [user, location, navigate]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
