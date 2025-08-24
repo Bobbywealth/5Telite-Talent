@@ -31,8 +31,69 @@ export default function AdminTalents() {
     approvalStatus: "",
     page: 1,
   });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTalentData, setNewTalentData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    stageName: "",
+    bio: "",
+    location: "",
+    categories: [] as string[],
+    skills: "",
+  });
 
   // Authentication is handled by the Router component
+
+  // Add talent mutation
+  const addTalentMutation = useMutation({
+    mutationFn: async (data: typeof newTalentData) => {
+      // First create user
+      const userResponse = await apiRequest("POST", "/api/admin/users", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        role: "talent",
+        status: "active"
+      });
+
+      // Then create talent profile
+      return apiRequest("POST", "/api/talents/admin-create", {
+        userId: userResponse.id,
+        stageName: data.stageName || `${data.firstName} ${data.lastName}`,
+        location: data.location,
+        bio: data.bio,
+        categories: data.categories,
+        skills: data.skills.split(",").map(s => s.trim()).filter(Boolean),
+        approvalStatus: "approved"
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Talent Added Successfully!",
+        description: "The new talent has been created and approved.",
+      });
+      setShowAddForm(false);
+      setNewTalentData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        stageName: "",
+        bio: "",
+        location: "",
+        categories: [],
+        skills: "",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error Adding Talent",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   // Fetch talents with filters
   const { data: talentsData, isLoading: talentsLoading, error } = useQuery({
@@ -41,6 +102,7 @@ export default function AdminTalents() {
       const params = new URLSearchParams();
       if (filters.search) params.set("search", filters.search);
       if (filters.category) params.set("category", filters.category);
+      if (filters.approvalStatus) params.set("approvalStatus", filters.approvalStatus);
       params.set("page", filters.page.toString());
       params.set("limit", "20");
 
@@ -52,18 +114,6 @@ export default function AdminTalents() {
     },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   // Approve/Reject talent mutation
@@ -207,8 +257,11 @@ export default function AdminTalents() {
 
           {/* Talents Table */}
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle>Talent Directory</CardTitle>
+              <Button onClick={() => setShowAddForm(true)} data-testid="button-add-talent">
+                <i className="fas fa-plus mr-2"></i>Add Talent
+              </Button>
             </CardHeader>
             <CardContent>
               {talentsLoading ? (
@@ -398,6 +451,92 @@ export default function AdminTalents() {
           </Card>
         </main>
       </div>
+
+      {/* Add Talent Dialog */}
+      <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Talent</DialogTitle>
+            <DialogDescription>
+              Create a new talent profile that will be automatically approved.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">First Name</label>
+                <Input
+                  value={newTalentData.firstName}
+                  onChange={(e) => setNewTalentData(prev => ({ ...prev, firstName: e.target.value }))}
+                  placeholder="First name"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Last Name</label>
+                <Input
+                  value={newTalentData.lastName}
+                  onChange={(e) => setNewTalentData(prev => ({ ...prev, lastName: e.target.value }))}
+                  placeholder="Last name"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                value={newTalentData.email}
+                onChange={(e) => setNewTalentData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="email@example.com"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Stage Name (Optional)</label>
+              <Input
+                value={newTalentData.stageName}
+                onChange={(e) => setNewTalentData(prev => ({ ...prev, stageName: e.target.value }))}
+                placeholder="Professional stage name"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Location</label>
+              <Input
+                value={newTalentData.location}
+                onChange={(e) => setNewTalentData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="City, State"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Bio</label>
+              <textarea
+                className="w-full min-h-[100px] px-3 py-2 border border-input rounded-md"
+                value={newTalentData.bio}
+                onChange={(e) => setNewTalentData(prev => ({ ...prev, bio: e.target.value }))}
+                placeholder="Brief biography and experience"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Skills (comma-separated)</label>
+              <Input
+                value={newTalentData.skills}
+                onChange={(e) => setNewTalentData(prev => ({ ...prev, skills: e.target.value }))}
+                placeholder="Acting, Modeling, Dancing, etc."
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowAddForm(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => addTalentMutation.mutate(newTalentData)}
+              disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email}
+            >
+              {addTalentMutation.isPending ? "Creating..." : "Add Talent"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

@@ -339,6 +339,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoints for creating users and talents
+  app.post("/api/admin/users", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { firstName, lastName, email, role, status } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      const newUser = await storage.upsertUser({
+        id: Math.random().toString(36).substring(2, 15),
+        firstName,
+        lastName,
+        email,
+        role: role as "admin" | "talent" | "client",
+        status: status || "active",
+        profileImageUrl: null
+      });
+
+      res.status(201).json(newUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  app.post("/api/talents/admin-create", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.claims.sub;
+      const adminUser = await storage.getUser(adminUserId);
+
+      if (!adminUser || adminUser.role !== 'admin') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const profileData = insertTalentProfileSchema.parse(req.body);
+      const profile = await storage.createTalentProfile(profileData);
+
+      res.json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating talent profile:", error);
+      res.status(500).json({ message: "Failed to create talent profile" });
+    }
+  });
+
   app.patch('/api/admin/talents/:id/approve', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
