@@ -155,16 +155,17 @@ export default function Landing() {
                   <i className="fas fa-arrow-right ml-3"></i>
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
-                onClick={() => document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-request-booking"
-              >
+              <Link href="/book-request">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-2 border-white/80 bg-white/10 text-white hover:bg-white hover:text-primary hover:scale-105 transition-all duration-300 backdrop-blur-sm px-8 py-4 text-lg font-semibold"
+                  data-testid="button-request-booking"
+                >
                 <i className="fas fa-calendar text-lg mr-3"></i>Start Booking
-                <i className="fas fa-sparkles ml-3"></i>
-              </Button>
+                  <i className="fas fa-sparkles ml-3"></i>
+                </Button>
+              </Link>
             </div>
 
             {/* Stats - improved layout */}
