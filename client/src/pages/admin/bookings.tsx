@@ -510,12 +510,12 @@ export default function AdminBookings() {
                 </div>
                 <div>
                   <Label htmlFor="category-filter" className="text-sm font-medium">Filter by Category</Label>
-                  <Select value={talentCategoryFilter} onValueChange={setTalentCategoryFilter}>
+                  <Select value={talentCategoryFilter || "all"} onValueChange={(value) => setTalentCategoryFilter(value === "all" ? "" : value)}>
                     <SelectTrigger className="mt-1" data-testid="select-talent-category">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       {getUniqueCategories().map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
