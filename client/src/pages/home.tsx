@@ -18,11 +18,15 @@ export default function Home() {
   const { toast } = useToast();
 
   // Fetch real data for admin stats
-  const { data: talentsData } = useQuery({
+  const { data: talentsData, isLoading: talentsLoading, error: talentsError } = useQuery({
     queryKey: ["/api/talents"],
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
+
+  // Debug logging
+  console.log('Debug - isAuthenticated:', isAuthenticated, 'user role:', user?.role, 'enabled:', isAuthenticated && user?.role === 'admin');
+  console.log('Debug - talentsData:', talentsData, 'loading:', talentsLoading, 'error:', talentsError);
 
   const { data: bookingsData } = useQuery({
     queryKey: ["/api/bookings"],
@@ -155,8 +159,12 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{talentsData?.total ? parseInt(talentsData.total) : 0}</div>
-                    <p className="text-xs text-slate-500">Active profiles</p>
+                    <div className="text-2xl font-bold">
+                      {talentsLoading ? '...' : (talentsData?.total ? parseInt(talentsData.total) : 0)}
+                    </div>
+                    <p className="text-xs text-slate-500">
+                      {talentsError ? 'Error loading' : 'Active profiles'}
+                    </p>
                   </CardContent>
                 </Card>
 
