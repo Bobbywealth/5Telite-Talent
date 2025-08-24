@@ -50,6 +50,10 @@ export interface IStorage {
   }): Promise<{ bookings: (Booking & { client: User; createdBy: User; bookingTalents: (BookingTalent & { talent: User })[] })[], total: number }>;
   updateBooking(id: string, booking: Partial<InsertBooking>): Promise<Booking>;
   addTalentToBooking(bookingId: string, talentId: string): Promise<BookingTalent>;
+  
+  // Booking request operations
+  getPendingBookingRequests(talentId: string): Promise<(BookingTalent & { booking: Booking & { client: User } })[]>;
+  respondToBookingRequest(requestId: string, talentId: string, status: 'accepted' | 'declined', message?: string): Promise<BookingTalent>;
 
   // Task operations
   createTask(task: InsertTask): Promise<Task>;
@@ -325,6 +329,68 @@ export class DatabaseStorage implements IStorage {
       .values({ bookingId, talentId })
       .returning();
     return created;
+  }
+
+  async getPendingBookingRequests(talentId: string): Promise<(BookingTalent & { booking: Booking & { client: User } })[]> {
+    const requests = await db
+      .select({
+        id: bookingTalents.id,
+        bookingId: bookingTalents.bookingId,
+        talentId: bookingTalents.talentId,
+        requestStatus: bookingTalents.requestStatus,
+        responseMessage: bookingTalents.responseMessage,
+        respondedAt: bookingTalents.respondedAt,
+        createdAt: bookingTalents.createdAt,
+        booking: bookings,
+        client: users,
+      })
+      .from(bookingTalents)
+      .innerJoin(bookings, eq(bookingTalents.bookingId, bookings.id))
+      .innerJoin(users, eq(bookings.clientId, users.id))
+      .where(
+        and(
+          eq(bookingTalents.talentId, talentId),
+          eq(bookingTalents.requestStatus, 'pending')
+        )
+      )
+      .orderBy(desc(bookingTalents.createdAt));
+
+    return requests.map(r => ({
+      id: r.id,
+      bookingId: r.bookingId,
+      talentId: r.talentId,
+      requestStatus: r.requestStatus,
+      responseMessage: r.responseMessage,
+      respondedAt: r.respondedAt,
+      createdAt: r.createdAt,
+      booking: {
+        ...r.booking,
+        client: r.client,
+      },
+    }));
+  }
+
+  async respondToBookingRequest(requestId: string, talentId: string, status: 'accepted' | 'declined', message?: string): Promise<BookingTalent> {
+    const [updated] = await db
+      .update(bookingTalents)
+      .set({
+        requestStatus: status,
+        responseMessage: message,
+        respondedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(bookingTalents.id, requestId),
+          eq(bookingTalents.talentId, talentId)
+        )
+      )
+      .returning();
+
+    if (!updated) {
+      throw new Error("Booking request not found or access denied");
+    }
+
+    return updated;
   }
 
   async createTask(task: InsertTask): Promise<Task> {

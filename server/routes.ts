@@ -573,6 +573,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send booking request to talents
+  app.post('/api/bookings/:id/request-talents', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { talentIds } = req.body;
+      if (!Array.isArray(talentIds) || talentIds.length === 0) {
+        return res.status(400).json({ message: "talentIds array is required" });
+      }
+
+      const results = [];
+      for (const talentId of talentIds) {
+        const bookingTalent = await storage.addTalentToBooking(req.params.id, talentId);
+        results.push(bookingTalent);
+      }
+
+      res.json({ message: "Booking requests sent successfully", requests: results });
+    } catch (error) {
+      console.error("Error sending booking requests:", error);
+      res.status(500).json({ message: "Failed to send booking requests" });
+    }
+  });
+
+  // Get pending booking requests for talent
+  app.get('/api/booking-requests', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'talent') {
+        return res.status(403).json({ message: "Talent access required" });
+      }
+
+      const requests = await storage.getPendingBookingRequests(userId);
+      res.json({ requests });
+    } catch (error) {
+      console.error("Error fetching booking requests:", error);
+      res.status(500).json({ message: "Failed to fetch booking requests" });
+    }
+  });
+
+  // Respond to booking request (accept/decline)
+  app.patch('/api/booking-requests/:requestId/respond', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'talent') {
+        return res.status(403).json({ message: "Talent access required" });
+      }
+
+      const { action, message } = req.body; // action: 'accept' or 'decline'
+      
+      if (!['accept', 'decline'].includes(action)) {
+        return res.status(400).json({ message: "Action must be 'accept' or 'decline'" });
+      }
+
+      const result = await storage.respondToBookingRequest(
+        req.params.requestId, 
+        userId,
+        action === 'accept' ? 'accepted' : 'declined',
+        message
+      );
+
+      res.json({ 
+        message: `Booking request ${action}ed successfully`, 
+        request: result 
+      });
+    } catch (error) {
+      console.error("Error responding to booking request:", error);
+      res.status(500).json({ message: "Failed to respond to booking request" });
+    }
+  });
+
   // Task routes
   app.post('/api/tasks', isAuthenticated, async (req: any, res) => {
     try {

@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,6 +23,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+// Form schemas
+const bookingRequestSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  clientId: z.string().min(1, "Client is required"),
+  location: z.string().optional(),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  rate: z.string().optional(),
+  deliverables: z.string().optional(),
+  notes: z.string().optional(),
+});
 
 export default function AdminBookings() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -30,8 +49,40 @@ export default function AdminBookings() {
     status: "",
     page: 1,
   });
+  
+  // Booking request modal states
+  const [showCreateRequest, setShowCreateRequest] = useState(false);
+  const [showTalentSelection, setShowTalentSelection] = useState(false);
+  const [selectedTalents, setSelectedTalents] = useState<string[]>([]);
+  const [newBookingId, setNewBookingId] = useState<string>("");
+  
+  // Form for creating booking requests
+  const form = useForm<z.infer<typeof bookingRequestSchema>>({
+    resolver: zodResolver(bookingRequestSchema),
+    defaultValues: {
+      title: "",
+      clientId: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      rate: "",
+      deliverables: "",
+      notes: "",
+    },
+  });
 
-  // Authentication is handled by the Router component
+  // Fetch all talents for talent selection
+  const { data: talentsData } = useQuery({
+    queryKey: ["/api/talents"],
+    queryFn: async () => {
+      const response = await fetch("/api/talents?limit=100", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch talents");
+      return response.json();
+    },
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
 
   // Fetch bookings with filters
   const { data: bookingsData, isLoading: bookingsLoading, error } = useQuery({
@@ -50,18 +101,6 @@ export default function AdminBookings() {
     },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   // Update booking status mutation
@@ -88,6 +127,84 @@ export default function AdminBookings() {
         }, 500);
         return;
       }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Create booking request mutation
+  const createBookingRequestMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof bookingRequestSchema>) => {
+      // Create a basic client user for the booking
+      const clientData = {
+        role: "client" as const,
+        email: `client-${Date.now()}@5tagency.com`,
+        firstName: "Client",
+        lastName: "User",
+      };
+
+      const bookingData = {
+        ...data,
+        clientId: user?.id, // Use admin as client for now
+        createdBy: user?.id,
+        code: `BK-${Date.now()}`,
+        startDate: new Date(data.startDate).toISOString(),
+        endDate: new Date(data.endDate).toISOString(),
+        rate: data.rate ? parseFloat(data.rate) : undefined,
+        status: "inquiry",
+      };
+
+      return apiRequest("POST", "/api/bookings", bookingData);
+    },
+    onSuccess: (booking) => {
+      setNewBookingId(booking.id);
+      setShowCreateRequest(false);
+      setShowTalentSelection(true);
+      form.reset();
+      toast({
+        title: "Success",
+        description: "Booking created! Now select talents to send requests.",
+      });
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Send booking requests to selected talents
+  const sendRequestsMutation = useMutation({
+    mutationFn: async ({ bookingId, talentIds }: { bookingId: string; talentIds: string[] }) => {
+      return apiRequest("POST", `/api/bookings/${bookingId}/request-talents`, { talentIds });
+    },
+    onSuccess: () => {
+      setShowTalentSelection(false);
+      setSelectedTalents([]);
+      setNewBookingId("");
+      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      toast({
+        title: "Success",
+        description: "Booking requests sent successfully to selected talents!",
+      });
+    },
+    onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message,
@@ -149,14 +266,240 @@ export default function AdminBookings() {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-slate-900">Booking Management</h1>
-            <div className="flex items-center space-x-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Booking Management</h1>
               <span className="text-sm text-slate-600">
                 {bookingsData ? `${bookingsData.bookings.length} of ${bookingsData.total} bookings` : "Loading..."}
               </span>
             </div>
+            <div className="flex space-x-3">
+              <Dialog open={showCreateRequest} onOpenChange={setShowCreateRequest}>
+                <DialogTrigger asChild>
+                  <Button data-testid="button-create-booking-request">
+                    <i className="fas fa-plus mr-2"></i>Create Booking Request
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Create Booking Request</DialogTitle>
+                    <DialogDescription>
+                      Create a new booking and send requests to talents
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit((data) => createBookingRequestMutation.mutate(data))} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Project Title</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Commercial Shoot for Brand X" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="location"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Location</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Los Angeles, CA" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="startDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Start Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="endDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>End Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="rate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Rate (Optional)</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="Enter amount" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="deliverables"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Deliverables</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="Describe what's needed..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="notes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Additional Notes</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="Any additional information..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="flex justify-end space-x-2 pt-4">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setShowCreateRequest(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={createBookingRequestMutation.isPending}
+                          data-testid="button-submit-booking-request"
+                        >
+                          {createBookingRequestMutation.isPending ? "Creating..." : "Create & Select Talents"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </header>
+
+        {/* Talent Selection Modal */}
+        <Dialog open={showTalentSelection} onOpenChange={setShowTalentSelection}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Select Talents for Booking Request</DialogTitle>
+              <DialogDescription>
+                Choose which talents to send this booking request to
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {talentsData?.talents?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {talentsData.talents.map((talent: any) => (
+                    <div 
+                      key={talent.userId} 
+                      className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-slate-50"
+                    >
+                      <Checkbox
+                        id={talent.userId}
+                        checked={selectedTalents.includes(talent.userId)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedTalents([...selectedTalents, talent.userId]);
+                          } else {
+                            setSelectedTalents(selectedTalents.filter(id => id !== talent.userId));
+                          }
+                        }}
+                        data-testid={`checkbox-talent-${talent.userId}`}
+                      />
+                      <div className="flex-1">
+                        <label 
+                          htmlFor={talent.userId}
+                          className="font-medium text-slate-900 cursor-pointer"
+                        >
+                          {talent.user.firstName} {talent.user.lastName}
+                        </label>
+                        {talent.stageName && (
+                          <p className="text-sm text-slate-600">"{talent.stageName}"</p>
+                        )}
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {talent.categories?.slice(0, 3).map((category: string, index: number) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {category}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-slate-500 py-8">No approved talents found</p>
+              )}
+
+              <div className="flex justify-between items-center pt-4 border-t">
+                <p className="text-sm text-slate-600">
+                  {selectedTalents.length} talent{selectedTalents.length !== 1 ? 's' : ''} selected
+                </p>
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowTalentSelection(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      if (selectedTalents.length > 0) {
+                        sendRequestsMutation.mutate({ 
+                          bookingId: newBookingId, 
+                          talentIds: selectedTalents 
+                        });
+                      }
+                    }}
+                    disabled={selectedTalents.length === 0 || sendRequestsMutation.isPending}
+                    data-testid="button-send-requests"
+                  >
+                    {sendRequestsMutation.isPending ? "Sending..." : `Send Requests (${selectedTalents.length})`}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <main className="p-6">
           {/* Filters */}
@@ -277,9 +620,20 @@ export default function AdminBookings() {
                             {booking.bookingTalents?.length > 0 ? (
                               <div className="space-y-1">
                                 {booking.bookingTalents.slice(0, 2).map((bt: any) => (
-                                  <p key={bt.id} className="text-sm text-slate-600">
-                                    {bt.talent.firstName} {bt.talent.lastName}
-                                  </p>
+                                  <div key={bt.id} className="flex items-center justify-between">
+                                    <p className="text-sm text-slate-600">
+                                      {bt.talent.firstName} {bt.talent.lastName}
+                                    </p>
+                                    <Badge 
+                                      variant={
+                                        bt.requestStatus === 'accepted' ? 'default' :
+                                        bt.requestStatus === 'declined' ? 'destructive' : 'secondary'
+                                      }
+                                      className="ml-2 text-xs"
+                                    >
+                                      {bt.requestStatus}
+                                    </Badge>
+                                  </div>
                                 ))}
                                 {booking.bookingTalents.length > 2 && (
                                   <p className="text-xs text-slate-500">

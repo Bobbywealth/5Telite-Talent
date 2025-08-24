@@ -78,6 +78,10 @@ export const bookingStatusEnum = pgEnum("booking_status", [
   "inquiry", "proposed", "contract_sent", "signed", "invoiced", "paid", "completed", "cancelled"
 ]);
 
+export const bookingRequestStatusEnum = pgEnum("booking_request_status", [
+  "pending", "accepted", "declined"
+]);
+
 // Bookings
 export const bookings = pgTable("bookings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -102,6 +106,9 @@ export const bookingTalents = pgTable("booking_talents", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   bookingId: varchar("booking_id").references(() => bookings.id).notNull(),
   talentId: varchar("talent_id").references(() => users.id).notNull(),
+  requestStatus: bookingRequestStatusEnum("request_status").notNull().default("pending"),
+  responseMessage: text("response_message"), // Optional message when accepting/declining
+  respondedAt: timestamp("responded_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
