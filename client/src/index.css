@@ -110,7 +110,7 @@
         hsl(0 0% 5%) 100%
       );
     background-size: 400% 400%;
-    animation: gradient-shift 8s ease-in-out infinite, gradient-move 15s ease-in-out infinite;
+    animation: gradient-shift 6s ease-in-out infinite, gradient-move 10s ease-in-out infinite;
     position: relative;
   }
 
@@ -130,7 +130,7 @@
         rgba(59, 130, 246, 0.1) 100%
       );
     background-size: 600% 600%;
-    animation: gradient-wave 12s ease-in-out infinite;
+    animation: gradient-wave 8s ease-in-out infinite;
     opacity: 0.7;
   }
 
@@ -145,7 +145,7 @@
       radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.12) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
-    animation: gradient-pulse 10s ease-in-out infinite;
+    animation: gradient-pulse 7s ease-in-out infinite;
     opacity: 0.6;
   }
 
@@ -155,7 +155,7 @@
     background: radial-gradient(circle, rgba(255,255,255,0.05), transparent);
     top: 30%;
     right: 30%;
-    animation-delay: 1s;
+    animation-delay: 0.3s;
   }
 
   .shape-5 {
@@ -164,7 +164,7 @@
     background: radial-gradient(circle, rgba(255,215,0,0.08), transparent);
     bottom: 40%;
     right: 10%;
-    animation-delay: 3s;
+    animation-delay: 0.8s;
   }
 
   @keyframes gradient-shift {
@@ -259,7 +259,7 @@
     background: radial-gradient(circle, rgba(255,215,0,0.15), transparent);
     bottom: 20%;
     left: 15%;
-    animation-delay: 2s;
+    animation-delay: 0.5s;
   }
 
   .shape-3 {
@@ -268,7 +268,7 @@
     background: radial-gradient(circle, rgba(255,215,0,0.1), transparent);
     top: 50%;
     left: 5%;
-    animation-delay: 4s;
+    animation-delay: 1s;
   }
 
   .floating-dots {
@@ -296,23 +296,23 @@
   }
 
   .pulse-animation {
-    animation: pulse-animation 3s ease-in-out infinite;
+    animation: pulse-animation 2s ease-in-out infinite;
   }
 
   /* Card animations */
   .floating-card-1 {
-    animation: float 4s ease-in-out infinite;
+    animation: float 3s ease-in-out infinite;
     animation-delay: 0s;
   }
 
   .floating-card-2 {
-    animation: float 4s ease-in-out infinite;
-    animation-delay: 1s;
+    animation: float 3s ease-in-out infinite;
+    animation-delay: 0.3s;
   }
 
   .floating-card-3 {
-    animation: float 4s ease-in-out infinite;
-    animation-delay: 2s;
+    animation: float 3s ease-in-out infinite;
+    animation-delay: 0.6s;
   }
 
   /* Background patterns for brand consistency */
@@ -385,26 +385,26 @@
   }
 
   .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out;
+    animation: fadeInUp 0.5s ease-out;
   }
 
   .animate-fade-in-up-delay-1 {
-    animation: fadeInUp 0.8s ease-out 0.2s both;
+    animation: fadeInUp 0.5s ease-out 0.1s both;
   }
 
   .animate-fade-in-up-delay-2 {
-    animation: fadeInUp 0.8s ease-out 0.4s both;
+    animation: fadeInUp 0.5s ease-out 0.2s both;
   }
 
   .animate-fade-in-up-delay-3 {
-    animation: fadeInUp 0.8s ease-out 0.6s both;
+    animation: fadeInUp 0.5s ease-out 0.3s both;
   }
 
   .animate-fade-in-up-delay-4 {
-    animation: fadeInUp 0.8s ease-out 0.8s both;
+    animation: fadeInUp 0.5s ease-out 0.4s both;
   }
 
   .animate-underline {
-    animation: underlineGrow 1s ease-out 1s both;
+    animation: underlineGrow 0.6s ease-out 0.5s both;
   }
 }
