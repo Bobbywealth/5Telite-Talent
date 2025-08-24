@@ -37,12 +37,18 @@ export default function AdminNavbar() {
         <div className="flex items-center justify-between h-24">
           {/* Left: Logo */}
           <div className="flex items-center">
-            <Link href="/admin" className="flex items-center" data-testid="link-logo-admin">
+            <Link href="/admin" className="flex items-center bg-red-100 p-2" data-testid="link-logo-admin">
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
-                className="h-24 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-24 w-auto hover:scale-105 transition-transform duration-200 border-2 border-blue-500"
+                onError={(e) => {
+                  console.error('Logo failed to load:', logoImage);
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
               />
+              <span className="hidden text-primary font-bold text-xl">5T TALENT</span>
             </Link>
           </div>
 
