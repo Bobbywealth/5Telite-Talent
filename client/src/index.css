@@ -437,5 +437,7 @@
   button,
   [role="button"] {
     pointer-events: auto !important;
+    position: relative !important;
+    z-index: 999999 !important;
   }
 }
