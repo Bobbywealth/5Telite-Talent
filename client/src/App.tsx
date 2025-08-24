@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
@@ -28,18 +29,7 @@ import TalentProfileEdit from "@/pages/talent/profile-edit";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Force stop loading after 3 seconds to prevent infinite loading
-  React.useEffect(() => {
-    if (isLoading) {
-      const timeout = setTimeout(() => {
-        // If still loading after 3 seconds, force render without auth
-        window.location.reload();
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [isLoading]);
-
-  // Simplified loading state - show for max 2 seconds
+  // Show simple loading only briefly
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
