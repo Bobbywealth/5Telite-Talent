@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
+import logoImage from "@assets/5t-logo.png";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -135,21 +136,14 @@ export default function Home() {
               <p className="text-xl text-slate-200 mb-6">
                 {getRoleDescription()}
               </p>
-              {/* Quick action buttons for clients */}
+              {/* 5T Logo for client dashboard */}
               {user?.role === 'client' && (
-                <div className="flex flex-wrap gap-4">
-                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-browse-talent" asChild>
-                    <Link href="/talent">
-                      <i className="fas fa-search mr-2"></i>
-                      Browse Talent
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-new-booking" asChild>
-                    <Link href="/book">
-                      <i className="fas fa-plus-circle mr-2"></i>
-                      New Booking Request
-                    </Link>
-                  </Button>
+                <div className="flex items-center mt-6">
+                  <img 
+                    src={logoImage} 
+                    alt="5T Elite Logo" 
+                    className="h-16 w-auto opacity-90 hover:opacity-100 transition-opacity duration-200"
+                  />
                 </div>
               )}
             </div>
