@@ -122,11 +122,6 @@ export default function Landing() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="max-w-4xl mx-auto text-center text-white relative z-20">
-              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-sm font-medium text-white border border-white/30 mb-8">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></span>
-                500+ Diverse Professional Talents Available
-              </div>
-
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-8 leading-tight tracking-tight">
                 Book
                 <br />
