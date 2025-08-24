@@ -223,7 +223,7 @@ export class DatabaseStorage implements IStorage {
     return {
       ...booking.bookings,
       client: booking.users,
-      createdBy,
+      createdBy: createdBy,
       bookingTalents: bookingTalentsResult.map(row => ({ ...row.booking_talents, talent: row.users })),
     };
   }
@@ -288,7 +288,7 @@ export class DatabaseStorage implements IStorage {
         return {
           ...row.bookings,
           client: row.users,
-          createdBy,
+          createdBy: createdBy,
           bookingTalents: bookingTalentsResult.map(btRow => ({ ...btRow.booking_talents, talent: btRow.users })),
         };
       })
@@ -666,7 +666,16 @@ export class DatabaseStorage implements IStorage {
     // Create each talent user and profile
     for (const talentData of demoTalents) {
       // Create user
-      const talentUser = await this.upsertUser(talentData.user);
+      const talentUser = await this.upsertUser({
+        id: talentData.user.id,
+        role: talentData.user.role,
+        email: talentData.user.email,
+        firstName: talentData.user.firstName,
+        lastName: talentData.user.lastName,
+        phone: talentData.user.phone,
+        profileImageUrl: talentData.user.profileImageUrl,
+        status: talentData.user.status,
+      });
 
       // Create talent profile
       await this.createTalentProfile({
@@ -676,7 +685,7 @@ export class DatabaseStorage implements IStorage {
         skills: talentData.skills,
         bio: talentData.bio,
         location: talentData.location,
-        unionStatus: talentData.unionStatus,
+        unionStatus: talentData.unionStatus as "SAG-AFTRA" | "Non-Union" | "Other" | null,
         measurements: talentData.measurements,
         rates: talentData.rates,
         social: talentData.social,

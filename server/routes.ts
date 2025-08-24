@@ -83,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
+  app.get("/objects/:objectPath(*)", isAuthenticated, async (req: any, res) => {
     const userId = req.user?.claims?.sub;
     const objectStorageService = new ObjectStorageService();
     try {
@@ -263,7 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Check if user is authenticated (admin creating booking) or public inquiry
       if (req.user) {
-        const user = await storage.getUser(req.user.claims.sub);
+        const user = await storage.getUser((req.user as any).claims.sub);
         if (user && user.role === 'admin') {
           createdBy = user.id;
         }
@@ -512,7 +512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { bookings } = await storage.getAllBookings({ limit: 100 });
       
       const events = bookings
-        .filter(booking => booking.status === 'confirmed' || booking.status === 'paid')
+        .filter(booking => booking.status === 'signed' || booking.status === 'paid')
         .map(booking => ({
           id: booking.id,
           title: booking.title,
