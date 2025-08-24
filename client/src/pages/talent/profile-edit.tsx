@@ -132,12 +132,12 @@ export default function TalentProfileEdit() {
         },
       });
     }
-  }, [profileData]);
+  }, [profileData?.talentProfile]);
 
   // Authentication is handled by the Router component
 
   // Fetch current profile data
-  const { data: profileData, isLoading: profileLoading } = useQuery({
+  const { data: profileData, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ["/api/auth/user"],
     queryFn: async () => {
       const userData = await apiRequest("GET", "/api/auth/user");
@@ -152,6 +152,8 @@ export default function TalentProfileEdit() {
     },
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   // Save profile mutation
