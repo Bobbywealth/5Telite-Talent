@@ -427,4 +427,15 @@
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.5; transform: scale(0.8); }
   }
+
+  /* CRITICAL FIX: Allow button clicks even with FontAwesome icons */
+  button i[class*="fa"],
+  [role="button"] i[class*="fa"] {
+    pointer-events: none !important;
+  }
+  
+  button,
+  [role="button"] {
+    pointer-events: auto !important;
+  }
 }
