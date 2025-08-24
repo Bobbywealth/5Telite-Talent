@@ -29,18 +29,6 @@ export default function TalentDashboard() {
     },
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   // Fetch talent tasks
@@ -55,18 +43,6 @@ export default function TalentDashboard() {
     },
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   if (isLoading) {

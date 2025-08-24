@@ -31,10 +31,14 @@ export function getQueryFn({ on401 }: { on401?: "returnNull" | "throw" } = {}) {
   };
 }
 
-export async function apiRequest(url: string, options?: RequestInit) {
+export async function apiRequest(method: string, url: string, body?: any) {
   const response = await fetch(url, {
+    method,
     credentials: "include",
-    ...options,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    ...(body && { body: JSON.stringify(body) }),
   });
 
   if (!response.ok) {
