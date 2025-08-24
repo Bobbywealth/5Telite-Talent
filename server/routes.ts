@@ -362,18 +362,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       let bookingData;
       
-      if (req.body.talents && Array.isArray(req.body.talents)) {
+      // Convert date strings to Date objects for validation
+      const processedBody = {
+        ...req.body,
+        startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
+        endDate: req.body.endDate ? new Date(req.body.endDate) : undefined,
+      };
+      
+      if (processedBody.talents && Array.isArray(processedBody.talents)) {
         // Handle multiple talents
-        const { talents, ...bookingInfo } = req.body;
+        const { talents, ...bookingInfo } = processedBody;
         bookingData = insertBookingSchema.parse(bookingInfo);
       } else {
-        bookingData = insertBookingSchema.parse(req.body);
+        bookingData = insertBookingSchema.parse(processedBody);
       }
 
       const booking = await storage.createBooking(bookingData);
       res.json(booking);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Booking validation error:", error.errors);
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }
       console.error("Error creating booking:", error);
