@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Object storage routes
   app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
-    const userId = req.user?.claims?.sub;
+    const userId = (req.user as any)?.claims?.sub;
     const objectStorageService = new ObjectStorageService();
     try {
       const objectFile = await objectStorageService.getObjectEntityFile(
@@ -621,14 +621,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const today = new Date();
         const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
         const newBookings = recentBookings.bookings.filter(
-          booking => new Date(booking.createdAt) > yesterday
+          booking => booking.createdAt && new Date(booking.createdAt) > yesterday
         );
         if (newBookings.length > 0) {
           notifications.push({
             type: 'booking',
             title: `${newBookings.length} new booking${newBookings.length > 1 ? 's' : ''} created`,
             description: 'Recent bookings may need attention',
-            createdAt: newBookings[0]?.createdAt ? new Date(newBookings[0].createdAt) : new Date(),
+            createdAt: newBookings[0]?.createdAt ? new Date(newBookings[0].createdAt!) : new Date(),
             badge: 'New',
           });
         }
@@ -672,14 +672,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const today = new Date();
         const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
         const recentBookings = talentBookings.bookings.filter(
-          booking => new Date(booking.createdAt) > yesterday
+          booking => booking.createdAt && new Date(booking.createdAt) > yesterday
         );
         if (recentBookings.length > 0) {
           notifications.push({
             type: 'booking',
             title: `${recentBookings.length} booking update${recentBookings.length > 1 ? 's' : ''}`,
             description: 'Recent changes to your bookings',
-            createdAt: recentBookings[0]?.createdAt ? new Date(recentBookings[0].createdAt) : new Date(),
+            createdAt: recentBookings[0]?.createdAt ? new Date(recentBookings[0].createdAt!) : new Date(),
             badge: 'Update',
           });
         }
@@ -715,7 +715,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const today = new Date();
         const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
         const recentBookings = clientBookings.bookings.filter(
-          booking => new Date(booking.updatedAt) > yesterday
+          booking => booking.updatedAt && new Date(booking.updatedAt) > yesterday
         );
         if (recentBookings.length > 0) {
           notifications.push({
