@@ -107,7 +107,7 @@ export default function TalentDashboard() {
       if (!response.ok) throw new Error("Failed to fetch profile");
       return response.json();
     },
-    enabled: isAuthenticated && user?.role === 'talent' && user?.id,
+    enabled: !!(isAuthenticated && user?.role === 'talent' && user?.id),
     retry: false,
   });
 
