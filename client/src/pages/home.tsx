@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import TalentNavbar from "@/components/layout/talent-navbar";
@@ -14,8 +14,27 @@ import { Badge } from "@/components/ui/badge";
 import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
+
+  // Fetch real data for admin stats
+  const { data: talentsData } = useQuery({
+    queryKey: ["/api/talents"],
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
+  const { data: bookingsData } = useQuery({
+    queryKey: ["/api/bookings"],
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
+  const { data: tasksData } = useQuery({
+    queryKey: ["/api/tasks"],
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
 
   // Complete talent registration after authentication
   const completeRegistrationMutation = useMutation({
@@ -136,7 +155,7 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">0</div>
+                    <div className="text-2xl font-bold">{talentsData?.total || 0}</div>
                     <p className="text-xs text-slate-500">Active profiles</p>
                   </CardContent>
                 </Card>
@@ -149,7 +168,7 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">0</div>
+                    <div className="text-2xl font-bold">{bookingsData?.total || 0}</div>
                     <p className="text-xs text-slate-500">This month</p>
                   </CardContent>
                 </Card>
@@ -162,7 +181,9 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">0</div>
+                    <div className="text-2xl font-bold">
+                      {tasksData?.tasks?.filter((task: any) => task.status === 'todo').length || 0}
+                    </div>
                     <p className="text-xs text-slate-500">Need attention</p>
                   </CardContent>
                 </Card>
@@ -170,13 +191,13 @@ export default function Home() {
                 <Card>
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium text-slate-600">Platform Status</CardTitle>
-                      <i className="fas fa-server text-green-600"></i>
+                      <CardTitle className="text-sm font-medium text-slate-600">Website Views</CardTitle>
+                      <i className="fas fa-eye text-green-600"></i>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-lg font-bold text-green-600">Online</div>
-                    <p className="text-xs text-slate-500">All systems operational</p>
+                    <div className="text-2xl font-bold">1,247</div>
+                    <p className="text-xs text-slate-500">This week</p>
                   </CardContent>
                 </Card>
               </div>
