@@ -7,13 +7,14 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminCalendar from "@/components/admin/admin-calendar";
-import AdminNavbar from "@/components/layout/admin-navbar"; // Assuming AdminNavbar is imported
+import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock } from "lucide-react";
+import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -188,6 +189,9 @@ export default function AdminDashboard() {
                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                       Active
                     </span>
+                  </div>
+                  <div className="flex gap-4">
+                    <RoleSwitcher />
                   </div>
                 </div>
               </div>
