@@ -19,6 +19,7 @@ export default function TalentProfile() {
       }
       return response.json();
     },
+    retry: false,
   });
 
   if (isLoading) {

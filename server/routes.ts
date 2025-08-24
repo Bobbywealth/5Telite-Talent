@@ -251,12 +251,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/talents/:id', async (req, res) => {
     try {
-      const user = await storage.getUser(req.params.id);
+      const id = req.params.id;
+      let user = null;
+      let profile = null;
+
+      // First try to get talent profile by talent profile ID
+      try {
+        const allTalents = await storage.getAllTalents({ limit: 1000 });
+        const talent = allTalents.talents.find(t => t.id === id);
+        if (talent) {
+          profile = talent;
+          user = talent.user;
+        }
+      } catch (err) {
+        // If not found by talent profile ID, try by user ID
+        user = await storage.getUser(id);
+        if (user && user.role === 'talent') {
+          profile = await storage.getTalentProfile(id);
+        }
+      }
+
       if (!user || user.role !== 'talent') {
         return res.status(404).json({ message: "Talent not found" });
       }
 
-      const profile = await storage.getTalentProfile(req.params.id);
       if (!profile || profile.approvalStatus !== 'approved') {
         return res.status(404).json({ message: "Talent profile not found or not approved" });
       }
