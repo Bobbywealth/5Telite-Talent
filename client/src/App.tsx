@@ -23,6 +23,7 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminTasks from "@/pages/admin/tasks";
+import AdminSettings from "@/pages/admin/settings";
 
 // Talent Pages
 import TalentDashboard from "@/pages/talent/dashboard";
@@ -79,6 +80,7 @@ function Router() {
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
               <Route path="/admin/tasks" component={AdminTasks} />
+              <Route path="/admin/settings" component={AdminSettings} />
             </>
           )}
 
