@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logoImage from "@assets/5t-logo.png";
+import { NotificationBell } from "@/components/ui/notification-bell";
 
 export default function TalentNavbar() {
   const { user } = useAuth();
@@ -64,8 +65,9 @@ export default function TalentNavbar() {
             ))}
           </div>
 
-          {/* Right: User Profile */}
-          <div className="flex items-center">
+          {/* Right: Notifications & User Profile */}
+          <div className="flex items-center space-x-4">
+            <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 

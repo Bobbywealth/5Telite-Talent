@@ -1,126 +1,39 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import {
+  insertTalentProfileSchema,
+  insertBookingSchema,
+  insertTaskSchema,
+} from "@shared/schema";
+import {
+  ObjectStorageService,
+  ObjectNotFoundError,
+} from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
-import { z } from "zod";
-import { insertTalentProfileSchema, insertBookingSchema, insertTaskSchema } from "@shared/schema";
-
-// Placeholder for DB and schema imports (assuming they exist elsewhere)
-// import { db, users, talentProfiles, eq } from "./db"; // Example import
-// import crypto from "crypto"; // Example import
-
-// Mock DB and schema for demonstration purposes if not provided
-const mockDb = {
-  select: () => ({
-    from: () => ({
-      where: () => ({
-        limit: () => Promise.resolve([]),
-      }),
-    }),
-  }),
-  insert: () => ({
-    values: () => ({
-      returning: () => Promise.resolve([{ id: "mock-uuid", email: "mock@example.com", role: "talent", status: "active", firstName: "Mock", lastName: "User" }]),
-    }),
-  }),
-  update: () => ({
-    set: () => ({
-      where: () => ({
-        returning: () => Promise.resolve([{ id: "mock-uuid", userId: "mock-uuid", stageName: "Mock Talent", approvalStatus: "pending" }]),
-      }),
-    }),
-  }),
-};
-
-const mockUsers = {
-  email: "email",
-};
-const mockTalentProfiles = {
-  userId: "userId",
-  stageName: "stageName",
-  location: "location",
-  bio: "bio",
-  categories: "categories",
-  skills: "skills",
-  phoneNumber: "phoneNumber",
-  height: "height",
-  weight: "weight",
-  hairColor: "hairColor",
-  eyeColor: "eyeColor",
-  experience: "experience",
-  approvalStatus: "approvalStatus",
-  profileImageUrls: "profileImageUrls",
-  portfolioUrls: "portfolioUrls"
-};
-const mockEq = (a: any, b: any) => a === b;
-const mockCrypto = {
-  randomUUID: () => "mock-uuid"
-};
-
-const db = mockDb;
-const users = mockUsers;
-const talentProfiles = mockTalentProfiles;
-const eq = mockEq;
-const crypto = mockCrypto;
-
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Seed demo data on startup
-  try {
-    await storage.seedDemoData();
-  } catch (error) {
-    console.error("Failed to seed demo data:", error);
-  }
+  // Seed demo data if needed
+  app.post('/api/seed', async (req, res) => {
+    try {
+      await storage.seedDemoData();
+      res.json({ message: "Demo data seeded successfully" });
+    } catch (error) {
+      console.error("Error seeding demo data:", error);
+      res.status(500).json({ message: "Failed to seed demo data" });
+    }
+  });
 
-  // Auth routes - using Replit Auth only
-
-  // User endpoint to get current user info
+  // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      let user = await storage.getUser(userId);
-      
-      // If user doesn't exist, create them from Replit Auth claims
-      if (!user) {
-        const claims = req.user.claims;
-        user = await storage.upsertUser({
-          id: userId,
-          email: claims.email,
-          firstName: claims.first_name,
-          lastName: claims.last_name,
-          profileImageUrl: claims.profile_image_url,
-          role: 'talent', // Default to talent role
-          status: 'active'
-        });
-
-        // Create initial talent profile for new users
-        try {
-          await storage.createTalentProfile({
-            userId: user.id,
-            stageName: `${user.firstName} ${user.lastName}`,
-            categories: [],
-            skills: [],
-            bio: null,
-            location: null,
-            unionStatus: null,
-            measurements: null,
-            rates: null,
-            mediaUrls: [],
-            resumeUrls: [],
-            social: null,
-            guardian: null,
-            approvalStatus: "pending"
-          });
-        } catch (error) {
-          console.log("Initial talent profile already exists or error creating:", error);
-        }
-      }
-
+      const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -128,50 +41,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Route to switch user role for testing
-  app.post('/api/auth/switch-role', isAuthenticated, async (req: any, res) => {
+  // User role management (placeholder - not implemented in storage yet)
+  app.patch('/api/users/:id/role', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { role } = req.body;
+      const currentUser = await storage.getUser(userId);
 
-      if (!role || !['admin', 'talent', 'client'].includes(role)) {
-        return res.status(400).json({ message: "Invalid role. Must be 'admin', 'talent', or 'client'" });
+      if (!currentUser || currentUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
       }
 
-      // Update user role in database
-      const updatedUser = await storage.upsertUser({
-        id: userId,
-        email: req.user.claims.email,
-        firstName: req.user.claims.first_name,
-        lastName: req.user.claims.last_name,
-        profileImageUrl: req.user.claims.profile_image_url,
-        role: role,
-      });
-
-      res.json({ message: `Role switched to ${role}`, user: updatedUser });
+      // This feature would require additional storage methods
+      res.status(501).json({ message: "Feature not yet implemented" });
     } catch (error) {
-      console.error("Error switching user role:", error);
-      res.status(500).json({ message: "Failed to switch role" });
+      console.error("Error updating user role:", error);
+      res.status(500).json({ message: "Failed to update user role" });
     }
   });
 
   // Object storage routes
-  app.get("/public-objects/:filePath(*)", async (req, res) => {
-    const filePath = req.params.filePath;
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const file = await objectStorageService.searchPublicObject(filePath);
-      if (!file) {
-        return res.status(404).json({ error: "File not found" });
-      }
-      objectStorageService.downloadObject(file, res);
-    } catch (error) {
-      console.error("Error searching for public object:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  app.get("/objects/:objectPath(*)", isAuthenticated, async (req: any, res) => {
+  app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
     const userId = req.user?.claims?.sub;
     const objectStorageService = new ObjectStorageService();
     try {
@@ -272,122 +161,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/talents/me', isAuthenticated, async (req: any, res) => {
+  app.post('/api/talents', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
 
       if (!user || user.role !== 'talent') {
-        return res.status(403).json({ message: "Access denied" });
+        return res.status(403).json({ message: "Talent access required" });
+      }
+
+      // Check if profile already exists
+      const existingProfile = await storage.getTalentProfile(userId);
+      if (existingProfile) {
+        return res.status(400).json({ message: "Talent profile already exists" });
       }
 
       const profileData = insertTalentProfileSchema.parse({
         ...req.body,
         userId,
+        approvalStatus: 'pending'
       });
 
-      const existingProfile = await storage.getTalentProfile(userId);
-      let profile;
-
-      if (existingProfile) {
-        profile = await storage.updateTalentProfile(userId, profileData);
-      } else {
-        profile = await storage.createTalentProfile(profileData);
-      }
-
-      res.json(profile);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Validation error", errors: error.errors });
-      }
-      console.error("Error updating talent profile:", error);
-      res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
-
-  app.put("/api/talents/me/media", isAuthenticated, async (req: any, res) => {
-    if (!req.body.mediaUrl) {
-      return res.status(400).json({ error: "mediaUrl is required" });
-    }
-
-    const userId = req.user.claims.sub;
-    const user = await storage.getUser(userId);
-
-    if (!user || user.role !== 'talent') {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    try {
-      const objectStorageService = new ObjectStorageService();
-      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        req.body.mediaUrl,
-        {
-          owner: userId,
-          visibility: "public", // Talent media is public for directory viewing
-        },
-      );
-
-      // Update talent profile with new media URL
-      const profile = await storage.getTalentProfile(userId);
-      if (profile) {
-        const mediaUrls = [...(profile.mediaUrls || []), objectPath];
-        await storage.updateTalentProfile(userId, { mediaUrls });
-      }
-
-      res.status(200).json({ objectPath });
-    } catch (error) {
-      console.error("Error setting talent media:", error);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  // Admin endpoints for creating users and talents
-  app.post("/api/admin/users", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-
-      if (!user || user.role !== 'admin') {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      const { firstName, lastName, email, role, status } = req.body;
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists with this email" });
-      }
-
-      const newUser = await storage.upsertUser({
-        id: Math.random().toString(36).substring(2, 15),
-        firstName,
-        lastName,
-        email,
-        role: role as "admin" | "talent" | "client",
-        status: status || "active",
-        profileImageUrl: null
-      });
-
-      res.status(201).json(newUser);
-    } catch (error) {
-      console.error("Error creating user:", error);
-      res.status(500).json({ message: "Failed to create user" });
-    }
-  });
-
-  app.post("/api/talents/admin-create", isAuthenticated, async (req: any, res) => {
-    try {
-      const adminUserId = req.user.claims.sub;
-      const adminUser = await storage.getUser(adminUserId);
-
-      if (!adminUser || adminUser.role !== 'admin') {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      const profileData = insertTalentProfileSchema.parse(req.body);
       const profile = await storage.createTalentProfile(profileData);
-
       res.json(profile);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -395,6 +190,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error creating talent profile:", error);
       res.status(500).json({ message: "Failed to create talent profile" });
+    }
+  });
+
+  app.patch('/api/talents/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const targetUserId = req.params.id;
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Only the talent themselves or admin can update
+      if (user.role !== 'admin' && userId !== targetUserId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const profileData = req.body;
+      
+      // If admin is updating, preserve the approval status unless specifically changing it
+      if (user.role === 'admin' && !profileData.hasOwnProperty('approvalStatus')) {
+        const existingProfile = await storage.getTalentProfile(targetUserId);
+        if (existingProfile) {
+          profileData.approvalStatus = existingProfile.approvalStatus;
+        }
+      } else if (user.role !== 'admin') {
+        // Non-admin users cannot change approval status
+        delete profileData.approvalStatus;
+      }
+
+      const profile = await storage.updateTalentProfile(targetUserId, profileData);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error updating talent profile:", error);
+      res.status(500).json({ message: "Failed to update talent profile" });
     }
   });
 
@@ -424,36 +255,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/bookings', async (req, res) => {
     try {
       let bookingData;
-      let createdBy = req.body.createdBy;
-
-      // Check if user is authenticated (admin creating booking) or public inquiry
-      if (req.user) {
-        const user = await storage.getUser((req.user as any).claims.sub);
-        if (user && user.role === 'admin') {
-          createdBy = user.id;
-        }
-      }
-
-      // If no createdBy, this is a public inquiry - create a basic client user
-      if (!createdBy && req.body.clientEmail) {
-        const clientData = {
-          role: "client" as const,
-          email: req.body.clientEmail,
-          firstName: req.body.clientName?.split(' ')[0] || "Client",
-          lastName: req.body.clientName?.split(' ').slice(1).join(' ') || "User",
-        };
-
-        let client = await storage.getUser(clientData.email!); // Use email as ID for demo
-        if (!client) {
-          client = await storage.upsertUser(clientData);
-        }
-
-        createdBy = client.id;
-        bookingData = insertBookingSchema.parse({
-          ...req.body,
-          clientId: client.id,
-          createdBy: client.id,
-        });
+      
+      if (req.body.talents && Array.isArray(req.body.talents)) {
+        // Handle multiple talents
+        const { talents, ...bookingInfo } = req.body;
+        bookingData = insertBookingSchema.parse(bookingInfo);
       } else {
         bookingData = insertBookingSchema.parse(req.body);
       }
@@ -557,7 +363,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/bookings/:id/add-talent', isAuthenticated, async (req: any, res) => {
+  // Send booking requests to talents (placeholder)
+  app.post('/api/bookings/:id/send-requests', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -566,37 +373,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const { talentId } = req.body;
-      const bookingTalent = await storage.addTalentToBooking(req.params.id, talentId);
-      res.json(bookingTalent);
-    } catch (error) {
-      console.error("Error adding talent to booking:", error);
-      res.status(500).json({ message: "Failed to add talent to booking" });
-    }
-  });
-
-  // Send booking request to talents
-  app.post('/api/bookings/:id/request-talents', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-
-      if (!user || user.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const { talentIds } = req.body;
-      if (!Array.isArray(talentIds) || talentIds.length === 0) {
-        return res.status(400).json({ message: "talentIds array is required" });
-      }
-
-      const results = [];
-      for (const talentId of talentIds) {
-        const bookingTalent = await storage.addTalentToBooking(req.params.id, talentId);
-        results.push(bookingTalent);
-      }
-
-      res.json({ message: "Booking requests sent successfully", requests: results });
+      // This feature would require additional storage methods
+      res.status(501).json({ message: "Feature not yet implemented" });
     } catch (error) {
       console.error("Error sending booking requests:", error);
       res.status(500).json({ message: "Failed to send booking requests" });
@@ -651,15 +429,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await storage.respondToBookingRequest(
         req.params.requestId, 
-        userId,
+        userId, 
         action === 'accept' ? 'accepted' : 'declined',
         message
       );
-
-      res.json({ 
-        message: `Booking request ${action}ed successfully`, 
-        request: result 
-      });
+      
+      res.json(result);
     } catch (error) {
       console.error("Error responding to booking request:", error);
       res.status(500).json({ message: "Failed to respond to booking request" });
@@ -667,31 +442,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Task routes
-  app.post('/api/tasks', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-
-      if (!user || user.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const taskData = insertTaskSchema.parse({
-        ...req.body,
-        createdBy: userId,
-      });
-
-      const task = await storage.createTask(taskData);
-      res.json(task);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Validation error", errors: error.errors });
-      }
-      console.error("Error creating task:", error);
-      res.status(500).json({ message: "Failed to create task" });
-    }
-  });
-
   app.get('/api/tasks', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -702,9 +452,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { 
-        bookingId, 
-        talentId, 
-        status, 
+        bookingId,
+        status,
+        assigneeId,
         page = "1", 
         limit = "20" 
       } = req.query;
@@ -716,13 +466,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         offset,
       };
 
-      // Filter based on user role
-      if (user.role === 'talent') {
-        options.talentId = userId;
-      } else if (user.role === 'admin') {
-        if (bookingId) options.bookingId = bookingId;
-        if (talentId) options.talentId = talentId;
-        if (status) options.status = status;
+      // Set filters based on query params and user role
+      if (bookingId) options.bookingId = bookingId;
+      if (status) options.status = status;
+      
+      // Role-based filtering
+      if (user.role === 'admin') {
+        if (assigneeId) options.assigneeId = assigneeId;
+      } else {
+        // Non-admin users only see tasks assigned to them
+        options.assigneeId = userId;
       }
 
       const result = await storage.getAllTasks(options);
@@ -730,6 +483,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching tasks:", error);
       res.status(500).json({ message: "Failed to fetch tasks" });
+    }
+  });
+
+  app.post('/api/tasks', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const taskData = insertTaskSchema.parse(req.body);
+      const task = await storage.createTask(taskData);
+      res.json(task);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating task:", error);
+      res.status(500).json({ message: "Failed to create task" });
     }
   });
 
@@ -742,46 +516,234 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Only admin or assigned user can update tasks
-      if (user.role !== 'admin' && req.body.assigneeId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
+      // Users can only update tasks assigned to them, admins can update any task
+      if (user.role !== 'admin') {
+        // Check if task is assigned to this user
+        const tasks = await storage.getAllTasks({ assigneeId: userId });
+        const task = tasks.tasks.find(t => t.id === req.params.id);
+        if (!task) {
+          return res.status(403).json({ message: "Access denied" });
+        }
       }
 
-      const task = await storage.updateTask(req.params.id, req.body);
-      res.json(task);
+      const updatedTask = await storage.updateTask(req.params.id, req.body);
+      res.json(updatedTask);
     } catch (error) {
       console.error("Error updating task:", error);
       res.status(500).json({ message: "Failed to update task" });
     }
   });
 
-  // Calendar routes
-  app.get('/api/calendar', isAuthenticated, async (req: any, res) => {
+  // Notifications endpoint
+  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
 
-      if (!user || user.role !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
       }
 
-      const { bookings } = await storage.getAllBookings({ limit: 100 });
+      let notifications: any[] = [];
+      let total = 0;
 
-      const events = bookings
-        .filter(booking => booking.status === 'signed' || booking.status === 'paid')
-        .map(booking => ({
-          id: booking.id,
-          title: booking.title,
-          start: booking.startDate,
-          end: booking.endDate,
-          bookingId: booking.id,
-          talentIds: booking.bookingTalents.map(bt => bt.talentId),
-        }));
+      if (user.role === 'admin') {
+        // Admin notifications: pending approvals, booking requests, tasks, etc.
+        
+        // 1. Pending talent approvals
+        const pendingTalents = await storage.getAllTalents({ 
+          approvalStatus: 'pending', 
+          limit: 100 
+        });
+        if (pendingTalents.talents.length > 0) {
+          notifications.push({
+            type: 'approval',
+            title: `${pendingTalents.talents.length} talent${pendingTalents.talents.length > 1 ? 's' : ''} awaiting approval`,
+            description: `New talent applications need your review`,
+            createdAt: pendingTalents.talents[0]?.createdAt ? new Date(pendingTalents.talents[0].createdAt) : new Date(),
+            badge: pendingTalents.talents.length.toString(),
+          });
+        }
 
-      res.json(events);
+        // 2. Pending booking requests
+        const pendingBookingRequests = await storage.getAllBookingRequests({ 
+          status: 'pending', 
+          limit: 50 
+        });
+        if (pendingBookingRequests.length > 0) {
+          notifications.push({
+            type: 'booking',
+            title: `${pendingBookingRequests.length} booking request${pendingBookingRequests.length > 1 ? 's' : ''} pending`,
+            description: 'Talents are waiting for booking confirmations',
+            createdAt: pendingBookingRequests[0]?.createdAt ? new Date(pendingBookingRequests[0].createdAt) : new Date(),
+            badge: pendingBookingRequests.length.toString(),
+          });
+        }
+
+        // 3. Pending tasks
+        const adminTasks = await storage.getAllTasks({ 
+          assigneeId: userId, 
+          status: 'todo', 
+          limit: 50 
+        });
+        if (adminTasks.tasks.length > 0) {
+          notifications.push({
+            type: 'task',
+            title: `${adminTasks.tasks.length} pending task${adminTasks.tasks.length > 1 ? 's' : ''}`,
+            description: 'Tasks assigned to you need attention',
+            createdAt: adminTasks.tasks[0]?.createdAt ? new Date(adminTasks.tasks[0].createdAt) : new Date(),
+            badge: adminTasks.tasks.length.toString(),
+          });
+        }
+
+        // 4. Recent bookings (last 24 hours)
+        const recentBookings = await storage.getAllBookings({ 
+          limit: 10
+        });
+        const today = new Date();
+        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+        const newBookings = recentBookings.bookings.filter(
+          booking => new Date(booking.createdAt) > yesterday
+        );
+        if (newBookings.length > 0) {
+          notifications.push({
+            type: 'booking',
+            title: `${newBookings.length} new booking${newBookings.length > 1 ? 's' : ''} created`,
+            description: 'Recent bookings may need attention',
+            createdAt: newBookings[0]?.createdAt ? new Date(newBookings[0].createdAt) : new Date(),
+            badge: 'New',
+          });
+        }
+
+      } else if (user.role === 'talent') {
+        // Talent notifications: booking requests, tasks, messages, etc.
+        
+        // 1. Pending booking requests sent to this talent
+        const talentBookingRequests = await storage.getPendingBookingRequests(userId);
+        if (talentBookingRequests.length > 0) {
+          notifications.push({
+            type: 'booking',
+            title: `${talentBookingRequests.length} booking request${talentBookingRequests.length > 1 ? 's' : ''} awaiting response`,
+            description: 'Clients are waiting for your response',
+            createdAt: talentBookingRequests[0]?.createdAt ? new Date(talentBookingRequests[0].createdAt) : new Date(),
+            badge: talentBookingRequests.length.toString(),
+          });
+        }
+
+        // 2. Tasks assigned to this talent
+        const talentTasks = await storage.getAllTasks({ 
+          assigneeId: userId, 
+          status: 'todo', 
+          limit: 50 
+        });
+        if (talentTasks.tasks.length > 0) {
+          notifications.push({
+            type: 'task', 
+            title: `${talentTasks.tasks.length} pending task${talentTasks.tasks.length > 1 ? 's' : ''}`,
+            description: 'Tasks assigned to you need completion',
+            createdAt: talentTasks.tasks[0]?.createdAt ? new Date(talentTasks.tasks[0].createdAt) : new Date(),
+            badge: talentTasks.tasks.length.toString(),
+          });
+        }
+
+        // 3. Recent bookings this talent is involved in
+        const talentBookings = await storage.getAllBookings({ 
+          talentId: userId,
+          limit: 10
+        });
+        const today = new Date();
+        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+        const recentBookings = talentBookings.bookings.filter(
+          booking => new Date(booking.createdAt) > yesterday
+        );
+        if (recentBookings.length > 0) {
+          notifications.push({
+            type: 'booking',
+            title: `${recentBookings.length} booking update${recentBookings.length > 1 ? 's' : ''}`,
+            description: 'Recent changes to your bookings',
+            createdAt: recentBookings[0]?.createdAt ? new Date(recentBookings[0].createdAt) : new Date(),
+            badge: 'Update',
+          });
+        }
+
+        // 4. Profile approval status
+        const talentProfile = await storage.getTalentProfile(userId);
+        if (talentProfile?.approvalStatus === 'pending') {
+          notifications.push({
+            type: 'approval',
+            title: 'Profile under review',
+            description: 'Your talent application is being reviewed by our team',
+            createdAt: talentProfile.createdAt ? new Date(talentProfile.createdAt) : new Date(),
+            badge: 'Pending',
+          });
+        } else if (talentProfile?.approvalStatus === 'rejected') {
+          notifications.push({
+            type: 'urgent',
+            title: 'Profile needs attention',
+            description: 'Your application was rejected. Please update and resubmit.',
+            createdAt: talentProfile.updatedAt ? new Date(talentProfile.updatedAt) : new Date(),
+            badge: 'Action Required',
+          });
+        }
+
+      } else if (user.role === 'client') {
+        // Client notifications: booking updates, task assignments, etc.
+        
+        // 1. Bookings created by this client
+        const clientBookings = await storage.getAllBookings({ 
+          clientId: userId,
+          limit: 10
+        });
+        const today = new Date();
+        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+        const recentBookings = clientBookings.bookings.filter(
+          booking => new Date(booking.updatedAt) > yesterday
+        );
+        if (recentBookings.length > 0) {
+          notifications.push({
+            type: 'booking',
+            title: `${recentBookings.length} booking update${recentBookings.length > 1 ? 's' : ''}`,
+            description: 'Recent updates to your bookings',
+            createdAt: recentBookings[0]?.updatedAt ? new Date(recentBookings[0].updatedAt) : new Date(),
+            badge: 'Update',
+          });
+        }
+
+        // 2. Tasks assigned to this client
+        const clientTasks = await storage.getAllTasks({ 
+          assigneeId: userId, 
+          status: 'todo', 
+          limit: 50 
+        });
+        if (clientTasks.tasks.length > 0) {
+          notifications.push({
+            type: 'task',
+            title: `${clientTasks.tasks.length} pending task${clientTasks.tasks.length > 1 ? 's' : ''}`,
+            description: 'Tasks assigned to you need attention',
+            createdAt: clientTasks.tasks[0]?.createdAt ? new Date(clientTasks.tasks[0].createdAt) : new Date(),
+            badge: clientTasks.tasks.length.toString(),
+          });
+        }
+      }
+
+      // Sort notifications by most recent first
+      notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      // Calculate total count
+      total = notifications.reduce((sum, notif) => {
+        const badgeNum = parseInt(notif.badge) || 1;
+        return sum + (isNaN(badgeNum) ? 1 : badgeNum);
+      }, 0);
+
+      res.json({
+        items: notifications.slice(0, 10), // Limit to 10 most recent
+        total,
+        role: user.role
+      });
+
     } catch (error) {
-      console.error("Error fetching calendar:", error);
-      res.status(500).json({ message: "Failed to fetch calendar" });
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
     }
   });
 

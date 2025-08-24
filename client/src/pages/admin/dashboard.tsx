@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NotificationBell } from "@/components/ui/notification-bell";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -148,14 +149,7 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <i className="fas fa-bell text-slate-400 text-lg"></i>
-                {(tasksData?.tasks?.filter((task: any) => task.status === 'todo').length > 0) && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    {tasksData.tasks.filter((task: any) => task.status === 'todo').length}
-                  </span>
-                )}
-              </div>
+              <NotificationBell />
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-semibold">
