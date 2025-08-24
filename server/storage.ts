@@ -431,7 +431,7 @@ export class DatabaseStorage implements IStorage {
       status: "active",
     });
 
-    // Create additional demo talents
+    // Create demo talent users and profiles
     const demoTalents = [
       {
         id: "e6330a2c-922a-4c8e-84b4-96b1b709e523",
@@ -663,6 +663,27 @@ export class DatabaseStorage implements IStorage {
       }
     ];
 
+    // Create each talent user and profile
+    for (const talentData of demoTalents) {
+      // Create user
+      const talentUser = await this.upsertUser(talentData.user);
+      
+      // Create talent profile
+      await this.createTalentProfile({
+        userId: talentUser.id,
+        stageName: talentData.stageName,
+        categories: talentData.categories,
+        skills: talentData.skills,
+        bio: talentData.bio,
+        location: talentData.location,
+        unionStatus: talentData.unionStatus,
+        measurements: talentData.measurements,
+        rates: talentData.rates,
+        social: talentData.social,
+        approvalStatus: talentData.approvalStatus,
+      });
+    }
+
     const clientUser = await this.upsertUser({
       id: "client-demo-id",
       role: "client",
@@ -670,35 +691,6 @@ export class DatabaseStorage implements IStorage {
       firstName: "Client",
       lastName: "User",
       status: "active",
-    });
-
-    // Create talent profile
-    await this.createTalentProfile({
-      userId: talentUser.id,
-      stageName: "Sarah J.",
-      categories: ["Commercial", "Runway", "Editorial"],
-      skills: ["Acting", "Modeling", "Dance", "Spanish", "Yoga"],
-      bio: "Professional model and actress with over 5 years of experience in fashion, commercial, and editorial work. Specializes in high-fashion runway shows and brand campaigns.",
-      location: "New York, NY",
-      unionStatus: "SAG-AFTRA",
-      measurements: {
-        height: "5'8\"",
-        bust: "34\"",
-        waist: "26\"",
-        hips: "36\"",
-        shoe: "8.5",
-        hair: "Brown",
-        eyes: "Hazel",
-      },
-      rates: {
-        day: 800,
-        halfDay: 500,
-        hourly: 125,
-      },
-      social: {
-        instagram: "@sarahjmodel",
-      },
-      approvalStatus: "approved",
     });
 
     // Create demo booking
@@ -714,8 +706,8 @@ export class DatabaseStorage implements IStorage {
       notes: "Fashion campaign for spring collection",
     });
 
-    // Add talent to booking
-    await this.addTalentToBooking(demoBooking.id, talentUser.id);
+    // Add first talent to booking (Sarah J.)
+    await this.addTalentToBooking(demoBooking.id, "talent-demo-id-1");
 
     // Create demo tasks
     await this.createTask({
@@ -731,11 +723,11 @@ export class DatabaseStorage implements IStorage {
 
     await this.createTask({
       scope: "talent",
-      talentId: talentUser.id,
+      talentId: "talent-demo-id-1",
       title: "Update portfolio photos",
       description: "Add recent headshots to portfolio",
       status: "in_progress",
-      assigneeId: talentUser.id,
+      assigneeId: "talent-demo-id-1",
       createdBy: adminUser.id,
     });
 
