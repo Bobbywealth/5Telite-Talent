@@ -93,19 +93,22 @@ export default function Home() {
               <p className="text-xl text-slate-200 mb-6">
                 {getRoleDescription()}
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-dashboard" asChild>
-                  <Link href={getDashboardLink()}>
-                    <i className="fas fa-tachometer-alt mr-2"></i>
-                    Go to {user?.role === 'admin' ? 'Admin' : ''} Dashboard
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-browse-talent" asChild>
-                  <Link href="/talent">
-                    <i className="fas fa-users mr-2"></i>Browse Talent
-                  </Link>
-                </Button>
-              </div>
+              {/* Only show buttons for non-talent users since talents have navbar */}
+              {user?.role !== 'talent' && (
+                <div className="flex flex-wrap gap-4">
+                  <Button size="lg" className="bg-white text-primary hover:bg-slate-50" data-testid="button-dashboard" asChild>
+                    <Link href={getDashboardLink()}>
+                      <i className="fas fa-tachometer-alt mr-2"></i>
+                      Go to {user?.role === 'admin' ? 'Admin' : ''} Dashboard
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-primary" data-testid="button-browse-talent" asChild>
+                    <Link href="/talent">
+                      <i className="fas fa-users mr-2"></i>Browse Talent
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
