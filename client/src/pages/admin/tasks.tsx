@@ -348,7 +348,14 @@ export default function AdminTasks() {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-slate-900">Task Management</h1>
+            <div className="flex items-center space-x-4">
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-12 w-auto"
+              />
+              <h1 className="text-2xl font-bold text-slate-900">Task Management</h1>
+            </div>
             <div className="flex items-center space-x-4">
               <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                 <DialogTrigger asChild>

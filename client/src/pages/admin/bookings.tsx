@@ -321,11 +321,18 @@ export default function AdminBookings() {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Booking Management</h1>
-              <span className="text-sm text-slate-600">
-                {bookingsData ? `${bookingsData.bookings.length} of ${bookingsData.total} bookings` : "Loading..."}
-              </span>
+            <div className="flex items-center space-x-4">
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-12 w-auto"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Booking Management</h1>
+                <span className="text-sm text-slate-600">
+                  {bookingsData ? `${bookingsData.bookings.length} of ${bookingsData.total} bookings` : "Loading..."}
+                </span>
+              </div>
             </div>
             <div className="flex space-x-3">
               <Dialog open={showCreateRequest} onOpenChange={setShowCreateRequest}>

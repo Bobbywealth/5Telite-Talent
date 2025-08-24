@@ -285,7 +285,14 @@ export default function AdminTalents() {
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-slate-900">Talent Management</h1>
+            <div className="flex items-center space-x-4">
+              <img 
+                src="/attached_assets/5t-logo.png" 
+                alt="5T Talent Platform" 
+                className="h-12 w-auto"
+              />
+              <h1 className="text-2xl font-bold text-slate-900">Talent Management</h1>
+            </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-slate-600">
                 {talentsData ? `${talentsData.talents.length} of ${talentsData.total} talents` : "Loading..."}
