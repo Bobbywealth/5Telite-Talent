@@ -91,6 +91,7 @@ function Router() {
               <Route path="/dashboard/profile" component={TalentProfileEdit} />
               <Route path="/dashboard/bookings" component={TalentBookings} />
               <Route path="/dashboard/tasks" component={TalentTasks} />
+              <Route path="/dashboard/settings" component={Settings} />
             </>
           )}
 
