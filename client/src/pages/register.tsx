@@ -61,23 +61,26 @@ export default function Register() {
 
       const user = await userResponse.json();
 
-      // Then create talent profile
-      const profileResponse = await fetch("/api/talent-profiles", {
+      // Then update talent profile with detailed information
+      const profileResponse = await fetch("/api/talents/me", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user.id,
-          stageName: data.stageName || null,
+          stageName: data.stageName || `${data.firstName} ${data.lastName}`,
           location: data.location,
           bio: data.bio,
           categories: data.categories,
           skills: data.skills.split(",").map(s => s.trim()).filter(Boolean),
-          phoneNumber: data.phoneNumber,
-          height: data.height || null,
-          weight: data.weight || null,
-          hairColor: data.hairColor || null,
-          eyeColor: data.eyeColor || null,
-          experience: data.experience,
+          measurements: {
+            height: data.height || null,
+            weight: data.weight || null,
+            hairColor: data.hairColor || null,
+            eyeColor: data.eyeColor || null
+          },
+          social: {
+            phoneNumber: data.phoneNumber
+          },
+          approvalStatus: "pending"
         }),
       });
 

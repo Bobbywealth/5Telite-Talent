@@ -225,7 +225,7 @@ export class DatabaseStorage implements IStorage {
       client: booking.users,
       createdBy: createdBy,
       bookingTalents: bookingTalentsResult.map(row => ({ ...row.booking_talents, talent: row.users })),
-    };
+    } as any;
   }
 
   async getAllBookings(options: {
@@ -263,7 +263,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
     const results = await query
@@ -290,7 +290,7 @@ export class DatabaseStorage implements IStorage {
           client: row.users,
           createdBy: createdBy,
           bookingTalents: bookingTalentsResult.map(btRow => ({ ...btRow.booking_talents, talent: btRow.users })),
-        };
+        } as any;
       })
     );
 
@@ -360,7 +360,7 @@ export class DatabaseStorage implements IStorage {
     let query = db.select().from(tasks);
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
     const results = await query

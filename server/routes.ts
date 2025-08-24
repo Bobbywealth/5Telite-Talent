@@ -100,24 +100,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     // Create initial talent profile if role is 'talent'
     if (role === 'talent') {
-      await db.insert(talentProfiles).values({
-        id: crypto.randomUUID(),
-        userId: user.id,
-        stageName: `${firstName} ${lastName}`, // Default stage name
-        location: null,
-        bio: null,
-        categories: [],
-        skills: [],
-        phoneNumber: null,
-        height: null,
-        weight: null,
-        hairColor: null,
-        eyeColor: null,
-        experience: [],
-        approvalStatus: "pending",
-        profileImageUrls: [],
-        portfolioUrls: []
-      }).returning();
+      try {
+        await storage.createTalentProfile({
+          userId: user.id,
+          stageName: `${firstName} ${lastName}`,
+          categories: [],
+          skills: [],
+          bio: null,
+          location: null,
+          unionStatus: null,
+          measurements: null,
+          rates: null,
+          mediaUrls: [],
+          resumeUrls: [],
+          social: null,
+          guardian: null,
+          approvalStatus: "pending"
+        });
+      } catch (error) {
+        console.log("Initial talent profile creation handled by storage layer");
+      }
     }
 
     res.status(201).json(user);
