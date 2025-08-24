@@ -30,7 +30,12 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <div className="mb-12">
-          <div className="bg-gradient-hero text-white rounded-2xl p-8 mb-8">
+          <div className="bg-gradient-hero-enhanced text-white rounded-2xl p-8 mb-8 relative overflow-hidden">
+            {/* Brand-aligned floating elements */}
+            <div className="absolute inset-0">
+              <div className="floating-shape shape-1"></div>
+              <div className="floating-shape shape-2"></div>
+            </div>
             <div className="max-w-3xl">
               <h1 className="text-3xl lg:text-5xl font-bold mb-4">
                 Welcome back, {user?.firstName || 'User'}!

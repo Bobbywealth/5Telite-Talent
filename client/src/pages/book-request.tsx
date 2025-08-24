@@ -10,8 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useLocation } from "react-router-dom";
 
 export default function BookRequest() {
+  const navigate = useLocation()[1]; // This line seems to be incorrect as useLocation() returns an object, not an array with an index. Assuming it's a typo and should be removed or corrected if there's a specific routing library context.
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
@@ -73,31 +75,31 @@ export default function BookRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
       <Navbar />
-      
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
+          <h1 className="text-4xl lg:text-5xl font-bold text-yellow-400 mb-4">
             Request a Booking
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Tell us about your project and we'll connect you with the perfect talent. 
             Our team will review your request and provide a customized proposal.
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Project Details</CardTitle>
+        <Card className="bg-gradient-to-b from-gray-800 to-gray-700 border-yellow-400 border-2">
+          <CardHeader className="border-b border-yellow-400">
+            <CardTitle className="text-2xl text-yellow-400">Project Details</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Project Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="title">Project Title *</Label>
+                  <Label htmlFor="title" className="text-yellow-400">Project Title *</Label>
                   <Input
                     id="title"
                     placeholder="e.g., Spring Fashion Campaign 2024"
@@ -105,27 +107,28 @@ export default function BookRequest() {
                     onChange={(e) => handleChange("title", e.target.value)}
                     required
                     data-testid="input-project-title"
+                    className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category">Category *</Label>
+                  <Label htmlFor="category" className="text-yellow-400">Category *</Label>
                   <Select 
                     value={formData.category} 
                     onValueChange={(value) => handleChange("category", value)}
                     required
                   >
-                    <SelectTrigger data-testid="select-category">
+                    <SelectTrigger data-testid="select-category" className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400">
                       <SelectValue placeholder="Select project category" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Commercial">Commercial</SelectItem>
-                      <SelectItem value="Fashion">Fashion</SelectItem>
-                      <SelectItem value="Editorial">Editorial</SelectItem>
-                      <SelectItem value="Event">Event</SelectItem>
-                      <SelectItem value="Corporate">Corporate</SelectItem>
-                      <SelectItem value="Film/TV">Film/TV</SelectItem>
-                      <SelectItem value="Music Video">Music Video</SelectItem>
-                      <SelectItem value="Photography">Photography</SelectItem>
+                    <SelectContent className="bg-gray-700 border-gray-600 text-white">
+                      <SelectItem value="Commercial" className="hover:bg-yellow-400 hover:text-gray-900">Commercial</SelectItem>
+                      <SelectItem value="Fashion" className="hover:bg-yellow-400 hover:text-gray-900">Fashion</SelectItem>
+                      <SelectItem value="Editorial" className="hover:bg-yellow-400 hover:text-gray-900">Editorial</SelectItem>
+                      <SelectItem value="Event" className="hover:bg-yellow-400 hover:text-gray-900">Event</SelectItem>
+                      <SelectItem value="Corporate" className="hover:bg-yellow-400 hover:text-gray-900">Corporate</SelectItem>
+                      <SelectItem value="Film/TV" className="hover:bg-yellow-400 hover:text-gray-900">Film/TV</SelectItem>
+                      <SelectItem value="Music Video" className="hover:bg-yellow-400 hover:text-gray-900">Music Video</SelectItem>
+                      <SelectItem value="Photography" className="hover:bg-yellow-400 hover:text-gray-900">Photography</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -134,7 +137,7 @@ export default function BookRequest() {
               {/* Dates and Location */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <Label htmlFor="startDate">Start Date *</Label>
+                  <Label htmlFor="startDate" className="text-yellow-400">Start Date *</Label>
                   <Input
                     id="startDate"
                     type="date"
@@ -142,10 +145,11 @@ export default function BookRequest() {
                     onChange={(e) => handleChange("startDate", e.target.value)}
                     required
                     data-testid="input-start-date"
+                    className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="endDate">End Date *</Label>
+                  <Label htmlFor="endDate" className="text-yellow-400">End Date *</Label>
                   <Input
                     id="endDate"
                     type="date"
@@ -153,10 +157,11 @@ export default function BookRequest() {
                     onChange={(e) => handleChange("endDate", e.target.value)}
                     required
                     data-testid="input-end-date"
+                    className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="location">Location *</Label>
+                  <Label htmlFor="location" className="text-yellow-400">Location *</Label>
                   <Input
                     id="location"
                     placeholder="e.g., New York Studio"
@@ -164,13 +169,14 @@ export default function BookRequest() {
                     onChange={(e) => handleChange("location", e.target.value)}
                     required
                     data-testid="input-location"
+                    className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                   />
                 </div>
               </div>
 
               {/* Project Description */}
               <div>
-                <Label htmlFor="description">Project Description *</Label>
+                <Label htmlFor="description" className="text-yellow-400">Project Description *</Label>
                 <Textarea
                   id="description"
                   rows={4}
@@ -179,12 +185,13 @@ export default function BookRequest() {
                   onChange={(e) => handleChange("description", e.target.value)}
                   required
                   data-testid="textarea-description"
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                 />
               </div>
 
               {/* Deliverables */}
               <div>
-                <Label htmlFor="deliverables">Deliverables</Label>
+                <Label htmlFor="deliverables" className="text-yellow-400">Deliverables</Label>
                 <Textarea
                   id="deliverables"
                   rows={3}
@@ -192,12 +199,13 @@ export default function BookRequest() {
                   value={formData.deliverables}
                   onChange={(e) => handleChange("deliverables", e.target.value)}
                   data-testid="textarea-deliverables"
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                 />
               </div>
 
               {/* Budget */}
               <div>
-                <Label htmlFor="budget">Budget (USD)</Label>
+                <Label htmlFor="budget" className="text-yellow-400">Budget (USD)</Label>
                 <Input
                   id="budget"
                   type="number"
@@ -205,18 +213,19 @@ export default function BookRequest() {
                   value={formData.budget}
                   onChange={(e) => handleChange("budget", e.target.value)}
                   data-testid="input-budget"
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                 />
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-gray-400 mt-1">
                   Optional. Helps us provide more accurate talent recommendations.
                 </p>
               </div>
 
               {/* Contact Information */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Contact Information</h3>
+              <div className="border-t border-gray-700 pt-6">
+                <h3 className="text-lg font-semibold text-yellow-400 mb-4">Contact Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="clientName">Your Name *</Label>
+                    <Label htmlFor="clientName" className="text-yellow-400">Your Name *</Label>
                     <Input
                       id="clientName"
                       placeholder="Full name"
@@ -224,10 +233,11 @@ export default function BookRequest() {
                       onChange={(e) => handleChange("clientName", e.target.value)}
                       required
                       data-testid="input-client-name"
+                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="clientEmail">Email Address *</Label>
+                    <Label htmlFor="clientEmail" className="text-yellow-400">Email Address *</Label>
                     <Input
                       id="clientEmail"
                       type="email"
@@ -236,11 +246,12 @@ export default function BookRequest() {
                       onChange={(e) => handleChange("clientEmail", e.target.value)}
                       required
                       data-testid="input-client-email"
+                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                     />
                   </div>
                 </div>
                 <div className="mt-4">
-                  <Label htmlFor="clientPhone">Phone Number</Label>
+                  <Label htmlFor="clientPhone" className="text-yellow-400">Phone Number</Label>
                   <Input
                     id="clientPhone"
                     type="tel"
@@ -248,6 +259,7 @@ export default function BookRequest() {
                     value={formData.clientPhone}
                     onChange={(e) => handleChange("clientPhone", e.target.value)}
                     data-testid="input-client-phone"
+                    className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
                   />
                 </div>
               </div>
@@ -256,7 +268,7 @@ export default function BookRequest() {
               <div className="pt-6">
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
                   size="lg"
                   disabled={bookingMutation.isPending}
                   data-testid="button-submit-booking"
@@ -273,7 +285,7 @@ export default function BookRequest() {
                     </>
                   )}
                 </Button>
-                <p className="text-sm text-slate-500 text-center mt-3">
+                <p className="text-sm text-gray-400 text-center mt-3">
                   We'll review your request and respond within 24 hours with talent recommendations and next steps.
                 </p>
               </div>

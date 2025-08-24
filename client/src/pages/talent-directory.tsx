@@ -47,6 +47,26 @@ export default function TalentDirectory() {
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       
+      {/* Brand-aligned Hero Section */}
+      <section className="relative bg-gradient-hero-enhanced overflow-hidden py-20">
+        <div className="absolute inset-0">
+          <div className="floating-shape shape-1"></div>
+          <div className="floating-shape shape-2"></div>
+          <div className="floating-shape shape-3"></div>
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
+              Talent <span className="text-gradient-white">Directory</span>
+            </h1>
+            <p className="text-xl text-slate-200 mb-8 max-w-2xl mx-auto">
+              Discover exceptional talent for your next project
+            </p>
+          </div>
+        </div>
+      </section>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
