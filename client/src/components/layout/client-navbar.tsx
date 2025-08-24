@@ -41,7 +41,7 @@ export default function ClientNavbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+              className="lg:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
               data-testid="button-mobile-menu-client"
             >
               <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-lg`}></i>
@@ -57,7 +57,7 @@ export default function ClientNavbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -150,7 +150,7 @@ export default function ClientNavbar() {
             {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
-              className="md:hidden"
+              className="lg:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               data-testid="mobile-menu-toggle"
             >
@@ -161,7 +161,7 @@ export default function ClientNavbar() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-slate-200">
               {navItems.map((item) => (
                 <Link

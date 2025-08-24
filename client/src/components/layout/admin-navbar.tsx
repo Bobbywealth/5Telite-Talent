@@ -43,7 +43,7 @@ export default function AdminNavbar() {
             {/* Mobile Menu Button */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="md:hidden p-2" data-testid="button-mobile-menu">
+                <Button variant="ghost" size="sm" className="lg:hidden p-2" data-testid="button-mobile-menu">
                   <i className="fas fa-bars text-lg"></i>
                 </Button>
               </SheetTrigger>
@@ -94,7 +94,7 @@ export default function AdminNavbar() {
           </div>
 
           {/* Center: Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-6">
             {navigationItems.map((item) => (
               <Link 
                 key={item.href}
