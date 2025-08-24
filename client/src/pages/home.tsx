@@ -1,5 +1,9 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
@@ -9,6 +13,44 @@ import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export default function Home() {
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  // Complete talent registration after authentication
+  const completeRegistrationMutation = useMutation({
+    mutationFn: async (registrationData: any) => {
+      return apiRequest("POST", "/api/talents/me", registrationData);
+    },
+    onSuccess: () => {
+      localStorage.removeItem('talent_registration_data');
+      toast({
+        title: "Registration Completed!",
+        description: "Your talent profile has been created and is under review.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Registration Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Check for pending registration data
+  useEffect(() => {
+    if (user?.role === 'talent') {
+      const registrationData = localStorage.getItem('talent_registration_data');
+      if (registrationData) {
+        try {
+          const data = JSON.parse(registrationData);
+          completeRegistrationMutation.mutate(data);
+        } catch (error) {
+          console.error("Error parsing registration data:", error);
+          localStorage.removeItem('talent_registration_data');
+        }
+      }
+    }
+  }, [user]);
 
   const getDashboardLink = () => {
     if (user?.role === 'admin') return '/admin';

@@ -42,61 +42,28 @@ export default function Register() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      // First register the user
-      const userResponse = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          role: "talent"
-        }),
-      });
+      // Store form data in localStorage temporarily
+      localStorage.setItem('talent_registration_data', JSON.stringify({
+        stageName: data.stageName || `${data.firstName} ${data.lastName}`,
+        location: data.location,
+        bio: data.bio,
+        categories: data.categories,
+        skills: data.skills.split(",").map(s => s.trim()).filter(Boolean),
+        measurements: {
+          height: data.height || null,
+          weight: data.weight || null,
+          hairColor: data.hairColor || null,
+          eyeColor: data.eyeColor || null
+        },
+        social: {
+          phoneNumber: data.phoneNumber
+        }
+      }));
 
-      if (!userResponse.ok) {
-        const error = await userResponse.json();
-        throw new Error(error.message || "Registration failed");
-      }
-
-      const user = await userResponse.json();
-
-      // Then update talent profile with detailed information
-      const profileResponse = await fetch("/api/talents/me", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          stageName: data.stageName || `${data.firstName} ${data.lastName}`,
-          location: data.location,
-          bio: data.bio,
-          categories: data.categories,
-          skills: data.skills.split(",").map(s => s.trim()).filter(Boolean),
-          measurements: {
-            height: data.height || null,
-            weight: data.weight || null,
-            hairColor: data.hairColor || null,
-            eyeColor: data.eyeColor || null
-          },
-          social: {
-            phoneNumber: data.phoneNumber
-          },
-          approvalStatus: "pending"
-        }),
-      });
-
-      if (!profileResponse.ok) {
-        const error = await profileResponse.json();
-        throw new Error(error.message || "Profile creation failed");
-      }
-
-      return { user, profile: await profileResponse.json() };
-    },
-    onSuccess: () => {
-      toast({
-        title: "Registration Successful!",
-        description: "Your application has been submitted and is under review. You'll be notified once approved.",
-      });
-      setLocation("/");
+      // Redirect to Replit Auth login to complete registration
+      window.location.href = "/api/login";
+      
+      return { success: true };
     },
     onError: (error: any) => {
       toast({

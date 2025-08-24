@@ -77,69 +77,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.error("Failed to seed demo data:", error);
   }
 
-  // Auth routes
-  app.post("/api/auth/register", async (req: any, res) => {
-    const { firstName, lastName, email, role = "talent" } = req.body;
+  // Auth routes - using Replit Auth only
 
-    // Check if user already exists
-    const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    // Create user
-    const [user] = await db.insert(users).values({
-      id: crypto.randomUUID(),
-      firstName,
-      lastName,
-      email,
-      role: role as "admin" | "talent" | "client",
-      status: "active",
-      profileImageUrl: null
-    }).returning();
-
-    // Create initial talent profile if role is 'talent'
-    if (role === 'talent') {
-      try {
-        await storage.createTalentProfile({
-          userId: user.id,
-          stageName: `${firstName} ${lastName}`,
-          categories: [],
-          skills: [],
-          bio: null,
-          location: null,
-          unionStatus: null,
-          measurements: null,
-          rates: null,
-          mediaUrls: [],
-          resumeUrls: [],
-          social: null,
-          guardian: null,
-          approvalStatus: "pending"
-        });
-      } catch (error) {
-        console.log("Initial talent profile creation handled by storage layer");
-      }
-    }
-
-    res.status(201).json(user);
-  });
-
-  app.post("/api/auth/login", isAuthenticated, async (req: any, res) => {
+  // User endpoint to get current user info
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      let user = await storage.getUser(userId);
+      
+      // If user doesn't exist, create them from Replit Auth claims
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        const claims = req.user.claims;
+        user = await storage.upsertUser({
+          id: userId,
+          email: claims.email,
+          firstName: claims.first_name,
+          lastName: claims.last_name,
+          profileImageUrl: claims.profile_image_url,
+          role: 'talent', // Default to talent role
+          status: 'active'
+        });
+
+        // Create initial talent profile for new users
+        try {
+          await storage.createTalentProfile({
+            userId: user.id,
+            stageName: `${user.firstName} ${user.lastName}`,
+            categories: [],
+            skills: [],
+            bio: null,
+            location: null,
+            unionStatus: null,
+            measurements: null,
+            rates: null,
+            mediaUrls: [],
+            resumeUrls: [],
+            social: null,
+            guardian: null,
+            approvalStatus: "pending"
+          });
+        } catch (error) {
+          console.log("Initial talent profile already exists or error creating:", error);
+        }
       }
 
-      // Include talent profile if user is a talent
-      let talentProfile = null;
-      if (user.role === 'talent') {
-        talentProfile = await storage.getTalentProfile(userId);
-      }
-
-      res.json({ ...user, talentProfile });
+      res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });

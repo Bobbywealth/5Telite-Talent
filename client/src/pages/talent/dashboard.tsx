@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -14,6 +15,43 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function TalentDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
+
+  // Complete talent registration after authentication
+  const completeRegistrationMutation = useMutation({
+    mutationFn: async (registrationData: any) => {
+      return apiRequest("POST", "/api/talents/me", registrationData);
+    },
+    onSuccess: () => {
+      localStorage.removeItem('talent_registration_data');
+      toast({
+        title: "Registration Completed!",
+        description: "Your talent profile has been created and is under review.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Registration Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Check for pending registration data
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'talent') {
+      const registrationData = localStorage.getItem('talent_registration_data');
+      if (registrationData) {
+        try {
+          const data = JSON.parse(registrationData);
+          completeRegistrationMutation.mutate(data);
+        } catch (error) {
+          console.error("Error parsing registration data:", error);
+          localStorage.removeItem('talent_registration_data');
+        }
+      }
+    }
+  }, [isAuthenticated, user]);
 
   // Authentication is handled by the Router component
 
