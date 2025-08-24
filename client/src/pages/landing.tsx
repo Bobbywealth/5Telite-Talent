@@ -170,7 +170,7 @@ export default function Landing() {
                 <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Verified Talent</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">50+</div>
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">200+</div>
                 <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Completed Projects</div>
               </div>
               <div className="text-center">
