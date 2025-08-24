@@ -25,9 +25,6 @@ interface TalentCardProps {
 
 export default function TalentCard({ talent }: TalentCardProps) {
   const displayName = talent.stageName || `${talent.user.firstName} ${talent.user.lastName}`;
-  const primaryRate = talent.rates?.day ? `$${talent.rates.day}/day` : 
-                    talent.rates?.hourly ? `$${talent.rates.hourly}/hr` : 
-                    "Rate on request";
 
   return (
     <Card className="hover:shadow-xl transition-shadow cursor-pointer overflow-hidden" data-testid={`card-talent-${talent.id}`}>
@@ -86,10 +83,7 @@ export default function TalentCard({ talent }: TalentCardProps) {
           </div>
         )}
         
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-slate-900" data-testid={`text-talent-rate-${talent.id}`}>
-            {primaryRate}
-          </span>
+        <div className="flex justify-end items-center">
           <Link href={`/talent/${talent.id}`}>
             <Button variant="ghost" size="sm" data-testid={`button-view-profile-${talent.id}`}>
               View Profile

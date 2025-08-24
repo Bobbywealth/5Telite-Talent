@@ -207,40 +207,7 @@ export default function TalentProfile() {
               </Card>
             )}
 
-            {/* Rates */}
-            {talent.rates && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Rates</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  {talent.rates.day && (
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Day Rate:</span>
-                      <span className="text-slate-900 font-medium" data-testid="text-day-rate">
-                        ${talent.rates.day}
-                      </span>
-                    </div>
-                  )}
-                  {talent.rates.halfDay && (
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Half Day:</span>
-                      <span className="text-slate-900 font-medium" data-testid="text-half-day-rate">
-                        ${talent.rates.halfDay}
-                      </span>
-                    </div>
-                  )}
-                  {talent.rates.hourly && (
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Hourly:</span>
-                      <span className="text-slate-900 font-medium" data-testid="text-hourly-rate">
-                        ${talent.rates.hourly}
-                      </span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            
 
             {/* Union Status */}
             {talent.unionStatus && (
