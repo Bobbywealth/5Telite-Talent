@@ -121,27 +121,31 @@ export default function Landing() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-8 animate-fade-in-up">
-              <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-              500+ Professional Talents Available
+          <div className="max-w-4xl mx-auto text-center text-white relative z-20">
+              <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-sm font-medium text-white border border-white/30 mb-8">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></span>
+                500+ Diverse Professional Talents Available
+              </div>
+
+              <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-tight">
+                Book
+                <br />
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+                    Exceptional
+                  </span>
+                  <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-full"></div>
+                </span>
+                <br />
+                Talent
+              </h1>
+
+              <p className="text-xl lg:text-2xl mb-12 text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
+                Connect with diverse, multicultural performers who represent today's evolving global landscape.
+                <br />
+                <span className="font-bold text-yellow-300">Book with confidence</span> through our comprehensive talent platform.
+              </p>
             </div>
-
-            {/* Main heading */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up-delay-1">
-              Book <span className="text-gradient-white relative">
-                Exceptional
-                <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transform scale-x-0 animate-underline"></div>
-              </span>
-              <br />Talent
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-lg sm:text-xl lg:text-2xl text-slate-200 mb-10 max-w-3xl mx-auto animate-fade-in-up-delay-2 leading-relaxed">
-              Connect with professional models, actors, and performers for your next project. 
-              <span className="text-yellow-300 font-semibold block sm:inline">Book with confidence</span> through our comprehensive talent platform.
-            </p>
 
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up-delay-3">
@@ -226,95 +230,124 @@ export default function Landing() {
       </section>
 
       {/* What We Do Section */}
-      <section className="relative py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 overflow-hidden">
-        {/* Brand floating elements */}
-        <div className="absolute inset-0">
-          <div className="floating-shape shape-2"></div>
-          <div className="floating-shape shape-4"></div>
-        </div>
-        <div className="absolute inset-0 bg-black bg-opacity-5 brand-dot-pattern"></div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">What We Do</h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Comprehensive talent solutions designed to elevate your business and connect you with exceptional performers
-            </p>
+        <section className="py-24 bg-gradient-to-br from-slate-50 to-white relative overflow-hidden">
+          {/* Background branding elements */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-10 left-10 text-6xl font-black text-blue-600 transform -rotate-12">5T</div>
+            <div className="absolute top-32 right-20 text-4xl font-black text-blue-600 transform rotate-45">ELITE</div>
+            <div className="absolute bottom-20 left-1/4 text-5xl font-black text-blue-600 transform -rotate-45">TALENT</div>
+            <div className="absolute bottom-32 right-10 text-3xl font-black text-blue-600 transform rotate-12">5T</div>
+            <div className="absolute top-1/2 left-1/2 text-7xl font-black text-blue-600 transform -translate-x-1/2 -translate-y-1/2 rotate-90 opacity-30">ELITE</div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {/* Talent Acquisition */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 brand-card-hover">
-              <CardContent className="p-8 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
-                  <i className="fas fa-briefcase text-3xl text-white"></i>
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Talent Acquisition</h3>
-                <p className="text-slate-600 mb-6 leading-relaxed">
-                  We understand the unique needs of your business. We're not just recruiting; we're building 
-                  lasting partnerships between companies and top talent.
-                </p>
-                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 hover:shadow-lg transition-all duration-300" data-testid="button-talent-acquisition">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 mb-6">
+                What We Do
+              </h2>
+              <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
+                5T Elite Talent is the "everything" of talent and management agencies, focusing on the exquisite beauty and talent of predominantly multiracial-diverse-cultured performers who represent today's evolving global trends.
+              </p>
+            </div>
 
-            {/* Strategic Consulting */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 brand-card-hover">
-              <CardContent className="p-8 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
-                  <i className="fas fa-chart-line text-3xl text-white"></i>
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Strategic Consulting</h3>
-                <p className="text-slate-600 mb-6 leading-relaxed">
-                  Our strategic advice goes beyond recruitment. We guide your workforce decisions, 
-                  empowering your business to succeed.
-                </p>
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white border-0 hover:shadow-lg transition-all duration-300" data-testid="button-strategic-consulting">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="grid lg:grid-cols-4 gap-6 mb-12">
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <i className="fas fa-graduation-cap text-white text-xl"></i>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Educational Programming</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    School assemblies, afterschool programs, and educational content that enriches school communities.
+                  </p>
+                </CardContent>
+              </Card>
 
-            {/* Industry Specialization */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/10 backdrop-blur-sm hover:bg-white/20 brand-card-hover">
-              <CardContent className="p-8 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-blue-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
-                  <i className="fas fa-star text-3xl text-white"></i>
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Industry Specialization</h3>
-                <p className="text-slate-600 mb-6 leading-relaxed">
-                  Our deep industry knowledge ensures we connect you with professionals who understand 
-                  your sector inside and out. Trust us for industry-specific staffing.
-                </p>
-                <Button className="bg-gradient-to-r from-pink-500 to-blue-600 hover:from-pink-600 hover:to-blue-700 text-white border-0 hover:shadow-lg transition-all duration-300" data-testid="button-industry-specialization">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <i className="fas fa-building text-white text-xl"></i>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Corporate Talent</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Talent acquisition for major companies, corporate programming, and finding the right people for your organization.
+                  </p>
+                </CardContent>
+              </Card>
 
-          {/* Statistics Section */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl"></div>
-            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 p-12 backdrop-blur-sm bg-white/30 rounded-3xl border border-white/20">
-              <div className="text-center">
-                <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent mb-2">100%</div>
-                <div className="text-sm font-medium text-slate-600 uppercase tracking-wide">Satisfaction Guaranteed</div>
-              </div>
-              <div className="text-center">
-                <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-500 to-pink-600 bg-clip-text text-transparent mb-2">500+</div>
-                <div className="text-sm font-medium text-slate-600 uppercase tracking-wide">Active Talents</div>
-              </div>
-              <div className="text-center">
-                <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-pink-500 to-blue-600 bg-clip-text text-transparent mb-2">1000+</div>
-                <div className="text-sm font-medium text-slate-600 uppercase tracking-wide">Successful Projects</div>
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <i className="fas fa-tv text-white text-xl"></i>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Media & Entertainment</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Television, theatrical, commercials, voice over, documentaries, hosting, and new media platforms.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <i className="fas fa-briefcase text-white text-xl"></i>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Employment Services</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Helping employers find employees and helping jobseekers find meaningful work opportunities.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Talent Categories */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50">
+              <h3 className="text-2xl font-bold text-slate-900 text-center mb-8">Our Diverse Talent Roster</h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-slate-800">Performers</h4>
+                  <ul className="text-sm text-slate-600 space-y-1">
+                    <li>• Dancers</li>
+                    <li>• Actors</li>
+                    <li>• Singers</li>
+                    <li>• Musicians</li>
+                    <li>• Comedians</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-slate-800">Models</h4>
+                  <ul className="text-sm text-slate-600 space-y-1">
+                    <li>• Runway Models</li>
+                    <li>• Video & Print Models</li>
+                    <li>• All Races & Ethnicities</li>
+                    <li>• Children</li>
+                    <li>• Seniors</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-slate-800">Creative Professionals</h4>
+                  <ul className="text-sm text-slate-600 space-y-1">
+                    <li>• Writers</li>
+                    <li>• Poets</li>
+                    <li>• Visual Artists</li>
+                    <li>• Graphic Designers</li>
+                    <li>• Animators</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-slate-800">Specialists</h4>
+                  <ul className="text-sm text-slate-600 space-y-1">
+                    <li>• Motivational Speakers</li>
+                    <li>• Lecturers</li>
+                    <li>• Broadcasters</li>
+                    <li>• Stunt Performers</li>
+                    <li>• Performers with Disabilities</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* Featured Talents */}
       <section className="relative py-16 bg-gradient-hero-enhanced overflow-hidden">

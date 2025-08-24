@@ -46,7 +46,7 @@ export default function TalentDirectory() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      
+
       {/* Brand-aligned Hero Section */}
       <section className="relative bg-gradient-hero-enhanced overflow-hidden py-20">
         <div className="absolute inset-0">
@@ -66,7 +66,7 @@ export default function TalentDirectory() {
           </div>
         </div>
       </section>
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
