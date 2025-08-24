@@ -33,6 +33,7 @@ export interface IStorage {
     skills?: string[];
     location?: string;
     search?: string;
+    approvalStatus?: string;
     limit?: number;
     offset?: number;
   }): Promise<{ talents: (TalentProfile & { user: User })[], total: number }>;
@@ -128,6 +129,7 @@ export class DatabaseStorage implements IStorage {
     skills?: string[];
     location?: string;
     search?: string;
+    approvalStatus?: string;
     limit?: number;
     offset?: number;
   } = {}): Promise<{ talents: (TalentProfile & { user: User })[], total: number }> {
@@ -136,11 +138,12 @@ export class DatabaseStorage implements IStorage {
       skills,
       location,
       search,
+      approvalStatus = "approved", // Default to approved for public talent directory
       limit = 20,
       offset = 0,
     } = options;
 
-    const conditions = [eq(talentProfiles.approvalStatus, "approved")];
+    const conditions = [eq(talentProfiles.approvalStatus, approvalStatus as "pending" | "approved" | "rejected")];
 
     if (category) {
       conditions.push(sql`${category} = ANY(${talentProfiles.categories})`);

@@ -210,6 +210,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         skills, 
         location, 
         search, 
+        approvalStatus,
         page = "1", 
         limit = "20" 
       } = req.query;
@@ -222,6 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         skills: skillsArray as string[],
         location: location as string,
         search: search as string,
+        approvalStatus: approvalStatus as string,
         limit: parseInt(limit as string),
         offset,
       });
