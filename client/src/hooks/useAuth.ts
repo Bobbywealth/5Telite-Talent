@@ -3,69 +3,78 @@ import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import type { User } from "@/../../shared/schema";
 
-// Global singleton to prevent multiple simultaneous requests
-let isAuthRequestInProgress = false;
-let cachedAuthResult: { user: User | null; timestamp: number } | null = null;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+// Global auth state to prevent any auth requests
+let globalAuthState: {
+  user: User | null;
+  isLoading: boolean;
+  timestamp: number;
+} = {
+  user: null,
+  isLoading: false,
+  timestamp: 0,
+};
 
-const authQueryKey = ["/api/auth/user"];
+let hasInitialized = false;
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 export function useAuth() {
-  // Check cache first
   const now = Date.now();
-  if (cachedAuthResult && (now - cachedAuthResult.timestamp) < CACHE_DURATION) {
+  
+  // If we have recent cached data, return it immediately
+  if (hasInitialized && (now - globalAuthState.timestamp) < CACHE_DURATION) {
     return {
-      user: cachedAuthResult.user,
+      user: globalAuthState.user,
       isLoading: false,
-      isAuthenticated: !!cachedAuthResult.user,
+      isAuthenticated: !!globalAuthState.user,
       error: null,
     };
   }
 
   const { data: user, isLoading, error } = useQuery<User | null>({
-    queryKey: authQueryKey,
+    queryKey: ["/api/auth/user"],
     queryFn: async (...args) => {
-      // Prevent multiple simultaneous requests
-      if (isAuthRequestInProgress) {
-        // Return cached result if available
-        if (cachedAuthResult) {
-          return cachedAuthResult.user;
-        }
-        // Wait a bit and try again
-        await new Promise(resolve => setTimeout(resolve, 100));
-        return null;
+      // Prevent multiple requests by checking if we already have data
+      if (hasInitialized && (now - globalAuthState.timestamp) < CACHE_DURATION) {
+        return globalAuthState.user;
       }
 
-      try {
-        isAuthRequestInProgress = true;
-        const result = await getQueryFn({ on401: "returnNull" })(...args);
-        
-        // Cache the result
-        cachedAuthResult = {
-          user: result,
-          timestamp: Date.now()
-        };
-        
-        return result;
-      } finally {
-        isAuthRequestInProgress = false;
-      }
+      const result = await getQueryFn({ on401: "returnNull" })(...args);
+      
+      // Cache the result globally
+      globalAuthState = {
+        user: result,
+        isLoading: false,
+        timestamp: now,
+      };
+      hasInitialized = true;
+      
+      return result;
     },
+    enabled: !hasInitialized || (now - globalAuthState.timestamp) >= CACHE_DURATION,
     retry: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
+    staleTime: CACHE_DURATION,
+    gcTime: CACHE_DURATION * 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,
     refetchOnMount: false,
     refetchIntervalInBackground: false,
-    enabled: !cachedAuthResult || (now - cachedAuthResult.timestamp) >= CACHE_DURATION,
   });
 
+  // Update global state when query completes
+  if (user !== undefined && !isLoading) {
+    globalAuthState = {
+      user,
+      isLoading: false,
+      timestamp: now,
+    };
+    hasInitialized = true;
+  }
+
   return {
-    user: user ?? cachedAuthResult?.user ?? null,
-    isLoading: isLoading && !cachedAuthResult,
-    isAuthenticated: !!(user ?? cachedAuthResult?.user),
+    user: user ?? globalAuthState.user,
+    isLoading: isLoading && !hasInitialized,
+    isAuthenticated: !!(user ?? globalAuthState.user),
     error,
   };
 }
