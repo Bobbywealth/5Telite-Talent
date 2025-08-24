@@ -299,21 +299,7 @@
     animation: pulse-animation 2s ease-in-out infinite;
   }
 
-  /* Card animations */
-  .floating-card-1 {
-    animation: float 3s ease-in-out infinite;
-    animation-delay: 0s;
-  }
-
-  .floating-card-2 {
-    animation: float 3s ease-in-out infinite;
-    animation-delay: 0.3s;
-  }
-
-  .floating-card-3 {
-    animation: float 3s ease-in-out infinite;
-    animation-delay: 0.6s;
-  }
+  
 
   /* Background patterns for brand consistency */
   .hero-pattern {

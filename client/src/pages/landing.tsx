@@ -179,48 +179,6 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Floating visual elements - repositioned for better balance */}
-            <div className="hidden lg:block absolute top-1/2 left-8 transform -translate-y-1/2">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-3 hover:rotate-0 transition-all duration-500 floating-card-1">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <i className="fas fa-star text-white"></i>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">Top Rated</div>
-                    <div className="text-sm text-gray-600">5.0 ★ Rating</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="hidden lg:block absolute top-1/3 right-8">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-500 floating-card-2">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
-                    <i className="fas fa-check text-white"></i>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">Verified</div>
-                    <div className="text-sm text-gray-600">Professional</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="hidden lg:block absolute bottom-1/4 right-16">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-500 floating-card-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                    <i className="fas fa-bolt text-white"></i>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800">Fast Response</div>
-                    <div className="text-sm text-gray-600">&lt; 24 hours</div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
       </section>
 
