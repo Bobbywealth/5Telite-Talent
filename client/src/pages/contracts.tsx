@@ -253,7 +253,7 @@ export default function ContractsPage() {
               <p className="text-slate-600 dark:text-slate-400 text-center mb-4">
                 Contracts will appear here once they are created for bookings.
               </p>
-              {user?.role === "admin" && (
+              {user?.role === "admin" && !showCreateDialog && (
                 <Button 
                   onClick={() => setShowCreateDialog(true)}
                   data-testid="button-create-first-contract"
