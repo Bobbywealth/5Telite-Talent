@@ -222,108 +222,194 @@ export default function AdminDashboard() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="p-6">
+        <main className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+          {/* Hero Section */}
+          <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-8 mb-8 overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-4xl font-bold text-white mb-2">Welcome back, {user?.firstName}!</h1>
+                  <p className="text-indigo-100 text-lg">Manage talents, bookings, and platform operations</p>
+                </div>
+                <div className="hidden md:flex items-center space-x-4">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                    <span className="text-white text-sm font-medium">Admin Account</span>
+                  </div>
+                  <div className="bg-green-500/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                    <span className="text-green-100 text-sm font-medium flex items-center">
+                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                      Active
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/admin/talents">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <i className="fas fa-users mr-2"></i>
+                    Manage Talents
+                  </Button>
+                </Link>
+                <Link href="/admin/bookings">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <i className="fas fa-calendar mr-2"></i>
+                    View Bookings
+                  </Button>
+                </Link>
+                <Link href="/admin/tasks">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <i className="fas fa-tasks mr-2"></i>
+                    Task Manager
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+          
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Active Talents</p>
+                    <p className="text-sm font-medium text-blue-700 mb-1">Active Talents</p>
                     {talentsLoading ? (
                       <Skeleton className="h-8 w-16" />
                     ) : (
-                      <p className="text-3xl font-bold text-slate-900" data-testid="text-active-talents">
+                      <p className="text-3xl font-bold text-blue-900 mb-2" data-testid="text-active-talents">
                         {talentsData?.total || 0}
                       </p>
                     )}
+                    <div className="w-full bg-blue-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500" style={{width: '75%'}}></div>
+                    </div>
                   </div>
-                  <div className="bg-primary/10 rounded-lg p-3">
-                    <i className="fas fa-users text-primary text-xl"></i>
+                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
+                    <i className="fas fa-users text-white text-xl"></i>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm">
-                  <span className="text-green-600">+12% </span>
-                  <span className="text-slate-600">from last month</span>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-green-600 font-semibold">+12%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                    Active
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Active Bookings</p>
+                    <p className="text-sm font-medium text-purple-700 mb-1">Active Bookings</p>
                     {bookingsLoading ? (
                       <Skeleton className="h-8 w-16" />
                     ) : (
-                      <p className="text-3xl font-bold text-slate-900" data-testid="text-active-bookings">
+                      <p className="text-3xl font-bold text-purple-900 mb-2" data-testid="text-active-bookings">
                         {bookingsData?.total || 0}
                       </p>
                     )}
+                    <div className="w-full bg-purple-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full transition-all duration-500" style={{width: '60%'}}></div>
+                    </div>
                   </div>
-                  <div className="bg-secondary/10 rounded-lg p-3">
-                    <i className="fas fa-calendar text-secondary text-xl"></i>
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-3 shadow-lg">
+                    <i className="fas fa-calendar text-white text-xl"></i>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm">
-                  <span className="text-green-600">+8% </span>
-                  <span className="text-slate-600">from last month</span>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-green-600 font-semibold">+8%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-purple-50 border-purple-200 text-purple-700">
+                    Growing
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-emerald-50 to-teal-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Monthly Revenue</p>
-                    <p className="text-3xl font-bold text-slate-900" data-testid="text-revenue">
+                    <p className="text-sm font-medium text-emerald-700 mb-1">Monthly Revenue</p>
+                    <p className="text-3xl font-bold text-emerald-900 mb-2" data-testid="text-revenue">
                       $45,620
                     </p>
+                    <div className="w-full bg-emerald-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: '85%'}}></div>
+                    </div>
                   </div>
-                  <div className="bg-green-100 rounded-lg p-3">
-                    <i className="fas fa-dollar-sign text-green-600 text-xl"></i>
+                  <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
+                    <i className="fas fa-dollar-sign text-white text-xl"></i>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm">
-                  <span className="text-green-600">+23% </span>
-                  <span className="text-slate-600">from last month</span>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-green-600 font-semibold">+23%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                    Excellent
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-amber-50 to-orange-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Pending Approvals</p>
+                    <p className="text-sm font-medium text-amber-700 mb-1">Pending Approvals</p>
                     {pendingTalentsLoading ? (
                       <div className="py-1">
                         <Skeleton className="h-8 w-16" />
                       </div>
                     ) : (
-                      <p className="text-3xl font-bold text-slate-900" data-testid="text-pending-approvals">
+                      <p className="text-3xl font-bold text-amber-900 mb-2" data-testid="text-pending-approvals">
                         {pendingTalentsData?.talents?.length || 0}
                       </p>
                     )}
+                    <div className="w-full bg-amber-200 rounded-full h-2 mb-3">
+                      <div 
+                        className="bg-gradient-to-r from-amber-500 to-orange-600 h-2 rounded-full transition-all duration-500" 
+                        style={{width: (pendingTalentsData?.talents?.length || 0) > 0 ? '40%' : '100%'}}
+                      ></div>
+                    </div>
                   </div>
-                  <div className="bg-orange-100 rounded-lg p-3">
-                    <i className="fas fa-user-clock text-orange-600 text-xl"></i>
+                  <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-3 shadow-lg">
+                    <i className="fas fa-user-clock text-white text-xl"></i>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center text-sm">
-                  {(pendingTalentsData?.talents?.length || 0) > 0 ? (
-                    <>
-                      <span className="text-orange-600">Action needed </span>
-                      <span className="text-slate-600">for {pendingTalentsData?.talents?.length} talents</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-green-600">All caught up </span>
-                      <span className="text-slate-600">no pending approvals</span>
-                    </>
-                  )}
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    {(pendingTalentsData?.talents?.length || 0) > 0 ? (
+                      <>
+                        <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                        <span className="text-orange-600 font-semibold">Action needed</span>
+                        <span className="text-slate-600 ml-1">for {pendingTalentsData?.talents?.length}</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-green-600 font-semibold">All caught up</span>
+                        <span className="text-slate-600 ml-1">no pending</span>
+                      </>
+                    )}
+                  </div>
+                  <Badge variant="outline" className={`text-xs ${(pendingTalentsData?.talents?.length || 0) > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
+                    {(pendingTalentsData?.talents?.length || 0) > 0 ? 'Urgent' : 'Clear'}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
