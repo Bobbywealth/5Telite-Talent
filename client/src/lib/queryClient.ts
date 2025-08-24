@@ -51,8 +51,8 @@ export const queryClient = new QueryClient({
       refetchOnReconnect: false,
       refetchOnMount: false,
       refetchIntervalInBackground: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: Infinity, // Never consider data stale
+      gcTime: Infinity, // Never garbage collect
       retry: false,
       networkMode: 'online',
     },
