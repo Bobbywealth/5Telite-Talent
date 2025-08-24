@@ -20,22 +20,39 @@ export default function Home() {
   // Fetch real data for admin stats
   const { data: talentsData, isLoading: talentsLoading, error: talentsError } = useQuery({
     queryKey: ["/api/talents"],
+    queryFn: async () => {
+      const response = await fetch("/api/talents", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch talents");
+      return response.json();
+    },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
-  // Debug logging
-  console.log('Debug - isAuthenticated:', isAuthenticated, 'user role:', user?.role, 'enabled:', isAuthenticated && user?.role === 'admin');
-  console.log('Debug - talentsData:', talentsData, 'loading:', talentsLoading, 'error:', talentsError);
-
   const { data: bookingsData } = useQuery({
     queryKey: ["/api/bookings"],
+    queryFn: async () => {
+      const response = await fetch("/api/bookings", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch bookings");
+      return response.json();
+    },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
   const { data: tasksData } = useQuery({
     queryKey: ["/api/tasks"],
+    queryFn: async () => {
+      const response = await fetch("/api/tasks", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch tasks");
+      return response.json();
+    },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
@@ -160,11 +177,9 @@ export default function Home() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {talentsLoading ? '...' : (talentsData?.total ? parseInt(talentsData.total) : 0)}
+                      {talentsData?.total ? parseInt(talentsData.total) : 0}
                     </div>
-                    <p className="text-xs text-slate-500">
-                      {talentsError ? 'Error loading' : 'Active profiles'}
-                    </p>
+                    <p className="text-xs text-slate-500">Active profiles</p>
                   </CardContent>
                 </Card>
 
