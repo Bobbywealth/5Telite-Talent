@@ -157,7 +157,12 @@ export function setupAuth(app: Express) {
   app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
-      res.sendStatus(200);
+      // Destroy the session to ensure complete logout
+      req.session.destroy((err) => {
+        if (err) return next(err);
+        res.clearCookie('connect.sid');
+        res.sendStatus(200);
+      });
     });
   });
 
@@ -165,18 +170,23 @@ export function setupAuth(app: Express) {
   app.get("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
-      // Send HTML with JavaScript redirect to ensure client-side routing works
-      res.send(`
-        <html>
-          <head>
-            <meta http-equiv="refresh" content="0; url=/">
-            <script>window.location.href = "/";</script>
-          </head>
-          <body>
-            <p>Logging out... If you are not redirected, <a href="/">click here</a>.</p>
-          </body>
-        </html>
-      `);
+      // Destroy the session to ensure complete logout
+      req.session.destroy((err) => {
+        if (err) return next(err);
+        res.clearCookie('connect.sid');
+        // Send HTML with JavaScript redirect to ensure client-side routing works
+        res.send(`
+          <html>
+            <head>
+              <meta http-equiv="refresh" content="0; url=/">
+              <script>window.location.href = "/";</script>
+            </head>
+            <body>
+              <p>Logging out... If you are not redirected, <a href="/">click here</a>.</p>
+            </body>
+          </html>
+        `);
+      });
     });
   });
 
