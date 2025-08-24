@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { apiRequest } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Authentication is handled by the Router component
 
@@ -52,6 +55,55 @@ export default function AdminDashboard() {
     },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
+  });
+
+  // Fetch pending talents for approval
+  const { data: pendingTalentsData, isLoading: pendingTalentsLoading } = useQuery({
+    queryKey: ["/api/talents", { approvalStatus: "pending" }],
+    queryFn: async () => {
+      const response = await fetch("/api/talents?approvalStatus=pending&limit=10", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch pending talents");
+      return response.json();
+    },
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
+  // Fetch booking requests needing attention
+  const { data: pendingRequestsData, isLoading: pendingRequestsLoading } = useQuery({
+    queryKey: ["/api/booking-requests", { status: "pending" }],
+    queryFn: async () => {
+      const response = await fetch("/api/booking-requests?status=pending&limit=5", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch booking requests");
+      return response.json();
+    },
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
+  // Quick talent approval mutation
+  const quickApproveTalentMutation = useMutation({
+    mutationFn: async ({ talentId, status }: { talentId: string; status: "approved" | "rejected" }) => {
+      return apiRequest("PATCH", `/api/admin/talents/${talentId}/approve`, { status });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
+      toast({
+        title: "Success",
+        description: `Talent ${variables.status} successfully!`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   if (isLoading) {
@@ -184,22 +236,195 @@ export default function AdminDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Pending Tasks</p>
-                    <p className="text-3xl font-bold text-slate-900" data-testid="text-pending-tasks">
-                      {tasksLoading ? <Skeleton className="h-8 w-16" /> : 
-                       tasksData?.tasks?.filter((task: any) => task.status === 'todo').length || 0}
+                    <p className="text-sm font-medium text-slate-600">Pending Approvals</p>
+                    <p className="text-3xl font-bold text-slate-900" data-testid="text-pending-approvals">
+                      {pendingTalentsLoading ? <Skeleton className="h-8 w-16" /> : 
+                       (pendingTalentsData?.talents?.length || 0)}
                     </p>
                   </div>
                   <div className="bg-orange-100 rounded-lg p-3">
-                    <i className="fas fa-tasks text-orange-600 text-xl"></i>
+                    <i className="fas fa-user-clock text-orange-600 text-xl"></i>
                   </div>
                 </div>
                 <div className="mt-4 flex items-center text-sm">
-                  <span className="text-red-600">+2 </span>
-                  <span className="text-slate-600">new this week</span>
+                  {(pendingTalentsData?.talents?.length || 0) > 0 ? (
+                    <>
+                      <span className="text-orange-600">Action needed </span>
+                      <span className="text-slate-600">for {pendingTalentsData?.talents?.length} talents</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-green-600">All caught up </span>
+                      <span className="text-slate-600">no pending approvals</span>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Pending Approvals Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Pending Approvals</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Pending Talent Approvals */}
+              <Card>
+                <CardHeader className="border-b border-slate-200">
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Talent Approvals</span>
+                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                      {pendingTalentsLoading ? "..." : (pendingTalentsData?.talents?.length || 0)}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  {pendingTalentsLoading ? (
+                    <div className="space-y-4">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <div className="flex-1">
+                            <Skeleton className="h-4 w-32 mb-2" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                          <div className="flex space-x-2">
+                            <Skeleton className="h-8 w-16" />
+                            <Skeleton className="h-8 w-16" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : pendingTalentsData?.talents?.length > 0 ? (
+                    <div className="space-y-4">
+                      {pendingTalentsData.talents.slice(0, 4).map((talent: any) => (
+                        <div key={talent.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                          <div className="flex-1">
+                            <p className="font-medium text-slate-900">
+                              {talent.user.firstName} {talent.user.lastName}
+                            </p>
+                            <p className="text-sm text-slate-600">{talent.user.email}</p>
+                            {talent.categories?.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {talent.categories.slice(0, 2).map((category: string, index: number) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {category}
+                                  </Badge>
+                                ))}
+                                {talent.categories.length > 2 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    +{talent.categories.length - 2}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex space-x-2 ml-4">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => quickApproveTalentMutation.mutate({ 
+                                talentId: talent.userId, 
+                                status: 'rejected' 
+                              })}
+                              disabled={quickApproveTalentMutation.isPending}
+                              data-testid={`button-quick-reject-${talent.id}`}
+                            >
+                              <i className="fas fa-times mr-1"></i>Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => quickApproveTalentMutation.mutate({ 
+                                talentId: talent.userId, 
+                                status: 'approved' 
+                              })}
+                              disabled={quickApproveTalentMutation.isPending}
+                              data-testid={`button-quick-approve-${talent.id}`}
+                            >
+                              <i className="fas fa-check mr-1"></i>Approve
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                      {pendingTalentsData.talents.length > 4 && (
+                        <div className="text-center pt-2">
+                          <Button variant="outline" size="sm">
+                            View All ({pendingTalentsData.talents.length - 4} more)
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <i className="fas fa-check-circle text-green-500 text-3xl mb-2"></i>
+                      <p className="text-slate-500">No pending talent approvals</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Booking Requests Needing Attention */}
+              <Card>
+                <CardHeader className="border-b border-slate-200">
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Booking Requests</span>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      {pendingRequestsLoading ? "..." : (pendingRequestsData?.requests?.length || 0)}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  {pendingRequestsLoading ? (
+                    <div className="space-y-4">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="p-3 bg-slate-50 rounded-lg">
+                          <Skeleton className="h-4 w-48 mb-2" />
+                          <Skeleton className="h-3 w-32 mb-1" />
+                          <Skeleton className="h-3 w-24" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : pendingRequestsData?.requests?.length > 0 ? (
+                    <div className="space-y-4">
+                      {pendingRequestsData.requests.slice(0, 4).map((request: any) => (
+                        <div key={request.id} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium text-slate-900">
+                                {request.booking.title}
+                              </p>
+                              <p className="text-sm text-slate-600">
+                                To: {request.talent.user.firstName} {request.talent.user.lastName}
+                              </p>
+                              <p className="text-xs text-slate-500">
+                                {new Date(request.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <Badge 
+                              variant={request.status === 'pending' ? 'secondary' : 
+                                     request.status === 'accepted' ? 'default' : 'destructive'}
+                              className="text-xs"
+                            >
+                              {request.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                      {pendingRequestsData.requests.length > 4 && (
+                        <div className="text-center pt-2">
+                          <Button variant="outline" size="sm">
+                            View All ({pendingRequestsData.requests.length - 4} more)
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <i className="fas fa-inbox text-slate-400 text-3xl mb-2"></i>
+                      <p className="text-slate-500">No pending booking requests</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Recent Activity and Tasks */}
