@@ -260,7 +260,21 @@ export default function AdminTalents() {
   }
 
   if (!isAuthenticated || user?.role !== 'admin') {
-    return null;
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      window.location.href = '/api/login';
+      return null;
+    }
+    
+    // Show unauthorized message if wrong role
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-4">Access Denied</h1>
+          <p className="text-slate-600">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    );
   }
 
   return (

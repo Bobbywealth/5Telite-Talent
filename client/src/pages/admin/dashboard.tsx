@@ -119,7 +119,21 @@ export default function AdminDashboard() {
   }
 
   if (!isAuthenticated || user?.role !== 'admin') {
-    return null;
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      window.location.href = '/api/login';
+      return null;
+    }
+    
+    // Show unauthorized message if wrong role
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-4">Access Denied</h1>
+          <p className="text-slate-600">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    );
   }
 
   const getStatusBadgeVariant = (status: string) => {
@@ -174,9 +188,13 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-600">Active Talents</p>
-                    <p className="text-3xl font-bold text-slate-900" data-testid="text-active-talents">
-                      {talentsLoading ? <Skeleton className="h-8 w-16" /> : talentsData?.total || 0}
-                    </p>
+                    {talentsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-slate-900" data-testid="text-active-talents">
+                        {talentsData?.total || 0}
+                      </p>
+                    )}
                   </div>
                   <div className="bg-primary/10 rounded-lg p-3">
                     <i className="fas fa-users text-primary text-xl"></i>
@@ -194,9 +212,13 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-600">Active Bookings</p>
-                    <p className="text-3xl font-bold text-slate-900" data-testid="text-active-bookings">
-                      {bookingsLoading ? <Skeleton className="h-8 w-16" /> : bookingsData?.total || 0}
-                    </p>
+                    {bookingsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-slate-900" data-testid="text-active-bookings">
+                        {bookingsData?.total || 0}
+                      </p>
+                    )}
                   </div>
                   <div className="bg-secondary/10 rounded-lg p-3">
                     <i className="fas fa-calendar text-secondary text-xl"></i>
@@ -235,7 +257,9 @@ export default function AdminDashboard() {
                   <div>
                     <p className="text-sm font-medium text-slate-600">Pending Approvals</p>
                     {pendingTalentsLoading ? (
-                      <Skeleton className="h-8 w-16" />
+                      <div className="py-1">
+                        <Skeleton className="h-8 w-16" />
+                      </div>
                     ) : (
                       <p className="text-3xl font-bold text-slate-900" data-testid="text-pending-approvals">
                         {pendingTalentsData?.talents?.length || 0}
