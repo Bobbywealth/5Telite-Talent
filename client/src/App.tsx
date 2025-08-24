@@ -24,6 +24,8 @@ import AdminTasks from "@/pages/admin/tasks";
 // Talent Pages
 import TalentDashboard from "@/pages/talent/dashboard";
 import TalentProfileEdit from "@/pages/talent/profile-edit";
+import TalentBookings from "@/pages/talent/bookings";
+import TalentTasks from "@/pages/talent/tasks";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -73,6 +75,8 @@ function Router() {
             <>
               <Route path="/dashboard" component={TalentDashboard} />
               <Route path="/dashboard/profile" component={TalentProfileEdit} />
+              <Route path="/dashboard/bookings" component={TalentBookings} />
+              <Route path="/dashboard/tasks" component={TalentTasks} />
             </>
           )}
         </>
