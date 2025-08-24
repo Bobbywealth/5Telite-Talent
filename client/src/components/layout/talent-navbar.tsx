@@ -7,10 +7,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logoImage from "@assets/5t-logo.png";
 import { NotificationBell } from "@/components/ui/notification-bell";
+import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 import { Home, User, Calendar, ClipboardList, FileText, Users, Menu, ChevronDown, Settings, LogOut } from "lucide-react";
 
 export default function TalentNavbar() {
@@ -146,6 +148,12 @@ export default function TalentNavbar() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <div className="p-2">
+                  <div className="text-xs text-slate-500 mb-2 px-2">Switch Roles (Dev)</div>
+                  <RoleSwitcher />
+                </div>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <a href="/api/logout" className="flex items-center cursor-pointer">
                     <LogOut className="w-4 h-4 mr-2" />
