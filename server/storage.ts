@@ -471,9 +471,9 @@ export class DatabaseStorage implements IStorage {
           role: "talent" as const,
           email: "sarah@5t.com",
           firstName: "Sarah",
-          lastName: "Johnson",
+          lastName: "Chen",
           phone: null,
-          profileImageUrl: null,
+          profileImageUrl: "/attached_assets/image_1756045490912.png",
           status: "active" as const,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -667,7 +667,7 @@ export class DatabaseStorage implements IStorage {
     for (const talentData of demoTalents) {
       // Create user
       const talentUser = await this.upsertUser(talentData.user);
-      
+
       // Create talent profile
       await this.createTalentProfile({
         userId: talentUser.id,
