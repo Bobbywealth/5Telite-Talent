@@ -1,5 +1,8 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +16,30 @@ import logoImage from "@assets/5t-logo.png";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/logout");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+      setLocation("/");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    },
+  });
 
   const isActive = (path: string) => {
     if (path === "/") return location === "/";
@@ -131,11 +157,12 @@ export default function Navbar() {
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => window.location.href = "/api/logout"}
+                    onClick={() => logoutMutation.mutate()}
                     data-testid="button-logout"
+                    disabled={logoutMutation.isPending}
                   >
                     <i className="fas fa-sign-out-alt mr-2 w-4"></i>
-                    Sign Out
+                    {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
