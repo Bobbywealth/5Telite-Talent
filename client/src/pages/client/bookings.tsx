@@ -29,7 +29,7 @@ export default function ClientBookings() {
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
     search: "",
-    status: "",
+    status: "all",
     page: 1,
   });
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
@@ -41,7 +41,7 @@ export default function ClientBookings() {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters.search) params.set("search", filters.search);
-      if (filters.status) params.set("status", filters.status);
+      if (filters.status && filters.status !== "all") params.set("status", filters.status);
       params.set("page", filters.page.toString());
       params.set("limit", "20");
 
@@ -169,7 +169,7 @@ export default function ClientBookings() {
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="inquiry">Inquiry</SelectItem>
                     <SelectItem value="proposed">Proposed</SelectItem>
                     <SelectItem value="contract_sent">Contract Sent</SelectItem>

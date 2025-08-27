@@ -32,7 +32,7 @@ interface Announcement {
 export default function Announcements() {
   const { isAuthenticated, user } = useAuth();
   const [filters, setFilters] = useState({
-    category: "",
+    category: "all",
     search: "",
   });
 
@@ -120,7 +120,7 @@ export default function Announcements() {
 
   const announcements: Announcement[] = announcementsData?.announcements || [];
   const filteredAnnouncements = announcements.filter((announcement: Announcement) => {
-    const matchesCategory = !filters.category || announcement.category === filters.category;
+    const matchesCategory = !filters.category || filters.category === "all" || announcement.category === filters.category;
     const matchesSearch = !filters.search || 
       announcement.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       announcement.description.toLowerCase().includes(filters.search.toLowerCase());
@@ -204,7 +204,7 @@ export default function Announcements() {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="open-call">Open Calls</SelectItem>
                   <SelectItem value="event">Events</SelectItem>
                 </SelectContent>
