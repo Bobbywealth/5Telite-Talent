@@ -17,6 +17,7 @@ import TalentDirectory from "@/pages/talent-directory";
 import TalentProfile from "@/pages/talent-profile";
 import BookRequest from "@/pages/book-request";
 import Register from "@/pages/register";
+import Announcements from "@/pages/announcements";
 import NotFound from "@/pages/not-found";
 
 // Admin Pages
@@ -64,6 +65,7 @@ function Router() {
           <Route path="/auth" component={Auth} />
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
+          <Route path="/announcements" component={Announcements} />
           <Route path="/book" component={BookRequest} />
           <Route path="/register" component={Register} />
         </>
@@ -72,6 +74,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
+          <Route path="/announcements" component={Announcements} />
           <Route path="/book" component={BookRequest} />
           <Route path="/register" component={Register} />
 

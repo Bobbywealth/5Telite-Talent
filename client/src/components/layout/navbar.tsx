@@ -96,6 +96,17 @@ export default function Navbar() {
               Find Talent
             </Link>
             <Link 
+              href="/announcements"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isActive("/announcements") 
+                  ? "text-white bg-primary shadow-md" 
+                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+              }`}
+              data-testid="link-announcements"
+            >
+              Announcements
+            </Link>
+            <Link 
               href="/book"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/book") 
