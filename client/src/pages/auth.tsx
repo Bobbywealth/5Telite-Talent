@@ -9,11 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
-import { Eye, EyeOff, Sparkles, Users, Briefcase } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Users, Briefcase, Shield, CheckCircle, AlertCircle } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -22,14 +23,24 @@ const loginSchema = z.object({
 
 const registerSchema = z.object({
   email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters").regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+    "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+  ),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   role: z.enum(["admin", "talent", "client"]).default("talent"),
+  acceptTerms: z.boolean().refine(val => val === true, "You must accept the terms and conditions"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 type RegisterFormData = z.infer<typeof registerSchema>;
+
+const roleDescriptions = {
+  talent: "Showcase your skills and get discovered by clients looking for exceptional performers",
+  client: "Find and book talented performers for your projects, events, and productions", 
+  admin: "Manage platform operations, oversee bookings, and support the talent community"
+};
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
@@ -60,8 +71,34 @@ export default function AuthPage() {
       firstName: "",
       lastName: "",
       role: "talent",
+      acceptTerms: false,
     },
   });
+
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showPasswordHelp, setShowPasswordHelp] = useState(false);
+
+  const checkPasswordStrength = (password: string) => {
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^\w\s]/.test(password)) strength++;
+    setPasswordStrength(strength);
+  };
+
+  const getPasswordStrengthColor = () => {
+    if (passwordStrength < 2) return 'bg-red-500';
+    if (passwordStrength < 4) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
+  const getPasswordStrengthText = () => {
+    if (passwordStrength < 2) return 'Weak';
+    if (passwordStrength < 4) return 'Medium';
+    return 'Strong';
+  };
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
@@ -131,7 +168,7 @@ export default function AuthPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
         {/* Left side - Hero section */}
-        <div className="hidden lg:block space-y-8">
+        <div className="hidden md:block space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl xl:text-5xl font-bold text-gray-900 leading-tight">
               Join the Future of
@@ -180,6 +217,15 @@ export default function AuthPage() {
 
         {/* Right side - Auth forms */}
         <div className="w-full max-w-md mx-auto">
+          {/* Mobile Hero Section */}
+          <div className="md:hidden text-center mb-8 space-y-4">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Join <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">5T Talent</span>
+            </h1>
+            <p className="text-gray-600">
+              Connect with exceptional performers and streamline your booking process
+            </p>
+          </div>
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-2">
               <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
@@ -334,8 +380,13 @@ export default function AuthPage() {
                                 <Input
                                   {...field}
                                   type={showPassword ? "text" : "password"}
-                                  placeholder="Create a password"
+                                  placeholder="Create a strong password"
                                   data-testid="input-register-password"
+                                  onFocus={() => setShowPasswordHelp(true)}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    checkPasswordStrength(e.target.value);
+                                  }}
                                 />
                                 <Button
                                   type="button"
@@ -353,6 +404,47 @@ export default function AuthPage() {
                                 </Button>
                               </div>
                             </FormControl>
+                            
+                            {/* Password Strength Indicator */}
+                            {field.value && (
+                              <div className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className={`h-full transition-all duration-300 ${getPasswordStrengthColor()}`}
+                                      style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-xs font-medium text-gray-600">
+                                    {getPasswordStrengthText()}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Password Requirements */}
+                            {showPasswordHelp && (
+                              <div className="text-xs space-y-1 mt-2 p-3 bg-blue-50 rounded-lg">
+                                <div className="font-medium text-blue-900 mb-2">Password must contain:</div>
+                                <div className={`flex items-center space-x-2 ${field.value?.length >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {field.value?.length >= 8 ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                  <span>At least 8 characters</span>
+                                </div>
+                                <div className={`flex items-center space-x-2 ${/[a-z]/.test(field.value || '') ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {/[a-z]/.test(field.value || '') ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                  <span>One lowercase letter</span>
+                                </div>
+                                <div className={`flex items-center space-x-2 ${/[A-Z]/.test(field.value || '') ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {/[A-Z]/.test(field.value || '') ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                  <span>One uppercase letter</span>
+                                </div>
+                                <div className={`flex items-center space-x-2 ${/\d/.test(field.value || '') ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {/\d/.test(field.value || '') ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                                  <span>One number</span>
+                                </div>
+                              </div>
+                            )}
+                            
                             <FormMessage />
                           </FormItem>
                         )}
@@ -371,15 +463,83 @@ export default function AuthPage() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="talent">Talent/Performer</SelectItem>
-                                <SelectItem value="client">Client/Booker</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="talent">
+                                  <div className="flex items-center space-x-2">
+                                    <Sparkles className="w-4 h-4 text-purple-500" />
+                                    <div>
+                                      <div className="font-medium">Talent/Performer</div>
+                                      <div className="text-xs text-gray-500">Showcase your skills, get booked</div>
+                                    </div>
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="client">
+                                  <div className="flex items-center space-x-2">
+                                    <Briefcase className="w-4 h-4 text-blue-500" />
+                                    <div>
+                                      <div className="font-medium">Client/Booker</div>
+                                      <div className="text-xs text-gray-500">Find and book talented performers</div>
+                                    </div>
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="admin">
+                                  <div className="flex items-center space-x-2">
+                                    <Shield className="w-4 h-4 text-green-500" />
+                                    <div>
+                                      <div className="font-medium">Admin</div>
+                                      <div className="text-xs text-gray-500">Manage platform operations</div>
+                                    </div>
+                                  </div>
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={registerForm.control}
+                        name="acceptTerms"
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <div className="flex items-start space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  data-testid="checkbox-accept-terms"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-700">
+                                  I agree to the{" "}
+                                  <a href="/terms" className="text-blue-600 hover:underline" target="_blank">
+                                    Terms of Service
+                                  </a>
+                                  {" "}and{" "}
+                                  <a href="/privacy" className="text-blue-600 hover:underline" target="_blank">
+                                    Privacy Policy
+                                  </a>
+                                </FormLabel>
+                              </div>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* What happens next */}
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="w-4 h-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-900">What happens next?</span>
+                        </div>
+                        <div className="text-xs text-blue-700 space-y-1">
+                          <p>• We'll send a verification email to confirm your account</p>
+                          <p>• Complete your profile to get the most out of the platform</p>
+                          <p>• Start connecting with the talent community right away!</p>
+                        </div>
+                      </div>
 
                       <Button
                         type="submit"
