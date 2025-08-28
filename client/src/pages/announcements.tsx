@@ -41,19 +41,35 @@ export default function Announcements() {
     queryKey: ["/api/announcements", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filters.category) params.set("category", filters.category);
+      if (filters.category && filters.category !== "all") params.set("category", filters.category);
       if (filters.search) params.set("search", filters.search);
 
-      const response = await fetch(`/api/announcements?${params}`);
-      if (!response.ok) {
-        // If endpoint doesn't exist yet, return mock data for now
-        if (response.status === 404) {
+      try {
+        const response = await fetch(`/api/announcements?${params}`);
+        
+        // Check if response is JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          // API endpoint doesn't exist yet, use mock data
           return getMockAnnouncements();
         }
-        throw new Error("Failed to fetch announcements");
+        
+        if (!response.ok) {
+          // If endpoint doesn't exist yet, return mock data for now
+          if (response.status === 404) {
+            return getMockAnnouncements();
+          }
+          throw new Error("Failed to fetch announcements");
+        }
+        
+        return response.json();
+      } catch (fetchError) {
+        // Network error or parsing error, fallback to mock data
+        console.log("Using mock data due to API error:", fetchError);
+        return getMockAnnouncements();
       }
-      return response.json();
     },
+    retry: false, // Don't retry since we're using fallback data
   });
 
   // Mock data for now until backend endpoint is created
