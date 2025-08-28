@@ -61,59 +61,31 @@ export default function Announcements() {
     announcements: [
       {
         id: 1,
-        title: "Spring Fashion Campaign - Open Call",
+        title: "Netflix Series - Principal Cast Open Call",
         category: "open-call",
-        description: "Seeking diverse models for upcoming spring fashion campaign. Must be available March 15-20, 2024.",
-        location: "New York, NY",
-        date: "2024-03-15",
-        deadline: "2024-03-10",
-        requirements: ["Height: 5'8\" - 6'2\"", "Professional portfolio required", "Previous campaign experience preferred"],
-        compensation: "$500-$1200/day",
+        description: "Major streaming series seeking lead and supporting actors for new drama series filming in Atlanta. Professional production with established showrunners and A-list producers.",
+        location: "Atlanta, GA",
+        date: "2025-09-15",
+        deadline: "2025-09-05",
+        requirements: ["Ages 25-45", "Strong dramatic acting experience", "Available for 6-month shoot", "Union preferred but not required"],
+        compensation: "$15,000-$35,000/episode",
         contact: "casting@5tagency.com",
         featured: true,
-        createdAt: "2024-02-15T10:00:00Z"
+        createdAt: "2025-08-20T10:00:00Z"
       },
       {
         id: 2,
-        title: "Networking Event - Industry Mixer",
+        title: "Industry Networking Gala - Meet the Makers",
         category: "event",
-        description: "Join us for an exclusive industry mixer featuring top photographers, directors, and talent scouts.",
-        location: "Los Angeles, CA",
-        date: "2024-03-22",
+        description: "Exclusive evening connecting top talent with casting directors, agents, and production companies. Premium networking opportunity with panel discussions and portfolio reviews.",
+        location: "Beverly Hills, CA",
+        date: "2025-10-12",
         deadline: null,
-        requirements: ["Industry professionals only", "RSVP required", "Business attire"],
+        requirements: ["Professional performers only", "Portfolio/reel required", "Formal attire", "RSVP by October 1st"],
         compensation: null,
         contact: "events@5tagency.com",
         featured: false,
-        createdAt: "2024-02-20T15:30:00Z"
-      },
-      {
-        id: 3,
-        title: "Commercial Acting Workshop",
-        category: "event",
-        description: "Intensive 2-day workshop covering commercial acting techniques and audition skills.",
-        location: "Chicago, IL",
-        date: "2024-04-05",
-        deadline: "2024-03-25",
-        requirements: ["All experience levels welcome", "Acting background helpful but not required"],
-        compensation: "$150 workshop fee",
-        contact: "workshops@5tagency.com",
-        featured: false,
-        createdAt: "2024-02-25T09:15:00Z"
-      },
-      {
-        id: 4,
-        title: "Beauty Brand Campaign - Diverse Talents Wanted",
-        category: "open-call",
-        description: "Major beauty brand seeking authentic, diverse talent for inclusive campaign showcasing natural beauty.",
-        location: "Miami, FL",
-        date: "2024-04-12",
-        deadline: "2024-04-05",
-        requirements: ["All ethnicities and ages welcome", "Natural, minimal makeup look", "Comfortable on camera"],
-        compensation: "$800-$2000/day",
-        contact: "beauty@5tagency.com",
-        featured: true,
-        createdAt: "2024-03-01T11:45:00Z"
+        createdAt: "2025-08-25T15:30:00Z"
       }
     ]
   });
