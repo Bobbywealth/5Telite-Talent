@@ -24,6 +24,7 @@ import NotFound from "@/pages/not-found";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
+import AdminBookingRequests from "@/pages/admin/booking-requests";
 import AdminTasks from "@/pages/admin/tasks";
 import AdminAnnouncements from "@/pages/admin/announcements";
 import AdminSettings from "@/pages/admin/settings";
@@ -83,6 +84,7 @@ function Router() {
           {user?.role === 'admin' && (
             <>
               <Route path="/admin" component={AdminDashboard} />
+              <Route path="/admin/booking-requests" component={AdminBookingRequests} />
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
               <Route path="/admin/tasks" component={AdminTasks} />

@@ -83,12 +83,27 @@ export default function TalentCard({ talent }: TalentCardProps) {
           </div>
         )}
         
-        <div className="flex justify-end items-center">
-          <Link href={`/talent/${talent.id}`}>
-            <Button variant="ghost" size="sm" data-testid={`button-view-profile-${talent.id}`}>
-              View Profile
+        <div className="flex justify-between items-center">
+          <div className="text-sm text-slate-600" data-testid={`text-talent-rate-${talent.id}`}>
+            {talent.rates?.day && (
+              <span className="font-semibold">${talent.rates.day}/day</span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Link href={`/talent/${talent.id}`}>
+              <Button variant="ghost" size="sm" data-testid={`button-view-profile-${talent.id}`}>
+                View Profile
+              </Button>
+            </Link>
+            <Button 
+              size="sm" 
+              className="bg-primary hover:bg-primary/90 transition-colors"
+              data-testid={`button-book-talent-${talent.id}`}
+              onClick={() => window.location.href = `/book?talentId=${talent.user.id}&talentName=${encodeURIComponent(displayName)}&stageName=${encodeURIComponent(talent.stageName || '')}`}
+            >
+              Book
             </Button>
-          </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

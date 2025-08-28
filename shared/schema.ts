@@ -97,6 +97,9 @@ export const bookings = pgTable("bookings", {
   deliverables: text("deliverables"),
   notes: text("notes"),
   status: bookingStatusEnum("status").notNull().default("inquiry"),
+  // Store which talent the client wants to book (for admin review)
+  requestedTalentId: varchar("requested_talent_id").references(() => users.id),
+  requestedTalentName: varchar("requested_talent_name"), // Store name for reference
   createdBy: varchar("created_by").references(() => users.id).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

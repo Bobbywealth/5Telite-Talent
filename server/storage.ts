@@ -686,8 +686,12 @@ export class DatabaseStorage implements IStorage {
 
   async seedDemoData(): Promise<void> {
     // Clear existing data first to ensure fresh seed with proper passwords
+    // Clear talent profiles first due to foreign key constraints
+    await db.delete(talentProfiles);
+    await db.delete(bookingTalents);
+    await db.delete(bookings);
     await db.delete(users);
-    console.log("Cleared existing users for fresh seed");
+    console.log("Cleared existing data for fresh seed");
 
     console.log("Seeding demo data...");
 

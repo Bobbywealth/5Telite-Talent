@@ -24,6 +24,11 @@ const sidebarItems = [
     icon: Search,
   },
   {
+    title: "Booking Requests",
+    href: "/admin/booking-requests",
+    icon: Calendar,
+  },
+  {
     title: "Bookings",
     href: "/admin/bookings",
     icon: Calendar,

@@ -19,7 +19,7 @@ import { ObjectPermission } from "./objectAcl";
 import { ContractService } from "./contractService";
 import { db } from "./db";
 import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql, and, desc } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from attached_assets
@@ -431,15 +431,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         endDate: req.body.endDate ? new Date(req.body.endDate) : undefined,
       };
       
-      if (processedBody.talents && Array.isArray(processedBody.talents)) {
-        // Handle multiple talents
+      // Extract talent info for admin review (NEW WORKFLOW)
+      const { talentId, talentName, talents, ...bookingInfo } = processedBody;
+      
+      // Store requested talent information for admin review
+      if (talentId && talentName) {
+        bookingData = {
+          ...bookingInfo,
+          requestedTalentId: talentId,
+          requestedTalentName: talentName,
+          status: 'inquiry' // This will be reviewed by admin
+        };
+      } else if (processedBody.talents && Array.isArray(processedBody.talents)) {
+        // Handle multiple talents (legacy)
         const { talents, ...bookingInfo } = processedBody;
         bookingData = insertBookingSchema.parse(bookingInfo);
       } else {
         bookingData = insertBookingSchema.parse(processedBody);
       }
 
+      bookingData = insertBookingSchema.parse(bookingData);
       const booking = await storage.createBooking(bookingData);
+      
+      // NOTE: We NO LONGER automatically create booking_talents records
+      // Admin will handle talent outreach manually
+      
       res.json(booking);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -536,6 +552,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating booking:", error);
       res.status(500).json({ message: "Failed to update booking" });
+    }
+  });
+
+  // NEW: Admin endpoint to see bookings with requested talents 
+  app.get('/api/admin/booking-requests', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Get bookings that have a requested talent but no actual talent assignments yet
+      const pendingBookings = await db
+        .select({
+          booking: bookings,
+          client: users,
+          requestedTalent: {
+            id: sql<string>`requested_talent.id`,
+            firstName: sql<string>`requested_talent.first_name`,
+            lastName: sql<string>`requested_talent.last_name`,
+            email: sql<string>`requested_talent.email`,
+          }
+        })
+        .from(bookings)
+        .innerJoin(users, eq(bookings.clientId, users.id))
+        .leftJoin(sql`${users} as requested_talent`, eq(bookings.requestedTalentId, sql`requested_talent.id`))
+        .where(
+          and(
+            sql`${bookings.requestedTalentId} IS NOT NULL`,
+            eq(bookings.status, 'inquiry')
+          )
+        )
+        .orderBy(desc(bookings.createdAt));
+
+      res.json({ 
+        bookingRequests: pendingBookings.map(row => ({
+          ...row.booking,
+          client: row.client,
+          requestedTalent: row.requestedTalent
+        }))
+      });
+    } catch (error) {
+      console.error("Error fetching admin booking requests:", error);
+      res.status(500).json({ message: "Failed to fetch booking requests" });
+    }
+  });
+
+  // NEW: Admin endpoint to send booking request to specific talent
+  app.post('/api/admin/send-talent-request', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { bookingId, talentId, message } = req.body;
+
+      if (!bookingId || !talentId) {
+        return res.status(400).json({ message: "Booking ID and talent ID are required" });
+      }
+
+      // Add talent to booking (this creates the actual request)
+      await storage.addTalentToBooking(bookingId, talentId);
+
+      res.json({ message: "Talent request sent successfully" });
+    } catch (error) {
+      console.error("Error sending talent request:", error);
+      res.status(500).json({ message: "Failed to send talent request" });
     }
   });
 

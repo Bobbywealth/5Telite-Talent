@@ -19,9 +19,10 @@ export default function BookRequest() {
   const { isAuthenticated, user } = useAuth();
   const [showClientSignup, setShowClientSignup] = useState(false);
   
-  // Get talent ID from URL parameter
+  // Get talent info from URL parameters (NEW WORKFLOW)
   const urlParams = new URLSearchParams(window.location.search);
-  const talentId = urlParams.get('talent');
+  const talentId = urlParams.get('talentId'); // Changed from 'talent' to 'talentId'
+  const talentName = urlParams.get('talentName');
   
   const [formData, setFormData] = useState({
     title: "",
@@ -94,19 +95,24 @@ export default function BookRequest() {
   
   const bookingMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return apiRequest("POST", "/api/booking-requests", {
+      return apiRequest("POST", "/api/bookings", {
         ...data,
-        budget: data.budget ? parseFloat(data.budget) : undefined,
-        status: "pending",
-        talentId: data.talentId,
+        rate: data.budget ? parseFloat(data.budget) : undefined,
+        // NEW WORKFLOW: Include requested talent information for admin review
+        talentId: talentId,
+        talentName: talentName,
+        clientId: user?.id,
+        createdBy: user?.id,
       });
     },
     onSuccess: () => {
       toast({
         title: "Booking request submitted successfully!",
-        description: "We'll review your request and get back to you within 24 hours. You'll receive a contract to sign once approved.",
+        description: talentName 
+          ? `Your request to book ${talentName} has been sent to our admin team for review. We'll handle the talent outreach and get back to you soon!`
+          : "We'll review your request and get back to you within 24 hours.",
       });
-      // Redirect to client dashboard or contracts page
+      // Redirect to client dashboard
       if (user?.role === 'client') {
         window.location.href = "/client";
       }
