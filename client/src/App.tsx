@@ -25,6 +25,7 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminTasks from "@/pages/admin/tasks";
+import AdminAnnouncements from "@/pages/admin/announcements";
 import AdminSettings from "@/pages/admin/settings";
 
 // Talent Pages
@@ -85,6 +86,7 @@ function Router() {
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
               <Route path="/admin/tasks" component={AdminTasks} />
+              <Route path="/admin/announcements" component={AdminAnnouncements} />
               <Route path="/admin/contracts" component={Contracts} />
               <Route path="/admin/talent" component={TalentDirectory} />
               <Route path="/admin/settings" component={AdminSettings} />

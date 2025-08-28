@@ -4,6 +4,7 @@ import {
   bookings,
   bookingTalents,
   tasks,
+  announcements,
   type User,
   type UpsertUser,
   type TalentProfile,
@@ -14,6 +15,8 @@ import {
   type InsertTask,
   type BookingTalent,
   type InsertBookingTalent,
+  type Announcement,
+  type InsertAnnouncement,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, ilike, sql, desc, asc } from "drizzle-orm";
@@ -70,6 +73,19 @@ export interface IStorage {
     offset?: number;
   }): Promise<{ tasks: (Task & { assignee?: User; booking?: Booking; talent?: User })[], total: number }>;
   updateTask(id: string, task: Partial<InsertTask>): Promise<Task>;
+
+  // Announcement operations
+  createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
+  getAllAnnouncements(options?: {
+    category?: string;
+    search?: string;
+    published?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ announcements: (Announcement & { createdBy: User })[], total: number }>;
+  getAnnouncement(id: string): Promise<(Announcement & { createdBy: User }) | undefined>;
+  updateAnnouncement(id: string, announcement: Partial<InsertAnnouncement>): Promise<Announcement>;
+  deleteAnnouncement(id: string): Promise<void>;
 
   // Demo data seeding
   seedDemoData(): Promise<void>;
@@ -553,6 +569,119 @@ export class DatabaseStorage implements IStorage {
       .where(eq(tasks.id, id))
       .returning();
     return updated;
+  }
+
+  // Announcement operations
+  async createAnnouncement(announcementData: InsertAnnouncement): Promise<Announcement> {
+    const [announcement] = await db
+      .insert(announcements)
+      .values(announcementData)
+      .returning();
+    return announcement;
+  }
+
+  async getAllAnnouncements(options?: {
+    category?: string;
+    search?: string;
+    published?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ announcements: (Announcement & { createdBy: User })[], total: number }> {
+    let query = db
+      .select({
+        announcement: announcements,
+        createdBy: users,
+      })
+      .from(announcements)
+      .leftJoin(users, eq(announcements.createdBy, users.id))
+      .orderBy(desc(announcements.createdAt));
+
+    const conditions = [];
+
+    if (options?.category) {
+      conditions.push(eq(announcements.category, options.category as any));
+    }
+
+    if (options?.published !== undefined) {
+      conditions.push(eq(announcements.published, options.published));
+    }
+
+    if (options?.search) {
+      conditions.push(
+        sql`${announcements.title} ILIKE ${`%${options.search}%`} OR ${announcements.description} ILIKE ${`%${options.search}%`}`
+      );
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+
+    // Get total count
+    const totalQuery = db
+      .select({ count: sql`count(*)` })
+      .from(announcements);
+
+    if (conditions.length > 0) {
+      totalQuery.where(and(...conditions));
+    }
+
+    const [totalResult] = await totalQuery;
+    const total = Number(totalResult.count);
+
+    // Apply pagination
+    if (options?.limit) {
+      query = query.limit(options.limit);
+    }
+    if (options?.offset) {
+      query = query.offset(options.offset);
+    }
+
+    const results = await query;
+
+    const announcementsWithCreatedBy = results.map(row => ({
+      ...row.announcement,
+      createdBy: row.createdBy!,
+    }));
+
+    return {
+      announcements: announcementsWithCreatedBy,
+      total,
+    };
+  }
+
+  async getAnnouncement(id: string): Promise<(Announcement & { createdBy: User }) | undefined> {
+    const [result] = await db
+      .select({
+        announcement: announcements,
+        createdBy: users,
+      })
+      .from(announcements)
+      .leftJoin(users, eq(announcements.createdBy, users.id))
+      .where(eq(announcements.id, id));
+
+    if (!result) return undefined;
+
+    return {
+      ...result.announcement,
+      createdBy: result.createdBy!,
+    };
+  }
+
+  async updateAnnouncement(id: string, announcementData: Partial<InsertAnnouncement>): Promise<Announcement> {
+    const [announcement] = await db
+      .update(announcements)
+      .set({
+        ...announcementData,
+        updatedAt: new Date(),
+      })
+      .where(eq(announcements.id, id))
+      .returning();
+
+    return announcement;
+  }
+
+  async deleteAnnouncement(id: string): Promise<void> {
+    await db.delete(announcements).where(eq(announcements.id, id));
   }
 
   async seedDemoData(): Promise<void> {

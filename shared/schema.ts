@@ -119,6 +119,8 @@ export const taskScopeEnum = pgEnum("task_scope", ["booking", "talent"]);
 export const contractStatusEnum = pgEnum("contract_status", ["draft", "sent", "signed", "expired", "cancelled"]);
 export const signatureStatusEnum = pgEnum("signature_status", ["pending", "signed", "expired"]);
 
+export const announcementCategoryEnum = pgEnum("announcement_category", ["open-call", "event"]);
+
 // Tasks
 export const tasks = pgTable("tasks", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -164,6 +166,25 @@ export const signatures = pgTable("signatures", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Announcements
+export const announcements = pgTable("announcements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  category: announcementCategoryEnum("category").notNull(),
+  description: text("description").notNull(),
+  location: varchar("location").notNull(),
+  date: timestamp("date").notNull(), // Event/casting date
+  deadline: timestamp("deadline"), // Application deadline (optional)
+  requirements: text("requirements").array().default(sql`'{}'::text[]`),
+  compensation: varchar("compensation"), // Optional compensation info
+  contactEmail: varchar("contact_email").notNull(),
+  featured: boolean("featured").notNull().default(false),
+  published: boolean("published").notNull().default(true),
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   talentProfile: one(talentProfiles, {
@@ -177,6 +198,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   createdTasks: many(tasks, { relationName: "createdTasks" }),
   contracts: many(contracts),
   signatures: many(signatures),
+  announcements: many(announcements),
 }));
 
 export const talentProfilesRelations = relations(talentProfiles, ({ one }) => ({
@@ -262,6 +284,13 @@ export const signaturesRelations = relations(signatures, ({ one }) => ({
   }),
 }));
 
+export const announcementsRelations = relations(announcements, ({ one }) => ({
+  createdBy: one(users, {
+    fields: [announcements.createdBy],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -324,6 +353,12 @@ export const insertSignatureSchema = createInsertSchema(signatures).omit({
   createdAt: true,
 });
 
+export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -342,3 +377,5 @@ export type Contract = typeof contracts.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 export type Signature = typeof signatures.$inferSelect;
 export type InsertSignature = z.infer<typeof insertSignatureSchema>;
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;

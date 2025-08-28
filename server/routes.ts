@@ -9,6 +9,7 @@ import {
   insertTalentProfileSchema,
   insertBookingSchema,
   insertTaskSchema,
+  insertAnnouncementSchema,
 } from "@shared/schema";
 import {
   ObjectStorageService,
@@ -730,6 +731,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating task:", error);
       res.status(500).json({ message: "Failed to update task" });
+    }
+  });
+
+  // Announcement endpoints
+  app.get('/api/announcements', async (req, res) => {
+    try {
+      const { 
+        category, 
+        search, 
+        published = "true",
+        page = "1", 
+        limit = "20" 
+      } = req.query;
+
+      const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
+
+      const result = await storage.getAllAnnouncements({
+        category: category as string,
+        search: search as string,
+        published: published === "true",
+        limit: parseInt(limit as string),
+        offset,
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      res.status(500).json({ message: "Failed to fetch announcements" });
+    }
+  });
+
+  app.get('/api/announcements/:id', async (req, res) => {
+    try {
+      const announcement = await storage.getAnnouncement(req.params.id);
+      if (!announcement) {
+        return res.status(404).json({ message: "Announcement not found" });
+      }
+      res.json(announcement);
+    } catch (error) {
+      console.error("Error fetching announcement:", error);
+      res.status(500).json({ message: "Failed to fetch announcement" });
+    }
+  });
+
+  app.post('/api/announcements', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Convert date strings to Date objects for validation
+      const processedBody = {
+        ...req.body,
+        date: req.body.date ? new Date(req.body.date) : undefined,
+        deadline: req.body.deadline ? new Date(req.body.deadline) : undefined,
+        createdBy: userId,
+      };
+
+      const announcementData = insertAnnouncementSchema.parse(processedBody);
+      const announcement = await storage.createAnnouncement(announcementData);
+      res.json(announcement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating announcement:", error);
+      res.status(500).json({ message: "Failed to create announcement" });
+    }
+  });
+
+  app.patch('/api/announcements/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Convert date strings to Date objects if provided
+      const processedBody = { ...req.body };
+      if (processedBody.date) {
+        processedBody.date = new Date(processedBody.date);
+      }
+      if (processedBody.deadline) {
+        processedBody.deadline = new Date(processedBody.deadline);
+      }
+
+      const announcement = await storage.updateAnnouncement(req.params.id, processedBody);
+      res.json(announcement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error updating announcement:", error);
+      res.status(500).json({ message: "Failed to update announcement" });
+    }
+  });
+
+  app.delete('/api/announcements/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      await storage.deleteAnnouncement(req.params.id);
+      res.json({ message: "Announcement deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+      res.status(500).json({ message: "Failed to delete announcement" });
     }
   });
 
