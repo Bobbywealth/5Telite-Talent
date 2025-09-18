@@ -4,7 +4,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminCalendar from "@/components/admin/admin-calendar";
 import AdminNavbar from "@/components/layout/admin-navbar";
@@ -26,68 +26,38 @@ export default function AdminDashboard() {
 
   // Fetch dashboard stats
   const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
-    queryKey: ["/api/bookings"],
-    queryFn: async () => {
-      const response = await fetch("/api/bookings?limit=5", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch bookings");
-      return response.json();
-    },
+    queryKey: ["/api/bookings?limit=5"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
   const { data: talentsData, isLoading: talentsLoading } = useQuery({
-    queryKey: ["/api/talents"],
-    queryFn: async () => {
-      const response = await fetch("/api/talents?limit=5", {
-        credentials: "include", 
-      });
-      if (!response.ok) throw new Error("Failed to fetch talents");
-      return response.json();
-    },
+    queryKey: ["/api/talents?limit=5"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
   const { data: tasksData, isLoading: tasksLoading } = useQuery({
-    queryKey: ["/api/tasks"],
-    queryFn: async () => {
-      const response = await fetch("/api/tasks?limit=5", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch tasks");
-      return response.json();
-    },
+    queryKey: ["/api/tasks?limit=5"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
   // Fetch pending talents for approval
   const { data: pendingTalentsData, isLoading: pendingTalentsLoading } = useQuery({
-    queryKey: ["/api/talents", { approvalStatus: "pending" }],
-    queryFn: async () => {
-      const response = await fetch("/api/talents?approvalStatus=pending&limit=10", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch pending talents");
-      return response.json();
-    },
+    queryKey: ["/api/talents?approvalStatus=pending&limit=10"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
 
   // Fetch booking requests needing attention
   const { data: pendingRequestsData, isLoading: pendingRequestsLoading } = useQuery({
-    queryKey: ["/api/booking-requests", { status: "pending" }],
-    queryFn: async () => {
-      const response = await fetch("/api/booking-requests?status=pending&limit=5", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch booking requests");
-      return response.json();
-    },
+    queryKey: ["/api/booking-requests?status=pending&limit=5"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
   });
