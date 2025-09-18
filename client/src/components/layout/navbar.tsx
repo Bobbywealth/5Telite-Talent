@@ -78,7 +78,7 @@ export default function Navbar() {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/") && location === "/" 
                   ? "text-white bg-primary shadow-md" 
-                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                  : "text-slate-900 hover:text-primary hover:bg-slate-50"
               }`}
               data-testid="link-home"
             >
@@ -89,7 +89,7 @@ export default function Navbar() {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/talent") 
                   ? "text-white bg-primary shadow-md" 
-                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                  : "text-slate-900 hover:text-primary hover:bg-slate-50"
               }`}
               data-testid="link-find-talent"
             >
@@ -100,7 +100,7 @@ export default function Navbar() {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/announcements") 
                   ? "text-white bg-primary shadow-md" 
-                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                  : "text-slate-900 hover:text-primary hover:bg-slate-50"
               }`}
               data-testid="link-announcements"
             >
