@@ -64,7 +64,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center" data-testid="link-logo">
               <img 
-                src="/attached_assets/5t-logo.png" 
+                src={logoImage} 
                 alt="5T Talent Platform" 
                 className="h-24 w-auto hover:scale-105 transition-transform duration-200"
               />

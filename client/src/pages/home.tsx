@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import logoImage from "@assets/5t-logo.png";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -55,7 +56,7 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <img 
-            src="/attached_assets/5t-logo.png" 
+            src={logoImage} 
             alt="5T Talent Platform" 
             className="h-20 w-auto mx-auto mb-8"
           />

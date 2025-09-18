@@ -50,7 +50,7 @@ export default function AdminNavbar() {
               <SheetContent side="left" className="w-64 p-0">
                 <div className="p-6 border-b border-slate-200">
                   <img 
-                    src="/attached_assets/5t-logo.png" 
+                    src={logoImage} 
                     alt="5T Talent Platform" 
                     className="h-16 w-auto"
                   />
@@ -80,7 +80,7 @@ export default function AdminNavbar() {
             
             <Link href="/admin" className="flex items-center" data-testid="link-logo-admin">
               <img 
-                src="/attached_assets/5t-logo.png" 
+                src={logoImage} 
                 alt="5T Talent Platform" 
                 className="h-16 md:h-20 w-auto hover:scale-105 transition-transform duration-200"
                 onError={(e) => {

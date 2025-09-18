@@ -50,7 +50,7 @@ export default function ClientNavbar() {
             
             <Link href="/" className="flex items-center" data-testid="link-logo">
               <img 
-                src="/attached_assets/5t-logo.png" 
+                src={logoImage} 
                 alt="5T Talent Platform" 
                 className="h-16 md:h-20 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
               />
