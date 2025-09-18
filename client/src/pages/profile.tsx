@@ -342,8 +342,8 @@ export default function Profile() {
                     <div>
                       <h3 className="font-medium text-slate-900 mb-2">Authentication</h3>
                       <p className="text-sm text-slate-600 mb-4">
-                        Your account is secured through Replit Auth. You can manage your authentication settings 
-                        directly through your Replit account.
+                        Your account is secured through our authentication system. Contact support for any 
+                        authentication-related assistance.
                       </p>
                       <Button variant="outline" data-testid="button-manage-auth">
                         <i className="fas fa-external-link-alt mr-2"></i>

@@ -65,7 +65,7 @@ export default function Register() {
         mediaUrls: data.uploadedImages
       }));
 
-      // Redirect to Replit Auth login to complete registration
+      // Redirect to login to complete registration
       window.location.href = "/api/login";
       
       return { success: true };
