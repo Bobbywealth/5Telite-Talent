@@ -1,5 +1,14 @@
 import { QueryClient } from "@tanstack/react-query";
 
+// Helper function to construct full API URLs
+function getApiUrl(url: string): string {
+  if (url.startsWith('http')) {
+    return url; // Already a full URL
+  }
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+  return `${baseUrl}${url}`;
+}
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -16,7 +25,7 @@ export const queryClient = new QueryClient({
 export function getQueryFn({ on401 }: { on401?: "returnNull" | "throw" } = {}) {
   return async ({ queryKey }: { queryKey: [string, ...unknown[]] }) => {
     const [url] = queryKey;
-    const response = await fetch(url, {
+    const response = await fetch(getApiUrl(url), {
       credentials: "include",
     });
 
@@ -32,7 +41,7 @@ export function getQueryFn({ on401 }: { on401?: "returnNull" | "throw" } = {}) {
 }
 
 export async function apiRequest(method: string, url: string, body?: any) {
-  const response = await fetch(url, {
+  const response = await fetch(getApiUrl(url), {
     method,
     credentials: "include",
     headers: {
