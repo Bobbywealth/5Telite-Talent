@@ -23,7 +23,8 @@ export function useAuth() {
       authCheckInProgress = true;
 
       try {
-        const response = await fetch("/api/user", {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const response = await fetch(`${baseUrl}/api/user`, {
           credentials: "include",
         });
 
