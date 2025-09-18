@@ -65,8 +65,8 @@ export default function AdminNavbar() {
                       >
                         <div className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
                           isActive(item.href)
-                            ? "text-white bg-primary" 
-                            : "text-slate-600 hover:bg-slate-100"
+                            ? "text-slate-900 bg-slate-100" 
+                            : "text-slate-900 hover:bg-slate-100"
                         }`}>
                           <i className={`${item.icon} mr-3 w-4`}></i>
                           {item.label}
@@ -101,8 +101,8 @@ export default function AdminNavbar() {
                 href={item.href}
                 className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive(item.href)
-                    ? "text-white bg-primary shadow-md" 
-                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                    ? "text-slate-900 bg-slate-100 shadow-md" 
+                    : "text-slate-900 hover:text-primary hover:bg-slate-50"
                 }`}
                 data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
