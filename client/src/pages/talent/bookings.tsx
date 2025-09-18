@@ -147,9 +147,9 @@ export default function TalentBookings() {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="requests" data-testid="tab-requests">
               Booking Requests
-              {requestsData?.requests?.length > 0 && (
+              {(requestsData as any)?.requests?.length > 0 && (
                 <Badge variant="secondary" className="ml-2">
-                  {requestsData.requests.length}
+                  {(requestsData as any).requests.length}
                 </Badge>
               )}
             </TabsTrigger>
@@ -172,7 +172,7 @@ export default function TalentBookings() {
                   </Card>
                 ))}
               </div>
-            ) : (!requestsData?.requests || requestsData.requests.length === 0) ? (
+            ) : (!(requestsData as any)?.requests || (requestsData as any).requests.length === 0) ? (
               <Card>
                 <CardContent className="p-12 text-center">
                   <div className="text-slate-400 mb-4">
@@ -186,7 +186,7 @@ export default function TalentBookings() {
               </Card>
             ) : (
               <div className="grid gap-6">
-                {requestsData.requests.map((request: any) => (
+                {(requestsData as any).requests.map((request: any) => (
                   <Card key={request.id} className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
                     <CardHeader>
                       <div className="flex items-start justify-between">
@@ -296,7 +296,7 @@ export default function TalentBookings() {
                   </Card>
                 ))}
               </div>
-            ) : (!bookings?.bookings || bookings.bookings.length === 0) ? (
+            ) : (!(bookings as any)?.bookings || (bookings as any).bookings.length === 0) ? (
               <Card>
                 <CardContent className="p-12 text-center">
                   <div className="text-slate-400 mb-4">
@@ -310,7 +310,7 @@ export default function TalentBookings() {
               </Card>
             ) : (
               <div className="grid gap-6">
-                {bookings.bookings.map((booking: any) => (
+                {(bookings as any).bookings.map((booking: any) => (
                   <Card key={booking.id} className="hover:shadow-md transition-shadow">
                     <CardHeader>
                       <div className="flex items-start justify-between">

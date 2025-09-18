@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Menu } from "lucide-react";
-import { NotificationBell } from "@/components/notification-bell";
+import { NotificationBell } from "@/components/ui/notification-bell";
 
 export default function AdminTalents() {
   const { isAuthenticated, isLoading, user } = useAuth();

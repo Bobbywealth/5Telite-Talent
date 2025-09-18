@@ -492,7 +492,7 @@ export default function AdminAnnouncements() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {announcements.map((announcement) => (
+            {announcements.map((announcement: any) => (
               <Card key={announcement.id} data-testid={`card-announcement-${announcement.id}`}>
                 <CardHeader>
                   <div className="flex justify-between items-start">

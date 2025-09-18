@@ -99,7 +99,7 @@ export default function TalentCard({ talent }: TalentCardProps) {
               size="sm" 
               className="bg-primary hover:bg-primary/90 transition-colors"
               data-testid={`button-book-talent-${talent.id}`}
-              onClick={() => window.location.href = `/book?talentId=${talent.user.id}&talentName=${encodeURIComponent(displayName)}&stageName=${encodeURIComponent(talent.stageName || '')}`}
+              onClick={() => window.location.href = `/book?talentId=${talent.userId}&talentName=${encodeURIComponent(displayName)}&stageName=${encodeURIComponent(talent.stageName || '')}`}
             >
               Book
             </Button>
