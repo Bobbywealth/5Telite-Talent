@@ -76,7 +76,7 @@ export default function Navbar() {
             <Link 
               href="/"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive("/") && location === "/" 
+                location === "/" 
                   ? "text-white bg-primary shadow-md" 
                   : "text-slate-900 hover:text-primary hover:bg-slate-50"
               }`}
