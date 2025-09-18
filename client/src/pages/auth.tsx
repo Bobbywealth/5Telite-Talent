@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { Eye, EyeOff, Sparkles, Users, Briefcase, Shield, CheckCircle, AlertCircle } from "lucide-react";
+import logoImage from "@assets/5t-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -285,8 +286,12 @@ export default function AuthPage() {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"></div>
             
             <CardHeader className="text-center pb-4 pt-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-slate-900 to-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Sparkles className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 mx-auto mb-4">
+                <img 
+                  src={logoImage} 
+                  alt="5T Talent Platform" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-purple-900 bg-clip-text text-transparent">
                 Welcome
