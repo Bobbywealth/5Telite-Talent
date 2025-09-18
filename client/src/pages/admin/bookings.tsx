@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminNavbar from "@/components/layout/admin-navbar"; // Import AdminNavbar
 import { Button } from "@/components/ui/button";
@@ -79,14 +79,8 @@ export default function AdminBookings() {
 
   // Fetch all talents for talent selection
   const { data: talentsData } = useQuery({
-    queryKey: ["/api/talents"],
-    queryFn: async () => {
-      const response = await fetch("/api/talents?limit=100", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch talents");
-      return response.json();
-    },
+    queryKey: ["/api/talents?limit=100"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
   });
 

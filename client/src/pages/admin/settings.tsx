@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,13 +33,7 @@ export default function AdminSettings() {
   // Fetch current settings
   const { data: currentSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ["/api/admin/settings"],
-    queryFn: async () => {
-      const response = await fetch("/api/admin/settings", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch settings");
-      return response.json();
-    },
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
