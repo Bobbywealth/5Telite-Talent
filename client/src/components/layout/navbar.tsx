@@ -77,7 +77,7 @@ export default function Navbar() {
               href="/"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 location === "/" 
-                  ? "text-white bg-primary shadow-md" 
+                  ? "text-slate-900 bg-slate-100 shadow-md" 
                   : "text-slate-900 hover:text-primary hover:bg-slate-50"
               }`}
               data-testid="link-home"
