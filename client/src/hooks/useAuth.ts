@@ -26,6 +26,8 @@ export function useAuth() {
         const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
         const response = await fetch(`${baseUrl}/api/user`, {
           credentials: "include",
+          // Add timeout for slow backend responses
+          signal: AbortSignal.timeout(30000), // 30 second timeout
         });
 
         let result = null;
