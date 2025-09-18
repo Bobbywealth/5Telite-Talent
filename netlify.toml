@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build --prefix client"
-  publish = "client/dist"
+  command = "vite build"
+  publish = "dist/public"
 
 [[redirects]]
   from = "/*"
