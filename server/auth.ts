@@ -43,11 +43,10 @@ export function setupAuth(app: Express) {
       tableName: 'sessions', // Specify the correct table name
     }),
     cookie: {
-      secure: true, // Always use secure cookies for cross-origin
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'none', // Required for cross-origin cookies
-      domain: process.env.NODE_ENV === 'production' ? undefined : undefined, // Let browser handle domain
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // Use lax for same-origin
     },
   };
 
