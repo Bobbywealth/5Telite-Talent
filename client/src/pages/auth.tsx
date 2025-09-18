@@ -105,20 +105,26 @@ export default function AuthPage() {
     mutationFn: async (data: LoginFormData) => {
       return await apiRequest("POST", "/api/login", data);
     },
-    onSuccess: (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: async (data: any) => {
+      // Invalidate and refetch user data
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      // Redirect based on user role
-      const redirectPaths: Record<string, string> = {
-        admin: '/admin',
-        talent: '/dashboard',
-        client: '/client'
-      };
-      const redirectPath = redirectPaths[data?.role] || '/';
-      setLocation(redirectPath);
+      
+      // Small delay to ensure auth state updates
+      setTimeout(() => {
+        const redirectPaths: Record<string, string> = {
+          admin: '/admin',
+          talent: '/dashboard',
+          client: '/client'
+        };
+        const redirectPath = redirectPaths[data?.role] || '/';
+        setLocation(redirectPath);
+      }, 100);
     },
     onError: (error: any) => {
       toast({
@@ -133,20 +139,26 @@ export default function AuthPage() {
     mutationFn: async (data: RegisterFormData) => {
       return await apiRequest("POST", "/api/register", data);
     },
-    onSuccess: (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: async (data: any) => {
+      // Invalidate and refetch user data
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      
       toast({
         title: "Welcome to 5T Talent!",
         description: "Your account has been created successfully.",
       });
-      // Redirect based on user role
-      const redirectPaths: Record<string, string> = {
-        admin: '/admin',
-        talent: '/dashboard',
-        client: '/client'
-      };
-      const redirectPath = redirectPaths[data?.role] || '/';
-      setLocation(redirectPath);
+      
+      // Small delay to ensure auth state updates
+      setTimeout(() => {
+        const redirectPaths: Record<string, string> = {
+          admin: '/admin',
+          talent: '/dashboard',
+          client: '/client'
+        };
+        const redirectPath = redirectPaths[data?.role] || '/';
+        setLocation(redirectPath);
+      }, 100);
     },
     onError: (error: any) => {
       toast({
