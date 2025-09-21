@@ -316,9 +316,12 @@ Client Signature: _________________________ Date: _____________
         return res.status(404).json({ message: "Talent not found" });
       }
 
-      // If requesting their own profile, always allow access
+      // If requesting their own profile, always allow access (even if profile doesn't exist)
       if (requestingUserId === id) {
-        return res.json({ ...profile, user, talentProfile: profile });
+        return res.json({ 
+          ...user,
+          talentProfile: profile || null // Allow null profile for own access
+        });
       }
 
       // For public viewing, only show approved profiles
@@ -333,6 +336,7 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Create talent profile
   app.post('/api/talents', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -343,37 +347,51 @@ Client Signature: _________________________ Date: _____________
       }
 
       // Check if profile already exists
-      const existingProfile = await storage.getTalentProfile(userId);
-      if (existingProfile) {
-        return res.status(400).json({ message: "Talent profile already exists" });
+      try {
+        const existingProfile = await storage.getTalentProfile(userId);
+        if (existingProfile) {
+          return res.status(400).json({ message: "Talent profile already exists" });
+        }
+      } catch (error) {
+        // Profile doesn't exist, which is what we want
       }
 
-      const profileData = insertTalentProfileSchema.parse({
-        ...req.body,
+      // Create the profile
+      const profileData = {
         userId,
-        approvalStatus: 'pending'
-      });
+        ...req.body,
+        approvalStatus: 'pending' // New profiles need approval
+      };
 
       const profile = await storage.createTalentProfile(profileData);
-      
-      // 📧 Send email notification to admin about new talent signup (Enhanced)
-      try {
-        const user = await storage.getUser(userId);
-        if (user) {
-          await enhancedEmailService.notifyAdminNewTalentSignup(user, profile);
-        }
-      } catch (emailError) {
-        console.error("Failed to send new talent notification email:", emailError);
-        // Don't fail the request if email fails
-      }
-      
-      res.json(profile);
+      res.status(201).json(profile);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Validation error", errors: error.errors });
-      }
       console.error("Error creating talent profile:", error);
       res.status(500).json({ message: "Failed to create talent profile" });
+    }
+  });
+
+  // Update talent profile
+  app.patch('/api/talents/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const profileId = req.params.id;
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'talent') {
+        return res.status(403).json({ message: "Talent access required" });
+      }
+
+      // Only allow updating own profile (by user ID)
+      if (profileId !== userId) {
+        return res.status(403).json({ message: "Can only update own profile" });
+      }
+
+      const updatedProfile = await storage.updateTalentProfile(userId, req.body);
+      res.json(updatedProfile);
+    } catch (error) {
+      console.error("Error updating talent profile:", error);
+      res.status(500).json({ message: "Failed to update talent profile" });
     }
   });
 
