@@ -32,7 +32,7 @@ class EmailService {
     this.adminEmail = process.env.ADMIN_EMAIL || 'admin@5telite.com';
 
     // Create transporter
-    this.transporter = nodemailer.createTransporter(emailConfig);
+    this.transporter = nodemailer.createTransport(emailConfig);
 
     // Verify connection configuration
     this.verifyConnection();
