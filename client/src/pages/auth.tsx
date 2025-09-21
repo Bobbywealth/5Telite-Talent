@@ -123,8 +123,9 @@ export default function AuthPage() {
           client: '/client'
         };
         const redirectPath = redirectPaths[data?.role] || '/';
-        setLocation(redirectPath);
-      }, 500); // Increased delay for auth state
+        console.log('Redirecting to:', redirectPath, 'for role:', data?.role);
+        window.location.href = redirectPath; // Force full page navigation
+      }, 1000); // Longer delay for auth state
     },
     onError: (error: any) => {
       toast({
@@ -157,8 +158,9 @@ export default function AuthPage() {
           client: '/client'
         };
         const redirectPath = redirectPaths[data?.role] || '/';
-        setLocation(redirectPath);
-      }, 100);
+        console.log('Registration redirect to:', redirectPath, 'for role:', data?.role);
+        window.location.href = redirectPath; // Force full page navigation
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
