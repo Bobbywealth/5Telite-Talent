@@ -1273,6 +1273,23 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  app.delete('/api/tasks/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      await storage.deleteTask(req.params.id);
+      res.json({ message: "Task deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      res.status(500).json({ message: "Failed to delete task" });
+    }
+  });
+
   // Announcement endpoints
   app.get('/api/announcements', async (req, res) => {
     try {

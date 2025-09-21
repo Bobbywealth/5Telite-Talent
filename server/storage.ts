@@ -73,6 +73,7 @@ export interface IStorage {
     offset?: number;
   }): Promise<{ tasks: (Task & { assignee?: User; booking?: Booking; talent?: User })[], total: number }>;
   updateTask(id: string, task: Partial<InsertTask>): Promise<Task>;
+  deleteTask(id: string): Promise<void>;
 
   // Announcement operations
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
@@ -607,6 +608,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(tasks.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteTask(id: string): Promise<void> {
+    await db.delete(tasks).where(eq(tasks.id, id));
   }
 
   // Announcement operations

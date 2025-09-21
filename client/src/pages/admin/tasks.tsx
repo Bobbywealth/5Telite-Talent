@@ -46,7 +46,7 @@ export default function AdminTasks() {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    scope: "general" as "booking" | "talent" | "general",
+    scope: "booking" as "booking" | "talent" | "general",
     bookingId: "",
     talentId: "",
     assigneeId: "",
@@ -237,6 +237,36 @@ export default function AdminTasks() {
         return;
       }
       toast({ title: "Failed to update tasks", variant: "destructive" });
+    },
+  });
+
+  // Delete task mutation
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (taskId: string) => {
+      return apiRequest("DELETE", `/api/tasks/${taskId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({ 
+        title: "Task deleted successfully",
+        description: "The task has been permanently removed."
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => { window.location.href = "/api/login"; }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: `Failed to delete task: ${error.message}`,
+        variant: "destructive",
+      });
     },
   });
 
@@ -945,6 +975,16 @@ export default function AdminTasks() {
                                     })}
                                   >
                                     <i className="fas fa-check mr-2"></i>Done
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => {
+                                      if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+                                        deleteTaskMutation.mutate(task.id);
+                                      }
+                                    }}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <i className="fas fa-trash mr-2"></i>Delete Task
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
