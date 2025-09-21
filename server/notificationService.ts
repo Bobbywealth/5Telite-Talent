@@ -119,7 +119,7 @@ export class NotificationService {
       data: {
         contractId: data.contractId
       },
-      actionUrl: '/contracts',
+      actionUrl: '/talent/contracts',
       read: false
     });
   }

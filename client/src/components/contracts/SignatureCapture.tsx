@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SignatureCaptureProps {
-  onSignature: (signatureDataUrl: string) => void;
-  onClear?: () => void;
-  disabled?: boolean;
+  contractTitle: string;
+  onSign: (signatureDataUrl: string) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
   width?: number;
   height?: number;
 }
