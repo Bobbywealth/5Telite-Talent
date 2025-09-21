@@ -94,22 +94,24 @@ export default function TalentProfileEdit() {
 
   // Fetch current profile data
   const { data: profileData, isLoading: profileLoading, error: profileError } = useQuery({
-    queryKey: ["/api/auth/user"],
+    queryKey: ["/api/auth/user", Date.now()], // Add timestamp to force fresh data
     queryFn: async () => {
       const userData = await apiRequest("GET", "/api/auth/user");
       // Try to fetch talent profile
       try {
-        const talentProfile = await apiRequest("GET", `/api/talents/${userData.id}`);
-        return { ...userData, talentProfile };
+        const talentProfileResponse = await apiRequest("GET", `/api/talents/${userData.id}`);
+        console.log("Fresh profile data loaded:", talentProfileResponse);
+        return { ...userData, talentProfile: talentProfileResponse.talentProfile };
       } catch (error) {
+        console.error("Error fetching talent profile:", error);
         // Profile doesn't exist yet, return user data only
         return { ...userData, talentProfile: null };
       }
     },
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0, // No caching - always fetch fresh data
+    refetchOnWindowFocus: true, // Refresh when window gets focus
   });
 
   // Populate form with existing data when profile loads
