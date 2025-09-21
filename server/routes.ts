@@ -1661,6 +1661,24 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Quick fix endpoint to update booking status
+  app.post('/api/fix-booking-status/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const booking = await storage.updateBooking(req.params.id, { status: "confirmed" });
+      return res.json({ message: "Booking status updated to confirmed", booking });
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      return res.status(500).json({ message: "Failed to update booking status" });
+    }
+  });
+
   // Test endpoint to create sample contract
   app.post('/api/create-test-contract', isAuthenticated, async (req: any, res) => {
     try {
