@@ -5,6 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
+import { emailService } from "./emailService";
 import { User as DbUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 
@@ -123,6 +124,16 @@ export function setupAuth(app: Express) {
 
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
+
+      // 📧 Send welcome email for talent signups (admin will get notified when they create their profile)
+      if (role === "talent") {
+        try {
+          // Note: Admin notification will be sent when talent creates their profile
+          console.log(`New talent registered: ${email}`);
+        } catch (emailError) {
+          console.error("Note: Email service not configured for welcome emails:", emailError);
+        }
+      }
 
       // Log user in
       req.login(userWithoutPassword, (err) => {

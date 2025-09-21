@@ -14,6 +14,7 @@ import {
 // Object storage imports removed - now using Google Cloud Storage
 import { ObjectPermission } from "./objectAcl";
 import { ContractService } from "./contractService";
+import { emailService } from "./emailService";
 import { db } from "./db";
 import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
@@ -280,6 +281,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const profile = await storage.createTalentProfile(profileData);
+      
+      // 📧 Send email notification to admin about new talent signup
+      try {
+        const user = await storage.getUser(userId);
+        if (user) {
+          await emailService.notifyAdminNewTalentSignup(user, profile);
+        }
+      } catch (emailError) {
+        console.error("Failed to send new talent notification email:", emailError);
+        // Don't fail the request if email fails
+      }
+      
       res.json(profile);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -382,6 +395,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const profile = await storage.approveTalent(req.params.id, status);
+      
+      // 📧 Send email notification to talent about approval status
+      try {
+        const talentUser = await storage.getUser(req.params.id);
+        if (talentUser) {
+          await emailService.notifyTalentApprovalStatus(talentUser, status);
+        }
+      } catch (emailError) {
+        console.error("Failed to send talent approval notification email:", emailError);
+        // Don't fail the request if email fails
+      }
+      
       res.json(profile);
     } catch (error) {
       console.error("Error approving talent:", error);
@@ -586,7 +611,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
+      const oldBooking = await storage.getBooking(req.params.id);
       const booking = await storage.updateBooking(req.params.id, req.body);
+      
+      // 📧 Send email notification if booking status changed to confirmed
+      try {
+        if (req.body.status === 'confirmed' && oldBooking?.status !== 'confirmed') {
+          const updatedBooking = await storage.getBooking(req.params.id);
+          if (updatedBooking) {
+            // Collect all recipients (client + talents)
+            const recipients = [updatedBooking.client];
+            updatedBooking.bookingTalents.forEach(bt => recipients.push(bt.talent));
+            
+            await emailService.notifyBookingConfirmed(recipients, updatedBooking);
+          }
+        }
+      } catch (emailError) {
+        console.error("Failed to send booking confirmation notification email:", emailError);
+        // Don't fail the request if email fails
+      }
+      
       res.json(booking);
     } catch (error) {
       console.error("Error updating booking:", error);
@@ -683,11 +727,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const bookingId = req.params.id;
       
+      // Get booking details for email notifications
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
       // Add each talent to the booking
       const bookingTalents = [];
       for (const talentId of talentIds) {
         const bookingTalent = await storage.addTalentToBooking(bookingId, talentId);
         bookingTalents.push(bookingTalent);
+        
+        // 📧 Send email notification to talent about new booking request
+        try {
+          const talent = await storage.getUser(talentId);
+          if (talent) {
+            await emailService.notifyTalentBookingRequest(talent, booking, booking.client);
+          }
+        } catch (emailError) {
+          console.error(`Failed to send booking request notification to talent ${talentId}:`, emailError);
+          // Don't fail the request if email fails
+        }
       }
 
       res.json({ 
@@ -824,6 +885,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdBy: userId // Automatically set the createdBy field to the authenticated user
       });
       const task = await storage.createTask(taskData);
+      
+      // 📧 Send email notification to assigned talent about new task
+      try {
+        if (task.assigneeId) {
+          const assignedTalent = await storage.getUser(task.assigneeId);
+          if (assignedTalent) {
+            await emailService.notifyTalentTaskAssigned(assignedTalent, task, user);
+          }
+        }
+      } catch (emailError) {
+        console.error("Failed to send task assignment notification email:", emailError);
+        // Don't fail the request if email fails
+      }
+      
       res.json(task);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -1314,6 +1389,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         contractData
       );
+      
+      // 📧 Send email notification to talent and client about new contract
+      try {
+        await emailService.notifyContractSent(
+          bookingTalent.talent, 
+          booking, 
+          contract.title, 
+          'talent'
+        );
+        await emailService.notifyContractSent(
+          booking.client, 
+          booking, 
+          contract.title, 
+          'client'
+        );
+      } catch (emailError) {
+        console.error("Failed to send contract notification emails:", emailError);
+        // Don't fail the request if email fails
+      }
       
       res.json(contract);
     } catch (error) {
