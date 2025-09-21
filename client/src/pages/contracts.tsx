@@ -112,11 +112,17 @@ export default function ContractsPage() {
     queryKey: ["/api/bookings"],
   });
 
-  // Show all bookings that have talent requests (sent or accepted)
+  // Show all bookings (simplified - no filtering for now)
   const allBookings = bookingsData?.bookings || [];
-  const bookings = allBookings.filter((booking: any) => 
-    booking.bookingTalents && booking.bookingTalents.length > 0
-  );
+  const bookings = allBookings; // Show all bookings for debugging
+  
+  // Debug logging
+  console.log("Contracts Debug:", {
+    bookingsData,
+    allBookings,
+    bookings,
+    bookingsLength: bookings.length
+  });
 
   const createContractMutation = useMutation({
     mutationFn: async ({ bookingId, bookingTalentId }: { bookingId: string; bookingTalentId: string }) => {
