@@ -1,7 +1,7 @@
 // import jsPDF from 'jspdf'; // Removed for server compatibility
 import { Contract, Booking, User, TalentProfile, InsertContract, contracts, signatures } from '@shared/schema';
 import { db } from './db';
-import { eq, exists } from 'drizzle-orm';
+import { eq, exists, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 export interface ContractData {
@@ -168,7 +168,10 @@ This is a legally binding agreement. Please read carefully before signing.
         status: 'signed',
         signedAt: new Date(),
       })
-      .where(eq(signatures.contractId, contractId));
+      .where(and(
+        eq(signatures.contractId, contractId),
+        eq(signatures.signerId, signerId)
+      ));
 
     // Update contract status
     await db.update(contracts)

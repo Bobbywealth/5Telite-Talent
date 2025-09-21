@@ -71,10 +71,11 @@ export default function TalentContractsPage() {
       setShowSignature(false);
       setSelectedContract(null);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Contract signing error:", error);
       toast({
         title: "Signature Failed",
-        description: "Failed to sign contract. Please try again.",
+        description: error?.message || "Failed to sign contract. Please try again.",
         variant: "destructive",
       });
     },
