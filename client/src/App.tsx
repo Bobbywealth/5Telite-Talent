@@ -98,11 +98,11 @@ function Router() {
           {/* Talent routes */}
           {user?.role === 'talent' && (
             <>
-              <Route path="/dashboard" component={TalentDashboard} />
-              <Route path="/dashboard/profile" component={TalentProfileEdit} />
-              <Route path="/dashboard/bookings" component={TalentBookings} />
-              <Route path="/dashboard/tasks" component={TalentTasks} />
-              <Route path="/dashboard/settings" component={Settings} />
+              <Route path="/talent/dashboard" component={TalentDashboard} />
+              <Route path="/talent/profile" component={TalentProfileEdit} />
+              <Route path="/talent/bookings" component={TalentBookings} />
+              <Route path="/talent/tasks" component={TalentTasks} />
+              <Route path="/talent/settings" component={Settings} />
             </>
           )}
 

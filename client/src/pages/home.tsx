@@ -16,7 +16,7 @@ export default function Home() {
     if (isAuthenticated && user) {
       const redirectPath = {
         admin: '/admin',
-        talent: '/dashboard',
+        talent: '/talent/dashboard',
         client: '/client'
       }[user.role];
 
