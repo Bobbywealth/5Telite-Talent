@@ -254,7 +254,7 @@ export default function TalentDashboard() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link href="/talent/profile-edit">
+                <Link href="/talent/profile">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105" data-testid="button-edit-profile">
                     <UserPen className="w-4 h-4 mr-2" />Edit Profile
                   </Button>
@@ -409,7 +409,7 @@ export default function TalentDashboard() {
                           <strong>Why complete your profile?</strong> Clients prefer talents with complete profiles. 
                           You're {100 - completion.percentage}% away from maximizing your booking potential!
                         </div>
-                        <Link href="/talent/profile-edit">
+                        <Link href="/talent/profile">
                           <Button className="bg-amber-500 hover:bg-amber-600 text-white">
                             <UserPen className="w-4 h-4 mr-2" />
                             Complete Profile
