@@ -34,6 +34,7 @@ import TalentDashboard from "@/pages/talent/dashboard";
 import TalentProfileEdit from "@/pages/talent/profile-edit";
 import TalentBookings from "@/pages/talent/bookings";
 import TalentTasks from "@/pages/talent/tasks";
+import TalentContracts from "@/pages/talent/contracts";
 
 // Client Pages
 import ClientDashboard from "@/pages/client/dashboard";
@@ -82,6 +83,7 @@ function Router() {
               <Route path="/talent/profile" component={TalentProfileEdit} />
               <Route path="/talent/bookings" component={TalentBookings} />
               <Route path="/talent/tasks" component={TalentTasks} />
+              <Route path="/talent/contracts" component={TalentContracts} />
               <Route path="/talent/settings" component={Settings} />
             </>
           )}

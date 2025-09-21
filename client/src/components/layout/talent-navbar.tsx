@@ -34,7 +34,7 @@ export default function TalentNavbar() {
     { href: "/talent/profile-edit", label: "My Profile", icon: User },
     { href: "/talent/bookings", label: "My Bookings", icon: Calendar },
     { href: "/talent/tasks", label: "My Tasks", icon: ClipboardList },
-    { href: "/contracts", label: "My Contracts", icon: FileText },
+    { href: "/talent/contracts", label: "My Contracts", icon: FileText },
   ];
 
   return (
