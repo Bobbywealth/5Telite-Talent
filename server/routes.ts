@@ -45,68 +45,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create demo contracts endpoint for testing
   app.post('/api/demo-contracts', async (req, res) => {
     try {
-      // Find existing users
-      const adminUsers = await db.select().from(users).where(eq(users.role, 'admin')).limit(1);
-      const clientUsers = await db.select().from(users).where(eq(users.role, 'client')).limit(1);
-      const talentUsers = await db.select().from(users).where(eq(users.role, 'talent')).limit(1);
+      // Just create a simple demo contract directly in the database
+      const [demoContract] = await db.insert(contracts).values({
+        bookingId: "demo-booking-id",
+        bookingTalentId: "demo-booking-talent-id", 
+        title: "Fashion Photography Contract",
+        content: `
+TALENT ENGAGEMENT AGREEMENT
 
-      if (adminUsers.length === 0 || clientUsers.length === 0 || talentUsers.length === 0) {
-        return res.status(400).json({ 
-          message: "Missing required users", 
-          found: { 
-            admin: adminUsers.length, 
-            client: clientUsers.length, 
-            talent: talentUsers.length 
-          }
-        });
-      }
+Agreement Number: DEMO-001
+Date: ${new Date().toLocaleDateString()}
 
-      const adminUser = adminUsers[0];
-      const clientUser = clientUsers[0];
-      const talentUser = talentUsers[0];
+PARTIES:
+Client: Demo Client
+Email: client@demo.com
 
-      // Create a demo booking first
-      const demoBooking = await storage.createBooking({
-        title: "Fashion Photography Session",
-        description: "Professional fashion shoot for spring collection",
-        location: "Manhattan Studio",
-        startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-        endDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), // 8 days from now
-        rate: 500,
-        status: "confirmed",
-        createdById: adminUser.id,
-        clientId: clientUser.id,
-        deliverables: "High-quality fashion photography for spring collection",
-        usage: { web: true, print: true, social: true },
-        notes: "Please arrive 30 minutes early for hair and makeup"
-      });
+Talent: Test Talent  
+Email: talent@demo.com
 
-      // Add talent to booking
-      const bookingTalent = await storage.addTalentToBooking(demoBooking.id, talentUser.id);
+PROJECT DETAILS:
+Title: Fashion Photography Session
+Location: Manhattan Studio
+Start Date: ${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+End Date: ${new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+Rate: $500
 
-      // Create a contract for this booking
-      const contractData = {
-        booking: demoBooking,
-        talent: talentUser,
-        client: clientUser
-      };
+SCOPE OF WORK:
+High-quality fashion photography for spring collection.
 
-      const contract = await ContractService.createContract(
-        demoBooking.id,
-        bookingTalent.id,
-        adminUser.id,
-        contractData
-      );
+TERMS AND CONDITIONS:
+
+1. ENGAGEMENT: Talent agrees to provide professional services as outlined above.
+
+2. COMPENSATION: Payment shall be made according to the agreed rate and schedule.
+
+3. PROFESSIONAL CONDUCT: Talent shall maintain professional standards and arrive punctually to all scheduled activities.
+
+4. CANCELLATION: Either party may cancel with 24-hour notice, subject to applicable cancellation fees.
+
+By signing below, both parties agree to the terms and conditions outlined in this agreement.
+
+Talent Signature: _________________________ Date: _____________
+
+Client Signature: _________________________ Date: _____________
+        `,
+        status: 'sent',
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        createdBy: "demo-admin-id"
+      }).returning();
 
       res.json({ 
-        message: "Demo booking and contract created successfully",
-        booking: demoBooking,
-        bookingTalent,
-        contract
+        message: "Demo contract created successfully",
+        contract: demoContract
       });
     } catch (error) {
-      console.error("Error creating demo contracts:", error);
-      res.status(500).json({ message: "Failed to create demo contracts", error: error.message });
+      console.error("Error creating demo contract:", error);
+      res.status(500).json({ message: "Failed to create demo contract", error: error.message });
     }
   });
 
