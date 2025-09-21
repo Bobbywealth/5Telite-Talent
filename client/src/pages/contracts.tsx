@@ -100,7 +100,7 @@ export default function ContractsPage() {
         window.history.replaceState({}, '', newUrl);
       }
     }
-  }, [user, bookings]);
+  }, [user]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

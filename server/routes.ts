@@ -1516,6 +1516,83 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Test endpoint to seed Bobby Craig account
+  app.post('/api/seed-bobby-account', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Check if Bobby already exists
+      const existingBobby = await storage.getUserByEmail("bobby@5t.com");
+      if (existingBobby) {
+        return res.json({ 
+          message: "Bobby Craig already exists",
+          login: { email: "bobby@5t.com", password: "bobby123" }
+        });
+      }
+
+      // Import hash function
+      const { hashPassword } = await import("./auth");
+
+      // Create Bobby Craig user
+      const bobbyUser = await storage.createUser({
+        email: "bobby@5t.com",
+        password: await hashPassword("bobby123"),
+        firstName: "Bobby",
+        lastName: "Craig",
+        role: "talent",
+      });
+
+      // Create Bobby's talent profile
+      await storage.createTalentProfile({
+        userId: bobbyUser.id,
+        stageName: "Bobby Craig",
+        categories: ["Commercial", "On-Camera", "Corporate"],
+        skills: ["Acting", "Voice Acting", "Presenting", "Comedy"],
+        bio: "Versatile talent with experience in commercial acting, corporate presentations, and voice work. Professional, reliable, and great with client direction.",
+        location: "New York, NY",
+        unionStatus: "SAG-AFTRA",
+        measurements: {
+          height: "5'11\"",
+          weight: "175 lbs",
+          hair: "Brown",
+          eyes: "Brown"
+        },
+        rates: {
+          hourly: 150,
+          halfDay: 600,
+          day: 1000
+        },
+        social: {
+          instagram: "@bobbycraig"
+        },
+        approvalStatus: "approved",
+      });
+
+      res.json({ 
+        message: "Bobby Craig account created successfully!",
+        user: {
+          id: bobbyUser.id,
+          email: bobbyUser.email,
+          firstName: bobbyUser.firstName,
+          lastName: bobbyUser.lastName,
+          role: bobbyUser.role
+        },
+        login: {
+          email: "bobby@5t.com",
+          password: "bobby123"
+        }
+      });
+    } catch (error) {
+      console.error("Error creating Bobby's account:", error);
+      res.status(500).json({ message: "Failed to create Bobby's account" });
+    }
+  });
+
   // Test endpoint to create booking request for Bobby
   app.post('/api/create-test-booking-for-bobby', isAuthenticated, async (req: any, res) => {
     try {
