@@ -177,17 +177,17 @@ export default function TalentProfile() {
               {talent.mediaUrls && talent.mediaUrls.length > 0 ? (
                 <GcsImage 
                   objectName={talent.mediaUrls[0]}
-                  alt={`${talent.firstName} ${talent.lastName}`}
+                  alt={talent.stageName || `${talent.user?.firstName} ${talent.user?.lastName}`}
                   className="w-48 h-48 rounded-xl object-cover shadow-lg"
                   fallback={
                     <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
-                      <span className="text-4xl text-slate-400">{talent.firstName?.[0]}{talent.lastName?.[0]}</span>
+                      <span className="text-4xl text-slate-400">{talent.user?.firstName?.[0]}{talent.user?.lastName?.[0]}</span>
                     </div>
                   }
                 />
               ) : (
                 <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-4xl text-slate-400">{talent.firstName?.[0]}{talent.lastName?.[0]}</span>
+                  <span className="text-4xl text-slate-400">{talent.user?.firstName?.[0]}{talent.user?.lastName?.[0]}</span>
                 </div>
               )}
             </div>
@@ -197,9 +197,11 @@ export default function TalentProfile() {
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                    {talent.firstName} {talent.lastName}
+                    {talent.stageName || `${talent.user?.firstName} ${talent.user?.lastName}`}
                   </h1>
-                  <p className="text-xl text-primary font-medium mb-4">{talent.category}</p>
+                  <p className="text-xl text-primary font-medium mb-4">
+                    {talent.categories?.join(', ') || 'Professional Talent'}
+                  </p>
                   {talent.location && (
                     <p className="text-slate-600 mb-4 flex items-center">
                       <i className="fas fa-map-marker-alt mr-2"></i>
@@ -295,22 +297,22 @@ export default function TalentProfile() {
               <CardTitle>Quick Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {talent.yearsOfExperience && (
+              {talent.experience && (
                 <div className="flex justify-between">
                   <span className="text-slate-600">Experience:</span>
-                  <span className="font-medium">{talent.yearsOfExperience} years</span>
+                  <span className="font-medium">{talent.experience} years</span>
                 </div>
               )}
-              {talent.category && (
+              {talent.categories && talent.categories.length > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Category:</span>
-                  <span className="font-medium">{talent.category}</span>
+                  <span className="text-slate-600">Categories:</span>
+                  <span className="font-medium">{talent.categories.join(', ')}</span>
                 </div>
               )}
-              {talent.hourlyRate && (
+              {talent.rates?.hourly && (
                 <div className="flex justify-between">
                   <span className="text-slate-600">Hourly Rate:</span>
-                  <span className="font-medium">${talent.hourlyRate}</span>
+                  <span className="font-medium">${talent.rates.hourly}</span>
                 </div>
               )}
               {talent.availability && (
