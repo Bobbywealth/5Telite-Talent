@@ -291,6 +291,121 @@ class EmailService {
     await this.sendEmail(talent.email, subject, html);
   }
 
+  // 🎭 Welcome Email for Self-Registered Talents
+  async sendTalentWelcomeEmail(talent: User) {
+    const subject = `🎭 Welcome to 5T Elite Talent - Let's Get Started!`;
+    
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">🎭 Welcome to 5T Elite Talent!</h1>
+        </div>
+        
+        <div style="padding: 20px; background: #f9f9f9;">
+          <h2 style="color: #333;">Hi ${talent.firstName},</h2>
+          
+          <p>Welcome to the 5T Elite Talent platform! 🎉</p>
+          
+          <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #667eea;">
+            <h3 style="color: #667eea; margin-top: 0;">Next Steps:</h3>
+            <ol>
+              <li><strong>Complete Your Profile:</strong> Add your bio, photos, and skills</li>
+              <li><strong>Upload Professional Photos:</strong> High-quality headshots and portfolio images</li>
+              <li><strong>Wait for Approval:</strong> Our team will review your profile within 24-48 hours</li>
+              <li><strong>Start Booking:</strong> Once approved, you'll receive casting opportunities!</li>
+            </ol>
+          </div>
+          
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${process.env.FRONTEND_URL || 'https://fivetelite-talent.onrender.com'}/talent/profile-edit" 
+               style="background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+              Complete Your Profile
+            </a>
+          </div>
+          
+          <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ffc107;">
+            <p><strong>💡 Pro Tips:</strong></p>
+            <ul>
+              <li>Use professional, high-resolution photos</li>
+              <li>Write a compelling bio that showcases your experience</li>
+              <li>List all relevant skills and categories</li>
+              <li>Keep your profile updated with recent work</li>
+            </ul>
+          </div>
+          
+          <p style="color: #666; font-size: 14px; text-align: center;">
+            Questions? Reply to this email or contact us at ${this.adminEmail}
+          </p>
+        </div>
+      </div>
+    `;
+
+    await this.sendEmail(talent.email, subject, html);
+  }
+
+  // 🔑 Welcome Email for Admin-Created Talents with Login Credentials
+  async sendAdminCreatedTalentWelcome(talent: User, tempPassword: string, profile?: any) {
+    const subject = `🎭 Welcome to 5T Elite Talent - Your Account is Ready!`;
+    
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">🎭 Your 5T Elite Talent Account is Ready!</h1>
+        </div>
+        
+        <div style="padding: 20px; background: #f9f9f9;">
+          <h2 style="color: #333;">Hi ${talent.firstName},</h2>
+          
+          <p>Great news! Your talent profile has been created and approved on the 5T Elite Talent platform! 🎉</p>
+          
+          <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #4CAF50;">
+            <h3 style="color: #4CAF50; margin-top: 0;">🔑 Your Login Credentials:</h3>
+            <p><strong>Email:</strong> ${talent.email}</p>
+            <p><strong>Temporary Password:</strong> <code style="background: #f1f1f1; padding: 2px 6px; border-radius: 3px;">${tempPassword}</code></p>
+            
+            <div style="background: #fff3cd; padding: 10px; border-radius: 6px; margin: 10px 0;">
+              <p style="margin: 0; font-size: 14px;"><strong>⚠️ Important:</strong> Please change your password after your first login for security.</p>
+            </div>
+          </div>
+          
+          <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+            <h3 style="color: #333; margin-top: 0;">✅ Your Profile Status:</h3>
+            <p><strong>Status:</strong> <span style="color: #4CAF50; font-weight: bold;">APPROVED ✅</span></p>
+            <p>Your profile is live and ready to receive booking opportunities!</p>
+          </div>
+          
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${process.env.FRONTEND_URL || 'https://fivetelite-talent.onrender.com'}/auth" 
+               style="background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-right: 10px;">
+              Login to Your Account
+            </a>
+            <a href="${process.env.FRONTEND_URL || 'https://fivetelite-talent.onrender.com'}/talent/profile-edit" 
+               style="background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+              Update Your Profile
+            </a>
+          </div>
+          
+          <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+            <h3 style="color: #333; margin-top: 0;">🚀 What You Can Do Now:</h3>
+            <ul>
+              <li>View and manage your bookings</li>
+              <li>Update your profile and photos</li>
+              <li>Complete assigned tasks</li>
+              <li>Receive casting opportunities</li>
+              <li>Sign contracts digitally</li>
+            </ul>
+          </div>
+          
+          <p style="color: #666; font-size: 14px; text-align: center;">
+            Questions? Reply to this email or contact us at ${this.adminEmail}
+          </p>
+        </div>
+      </div>
+    `;
+
+    await this.sendEmail(talent.email, subject, html);
+  }
+
   // 🎉 Booking Confirmed - Notify All Parties
   async notifyBookingConfirmed(recipients: User[], booking: Booking) {
     const subject = `🎉 Booking Confirmed: ${booking.title}`;

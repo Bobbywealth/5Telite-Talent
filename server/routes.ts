@@ -123,6 +123,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Remove password from response
       const { password: _, ...userWithoutPassword } = newUser;
       
+      // 📧 Send welcome email with login credentials for admin-created users
+      if (role === "talent") {
+        try {
+          await emailService.sendAdminCreatedTalentWelcome(userWithoutPassword, tempPassword);
+        } catch (emailError) {
+          console.error("Failed to send welcome email to admin-created talent:", emailError);
+          // Don't fail the request if email fails
+        }
+      }
+      
       res.status(201).json({
         ...userWithoutPassword,
         tempPassword // Include temp password in response for admin to share

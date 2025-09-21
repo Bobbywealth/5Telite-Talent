@@ -125,13 +125,13 @@ export function setupAuth(app: Express) {
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
 
-      // 📧 Send welcome email for talent signups (admin will get notified when they create their profile)
+      // 📧 Send welcome email for talent signups
       if (role === "talent") {
         try {
-          // Note: Admin notification will be sent when talent creates their profile
-          console.log(`New talent registered: ${email}`);
+          await emailService.sendTalentWelcomeEmail(userWithoutPassword);
         } catch (emailError) {
-          console.error("Note: Email service not configured for welcome emails:", emailError);
+          console.error("Failed to send welcome email to new talent:", emailError);
+          // Don't fail the request if email fails
         }
       }
 
