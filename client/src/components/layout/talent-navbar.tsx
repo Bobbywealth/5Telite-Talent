@@ -31,7 +31,7 @@ export default function TalentNavbar() {
 
   const navigationItems = [
     { href: "/talent/dashboard", label: "Dashboard", icon: Home },
-    { href: "/talent/profile-edit", label: "My Profile", icon: User },
+    { href: "/talent/profile", label: "My Profile", icon: User },
     { href: "/talent/bookings", label: "My Bookings", icon: Calendar },
     { href: "/talent/tasks", label: "My Tasks", icon: ClipboardList },
     { href: "/talent/contracts", label: "My Contracts", icon: FileText },
@@ -137,7 +137,7 @@ export default function TalentNavbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild>
-                  <Link href="/talent/profile-edit" className="flex items-center cursor-pointer">
+                  <Link href="/talent/profile" className="flex items-center cursor-pointer">
                     <User className="w-4 h-4 mr-2" />
                     Edit Profile
                   </Link>
