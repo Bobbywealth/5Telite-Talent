@@ -153,7 +153,7 @@ export default function AuthPage() {
       setTimeout(() => {
         const redirectPaths: Record<string, string> = {
           admin: '/admin',
-          talent: '/dashboard',
+          talent: '/talent/dashboard',
           client: '/client'
         };
         const redirectPath = redirectPaths[data?.role] || '/';
