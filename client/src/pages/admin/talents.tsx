@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
+import { GcsImage } from "@/components/GcsImage";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
@@ -379,67 +380,134 @@ export default function AdminTalents() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Talent</TableHead>
-                      <TableHead>Categories</TableHead>
-                      <TableHead>Location</TableHead>
+                      <TableHead className="w-80">Talent Profile</TableHead>
+                      <TableHead>Categories & Skills</TableHead>
+                      <TableHead>Experience & Location</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {talentsData.talents.map((talent: any) => (
-                      <TableRow key={talent.id} data-testid={`row-talent-${talent.id}`}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            {talent.user.profileImageUrl ? (
-                              <img
-                                src={talent.user.profileImageUrl}
-                                alt={`${talent.user.firstName} ${talent.user.lastName}`}
-                                className="w-10 h-10 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
-                                <i className="fas fa-user text-slate-400"></i>
-                              </div>
-                            )}
-                            <div>
-                              <p className="font-medium text-slate-900" data-testid={`text-talent-name-${talent.id}`}>
-                                {talent.user.firstName} {talent.user.lastName}
-                              </p>
-                              {talent.stageName && (
-                                <p className="text-sm text-slate-600">{talent.stageName}</p>
+                      <TableRow key={talent.id} data-testid={`row-talent-${talent.id}`} className="h-24">
+                        <TableCell className="py-4">
+                          <div className="flex items-center space-x-4">
+                            {/* Profile Image */}
+                            <div className="flex-shrink-0">
+                              {talent.mediaUrls && talent.mediaUrls.length > 0 ? (
+                                <GcsImage 
+                                  objectName={talent.mediaUrls[0]}
+                                  alt={`${talent.user.firstName} ${talent.user.lastName}`}
+                                  className="w-16 h-16 rounded-full object-cover border-2 border-slate-200"
+                                  fallback={
+                                    <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center border-2 border-slate-200">
+                                      <i className="fas fa-user text-slate-400 text-lg"></i>
+                                    </div>
+                                  }
+                                />
+                              ) : (
+                                <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center border-2 border-slate-200">
+                                  <i className="fas fa-user text-slate-400 text-lg"></i>
+                                </div>
                               )}
-                              <p className="text-xs text-slate-500">{talent.user.email}</p>
+                            </div>
+                            
+                            {/* Talent Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-semibold text-slate-900 truncate" data-testid={`text-talent-name-${talent.id}`}>
+                                  {talent.user.firstName} {talent.user.lastName}
+                                </p>
+                                {talent.stageName && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    {talent.stageName}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600 truncate mb-1">{talent.user.email}</p>
+                              {talent.bio && (
+                                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                  {talent.bio.substring(0, 120)}{talent.bio.length > 120 ? '...' : ''}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {talent.categories?.slice(0, 2).map((category: string) => (
-                              <Badge key={category} variant="outline" className="text-xs">
-                                {category}
-                              </Badge>
-                            ))}
-                            {talent.categories?.length > 2 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{talent.categories.length - 2}
-                              </Badge>
+                        
+                        <TableCell className="py-4">
+                          <div className="space-y-2">
+                            {/* Categories */}
+                            <div className="flex flex-wrap gap-1">
+                              {talent.categories?.slice(0, 3).map((category: string) => (
+                                <Badge key={category} variant="outline" className="text-xs">
+                                  {category}
+                                </Badge>
+                              ))}
+                              {talent.categories?.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{talent.categories.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            {/* Top Skills */}
+                            {talent.skills && talent.skills.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {talent.skills.slice(0, 2).map((skill: string) => (
+                                  <Badge key={skill} variant="secondary" className="text-xs bg-blue-50 text-blue-700">
+                                    {skill}
+                                  </Badge>
+                                ))}
+                                {talent.skills.length > 2 && (
+                                  <Badge variant="secondary" className="text-xs bg-blue-50 text-blue-700">
+                                    +{talent.skills.length - 2} skills
+                                  </Badge>
+                                )}
+                              </div>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <span className="text-sm text-slate-600">{talent.location || "—"}</span>
+                        
+                        <TableCell className="py-4">
+                          <div className="space-y-1">
+                            {talent.experience && (
+                              <div className="flex items-center gap-1 text-sm text-slate-600">
+                                <i className="fas fa-clock text-xs"></i>
+                                <span>{talent.experience} experience</span>
+                              </div>
+                            )}
+                            {talent.location && (
+                              <div className="flex items-center gap-1 text-sm text-slate-600">
+                                <i className="fas fa-map-marker-alt text-xs"></i>
+                                <span>{talent.location}</span>
+                              </div>
+                            )}
+                            {talent.unionStatus && (
+                              <div className="flex items-center gap-1 text-sm text-slate-600">
+                                <i className="fas fa-certificate text-xs"></i>
+                                <span>{talent.unionStatus}</span>
+                              </div>
+                            )}
+                            {talent.mediaUrls && talent.mediaUrls.length > 1 && (
+                              <div className="flex items-center gap-1 text-xs text-slate-500">
+                                <i className="fas fa-images"></i>
+                                <span>{talent.mediaUrls.length} photos</span>
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
-                        <TableCell>
+                        
+                        <TableCell className="py-4">
                           <Badge variant={getApprovalBadgeVariant(talent.approvalStatus)} data-testid={`badge-status-${talent.id}`}>
                             {talent.approvalStatus}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-2">
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" data-testid={`button-view-${talent.id}`}>
+                                <Button variant="outline" size="sm" data-testid={`button-view-${talent.id}`} className="text-xs">
+                                  <i className="fas fa-eye mr-1"></i>
                                   View
                                 </Button>
                               </DialogTrigger>
@@ -533,6 +601,22 @@ export default function AdminTalents() {
                                 </div>
                               </DialogContent>
                             </Dialog>
+                            
+                            {/* Quick Actions */}
+                            {talent.approvalStatus === 'pending' && (
+                              <Button 
+                                size="sm"
+                                onClick={() => approveTalentMutation.mutate({
+                                  talentId: talent.userId,
+                                  status: 'approved'
+                                })}
+                                disabled={approveTalentMutation.isPending}
+                                className="text-xs bg-green-600 hover:bg-green-700"
+                              >
+                                <i className="fas fa-check mr-1"></i>
+                                Approve
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
