@@ -371,7 +371,53 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
-  app.get('/api/talents/:id', async (req: any, res) => {
+  // Public talent profile viewing (no auth required)
+  app.get('/api/talents/public/:id', async (req, res) => {
+    try {
+      const id = req.params.id;
+      console.log("Public talent profile request for:", id);
+      let user = null;
+      let profile = null;
+
+      // Try to get talent profile by talent profile ID first
+      try {
+        const allTalents = await storage.getAllTalents({ limit: 1000 });
+        const talent = allTalents.talents.find(t => t.id === id);
+        if (talent) {
+          profile = talent;
+          user = talent.user;
+        }
+      } catch (err) {
+        console.log("Error searching by talent profile ID:", err);
+      }
+
+      // If not found by talent profile ID, try by user ID
+      if (!user) {
+        try {
+          user = await storage.getUser(id);
+          if (user && user.role === 'talent') {
+            profile = await storage.getTalentProfile(id);
+          }
+        } catch (error) {
+          console.log("No talent profile found for user:", error);
+        }
+      }
+
+      if (!user || user.role !== 'talent' || !profile || profile.approvalStatus !== 'approved') {
+        return res.status(404).json({ message: "Talent profile not found or not approved" });
+      }
+
+      // Return profile data for public viewing (without sensitive user info)
+      const { password, ...safeUser } = user;
+      res.json({ ...profile, user: safeUser });
+    } catch (error) {
+      console.error("Error fetching public talent profile:", error);
+      res.status(500).json({ message: "Failed to fetch talent profile" });
+    }
+  });
+
+  // Authenticated talent profile access (for own profile editing)
+  app.get('/api/talents/:id', isAuthenticated, async (req: any, res) => {
     try {
       const id = req.params.id;
       const requestingUserId = req.user?.id;
