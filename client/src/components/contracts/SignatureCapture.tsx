@@ -42,7 +42,7 @@ export function SignatureCapture({
   }, [width, height]);
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (disabled) return;
+    if (isLoading) return;
 
     setIsDrawing(true);
     const canvas = canvasRef.current;
@@ -63,7 +63,7 @@ export function SignatureCapture({
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || disabled) return;
+    if (!isDrawing || isLoading) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -124,7 +124,7 @@ export function SignatureCapture({
             width={width}
             height={height}
             className={`border border-slate-200 dark:border-slate-700 rounded cursor-crosshair ${
-              disabled ? 'opacity-50 cursor-not-allowed' : ''
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onMouseDown={startDrawing}
             onMouseMove={draw}
@@ -140,22 +140,42 @@ export function SignatureCapture({
           />
         </div>
         
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={clearSignature}
-            disabled={!hasSignature || disabled}
-            data-testid="button-clear-signature"
-          >
-            Clear
-          </Button>
-          
-          <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center">
+        <div className="text-center mb-4">
+          <div className="text-sm text-slate-500 dark:text-slate-400">
             {hasSignature ? (
               <span className="text-green-600 dark:text-green-400">✓ Signature captured</span>
             ) : (
               <span>Draw your signature above</span>
             )}
+          </div>
+        </div>
+        
+        <div className="flex justify-between">
+          <Button
+            variant="outline"
+            onClick={clearSignature}
+            disabled={!hasSignature || isLoading}
+            data-testid="button-clear-signature"
+          >
+            Clear
+          </Button>
+          
+          <div className="flex space-x-2">
+            <Button
+              variant="ghost"
+              onClick={onCancel}
+              disabled={isLoading}
+              data-testid="button-cancel-signature"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSign}
+              disabled={!hasSignature || isLoading}
+              data-testid="button-sign-contract"
+            >
+              {isLoading ? "Signing..." : "Sign Contract"}
+            </Button>
           </div>
         </div>
       </CardContent>
