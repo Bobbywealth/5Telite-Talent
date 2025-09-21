@@ -116,6 +116,18 @@ function Router() {
             </>
           )}
 
+          {/* Dashboard redirect route - redirect to role-specific dashboard */}
+          <Route path="/dashboard" component={() => {
+            const redirectPaths: Record<string, string> = {
+              admin: '/admin',
+              talent: '/talent/dashboard',
+              client: '/client'
+            };
+            const redirectPath = redirectPaths[user?.role || ''] || '/';
+            window.location.replace(redirectPath);
+            return null;
+          }} />
+
           {/* Shared routes for all authenticated users */}
           <Route path="/profile" component={Profile} />
           <Route path="/settings" component={Settings} />

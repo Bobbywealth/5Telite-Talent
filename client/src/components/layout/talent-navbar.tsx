@@ -21,7 +21,7 @@ export default function TalentNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => {
-    if (path === "/dashboard") return location === "/dashboard";
+    if (path === "/talent/dashboard") return location === "/talent/dashboard";
     return location.startsWith(path);
   };
 
@@ -30,10 +30,10 @@ export default function TalentNavbar() {
   };
 
   const navigationItems = [
-    { href: "/dashboard", label: "Dashboard", icon: Home },
-    { href: "/dashboard/profile", label: "My Profile", icon: User },
-    { href: "/dashboard/bookings", label: "My Bookings", icon: Calendar },
-    { href: "/dashboard/tasks", label: "My Tasks", icon: ClipboardList },
+    { href: "/talent/dashboard", label: "Dashboard", icon: Home },
+    { href: "/talent/profile", label: "My Profile", icon: User },
+    { href: "/talent/bookings", label: "My Bookings", icon: Calendar },
+    { href: "/talent/tasks", label: "My Tasks", icon: ClipboardList },
     { href: "/contracts", label: "My Contracts", icon: FileText },
   ];
 
