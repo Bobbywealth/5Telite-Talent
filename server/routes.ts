@@ -18,7 +18,7 @@ import { emailService } from "./emailService";
 import { enhancedEmailService } from "./emailServiceEnhanced";
 import { NotificationService } from "./notificationService";
 import { db } from "./db";
-import { bookings, users, talentProfiles, bookingTalents, contracts, signatures } from "@shared/schema";
+import { bookings, users, talentProfiles, bookingTalents, contracts, signatures, tasks } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 import filesRouter from './routes/files';
 
@@ -147,6 +147,54 @@ Client Signature: _________________________ Date: _____________
     } catch (error) {
       console.error("Error switching role:", error);
       res.status(500).json({ message: "Failed to switch role" });
+    }
+  });
+
+  // Admin dashboard stats endpoint
+  app.get('/api/admin/dashboard-stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Get stats for admin dashboard
+      const [totalTalents, totalBookings, totalContracts, totalTasks] = await Promise.all([
+        db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.role, 'talent')),
+        db.select({ count: sql<number>`count(*)` }).from(bookings),
+        db.select({ count: sql<number>`count(*)` }).from(contracts),
+        db.select({ count: sql<number>`count(*)` }).from(tasks)
+      ]);
+
+      const stats = {
+        totalTalents: totalTalents[0]?.count || 0,
+        totalBookings: totalBookings[0]?.count || 0,
+        totalContracts: totalContracts[0]?.count || 0,
+        totalTasks: totalTasks[0]?.count || 0,
+        activeBookings: 0, // Will be calculated
+        pendingApprovals: 0 // Will be calculated
+      };
+
+      // Get active bookings count
+      const activeBookingsResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(bookings)
+        .where(sql`status IN ('confirmed', 'in_progress')`);
+      stats.activeBookings = activeBookingsResult[0]?.count || 0;
+
+      // Get pending talent approvals
+      const pendingApprovalsResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(talentProfiles)
+        .where(eq(talentProfiles.approvalStatus, 'pending'));
+      stats.pendingApprovals = pendingApprovalsResult[0]?.count || 0;
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching admin dashboard stats:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard stats" });
     }
   });
 
@@ -625,7 +673,7 @@ Client Signature: _________________________ Date: _____________
   });
 
   // Booking routes
-  app.post('/api/bookings', async (req, res) => {
+  app.post('/api/bookings', isAuthenticated, async (req: any, res) => {
     try {
       let bookingData;
       
