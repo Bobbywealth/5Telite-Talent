@@ -156,7 +156,7 @@ export default function TalentDashboard() {
   const calculateProfileCompletion = (profile: any) => {
     console.log("Profile data for completion calculation:", profile);
     if (!profile) {
-      console.log("No profile data found");
+      console.log("No profile data found - Bobby needs to create his profile");
       return { 
         percentage: 0, 
         completed: [], 

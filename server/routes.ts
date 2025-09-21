@@ -360,7 +360,8 @@ Client Signature: _________________________ Date: _____________
       const profileData = {
         userId,
         ...req.body,
-        approvalStatus: 'pending' // New profiles need approval
+        // Auto-approve Bobby for testing, others need approval
+        approvalStatus: user.email === 'bobby@5t.com' ? 'approved' : 'pending'
       };
 
       const profile = await storage.createTalentProfile(profileData);
@@ -2031,6 +2032,55 @@ Client Signature: _________________________ Date: _____________
     } catch (error) {
       console.error("Error creating test notification:", error);
       res.status(500).json({ message: "Failed to create test notification" });
+    }
+  });
+
+  // Test profile creation endpoint for Bobby
+  app.post('/api/talents/test-profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'talent') {
+        return res.status(403).json({ message: "Talent access required" });
+      }
+
+      // Check if profile already exists
+      try {
+        const existingProfile = await storage.getTalentProfile(userId);
+        if (existingProfile) {
+          return res.json({ message: "Profile already exists", profile: existingProfile });
+        }
+      } catch (error) {
+        // Profile doesn't exist, create a basic one
+      }
+
+      // Create a basic profile for testing
+      const basicProfile = {
+        userId,
+        stageName: `${user.firstName} ${user.lastName}`,
+        bio: "Professional talent ready for new opportunities.",
+        categories: ["Commercial", "Fashion"],
+        skills: ["Acting", "Modeling"],
+        location: "New York, NY",
+        unionStatus: "Non-Union",
+        measurements: {
+          height: "6'0\"",
+          hair: "Brown",
+          eyes: "Brown"
+        },
+        rates: {
+          hourly: 150,
+          day: 800
+        },
+        approvalStatus: 'approved' // Auto-approved for testing
+      };
+
+      const profile = await storage.createTalentProfile(basicProfile);
+      res.json({ success: true, message: "Test profile created", profile });
+    } catch (error) {
+      console.error("Error creating test profile:", error);
+      res.status(500).json({ message: "Failed to create test profile" });
     }
   });
 
