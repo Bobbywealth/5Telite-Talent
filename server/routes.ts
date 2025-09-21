@@ -2109,6 +2109,31 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Fix task scope enum endpoint
+  app.post('/api/admin/fix-task-scope', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      // Add 'general' to the task_scope enum
+      await db.execute(sql`
+        ALTER TYPE task_scope ADD VALUE IF NOT EXISTS 'general';
+      `);
+      
+      res.json({ success: true, message: "Task scope enum updated successfully" });
+    } catch (error) {
+      console.error("Error updating task scope enum:", error);
+      res.status(500).json({ 
+        message: "Failed to update task scope enum", 
+        error: (error as Error).message 
+      });
+    }
+  });
+
   // Create notifications table endpoint
   app.post('/api/admin/create-notifications-table', isAuthenticated, async (req: any, res) => {
     try {

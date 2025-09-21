@@ -117,7 +117,7 @@ export const bookingTalents = pgTable("booking_talents", {
 });
 
 export const taskStatusEnum = pgEnum("task_status", ["todo", "in_progress", "blocked", "done"]);
-export const taskScopeEnum = pgEnum("task_scope", ["booking", "talent"]);
+export const taskScopeEnum = pgEnum("task_scope", ["booking", "talent", "general"]);
 
 export const contractStatusEnum = pgEnum("contract_status", ["draft", "sent", "signed", "expired", "cancelled"]);
 export const signatureStatusEnum = pgEnum("signature_status", ["pending", "signed", "expired"]);
