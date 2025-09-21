@@ -7,7 +7,6 @@ import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import { Link } from "wouter";
 import TalentNavbar from "@/components/layout/talent-navbar";
 import Footer from "@/components/layout/footer";
-import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -626,15 +625,6 @@ export default function TalentDashboard() {
         </div>
       </div>
 
-      {/* Role Switcher - Development Tool */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="bg-slate-100 border border-slate-200 rounded-lg p-4">
-          <div className="text-sm text-slate-600 mb-4 font-medium">
-            🛠️ Development Tool - Switch Roles
-          </div>
-          <RoleSwitcher />
-        </div>
-      </div>
 
       <Footer />
     </div>

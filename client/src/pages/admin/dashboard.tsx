@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock } from "lucide-react";
-import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -156,9 +155,6 @@ export default function AdminDashboard() {
                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                       Active
                     </span>
-                  </div>
-                  <div className="flex gap-4">
-                    <RoleSwitcher />
                   </div>
                 </div>
               </div>

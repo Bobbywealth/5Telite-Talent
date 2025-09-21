@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 import { Plus, Search, Calendar, DollarSign, ClipboardList, Clock, CalendarCheck } from "lucide-react";
 
 export default function ClientDashboard() {
@@ -130,7 +129,6 @@ export default function ClientDashboard() {
                   <Calendar className="w-4 h-4 mr-2" />My Bookings
                 </Button>
               </Link>
-              <RoleSwitcher />
             </div>
           </div>
         </div>
