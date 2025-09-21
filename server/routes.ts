@@ -20,6 +20,7 @@ import { ContractService } from "./contractService";
 import { db } from "./db";
 import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
+import filesRouter from './routes/files';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from attached_assets
@@ -27,6 +28,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Auth middleware
   await setupAuth(app);
+
+  // Mount files router
+  app.use('/api/files', filesRouter);
 
   // Seed demo data if needed
   app.post('/api/seed', async (req, res) => {
