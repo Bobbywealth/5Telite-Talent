@@ -108,9 +108,11 @@ export default function ContractsPage() {
     queryKey: ["/api/contracts"],
   });
 
-  const { data: bookings = [] } = useQuery({
+  const { data: bookingsData } = useQuery({
     queryKey: ["/api/bookings"],
   });
+
+  const bookings = bookingsData?.bookings || [];
 
   const createContractMutation = useMutation({
     mutationFn: async ({ bookingId, bookingTalentId }: { bookingId: string; bookingTalentId: string }) => {
