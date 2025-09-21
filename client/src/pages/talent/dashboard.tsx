@@ -342,10 +342,13 @@ export default function TalentDashboard() {
                   <div>
                     <p className="text-sm font-medium text-purple-700 mb-1">Active Bookings</p>
                     <p className="text-3xl font-bold text-purple-900 mb-2">
-                      {bookingsData?.bookings?.filter((b: any) => ['confirmed', 'in_progress'].includes(b.status)).length || 0}
+                      {bookingsData?.bookings?.filter((b: any) => ['inquiry', 'proposed', 'contract_sent', 'signed', 'invoiced', 'paid'].includes(b.status)).length || 0}
                     </p>
                     <div className="w-full bg-purple-200 rounded-full h-2 mb-2">
-                      <div className="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full transition-all duration-500" style={{width: '60%'}}></div>
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full transition-all duration-500" 
+                        style={{width: `${Math.min((bookingsData?.bookings?.filter((b: any) => ['inquiry', 'proposed', 'contract_sent', 'signed', 'invoiced', 'paid'].includes(b.status)).length || 0) * 20, 100)}%`}}
+                      ></div>
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-3 shadow-lg">
