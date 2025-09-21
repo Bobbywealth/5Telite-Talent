@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "@/components/ui/notification-bell";
 import logoImage from "@assets/5t-logo.png";
 
 export default function AdminNavbar() {
@@ -112,8 +113,9 @@ export default function AdminNavbar() {
             ))}
           </div>
 
-          {/* Right: User Profile */}
-          <div className="flex items-center">
+          {/* Right: Notifications + User Profile */}
+          <div className="flex items-center space-x-2">
+            <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
