@@ -11,10 +11,7 @@ import {
   insertTaskSchema,
   insertAnnouncementSchema,
 } from "@shared/schema";
-import {
-  ObjectStorageService,
-  ObjectNotFoundError,
-} from "./objectStorage";
+// Object storage imports removed - now using Google Cloud Storage
 import { ObjectPermission } from "./objectAcl";
 import { ContractService } from "./contractService";
 import { db } from "./db";
@@ -106,42 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Object storage routes
-  app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
-    const userId = req.user?.id;
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const objectFile = await objectStorageService.getObjectEntityFile(
-        req.path,
-      );
-      const canAccess = await objectStorageService.canAccessObjectEntity({
-        objectFile,
-        userId: userId,
-        requestedPermission: ObjectPermission.READ,
-      });
-      if (!canAccess) {
-        return res.sendStatus(401);
-      }
-      objectStorageService.downloadObject(objectFile, res);
-    } catch (error) {
-      console.error("Error checking object access:", error);
-      if (error instanceof ObjectNotFoundError) {
-        return res.sendStatus(404);
-      }
-      return res.sendStatus(500);
-    }
-  });
-
-  app.post("/api/objects/upload", isAuthenticated, async (req, res) => {
-    try {
-      const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
-    } catch (error) {
-      console.error("Error getting upload URL:", error);
-      res.status(500).json({ message: "Failed to get upload URL" });
-    }
-  });
+  // Object storage routes now handled by Google Cloud Storage in /api/files
 
   // Talent routes
   app.get('/api/talents', async (req, res) => {
@@ -309,20 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         delete profileData.approvalStatus;
       }
 
-      // Handle media URL uploads with ACL
-      if (profileData.mediaUrls) {
-        const objectStorageService = new ObjectStorageService();
-        for (const mediaUrl of profileData.mediaUrls) {
-          try {
-            await objectStorageService.trySetObjectEntityAclPolicy(mediaUrl, {
-              owner: userId,
-              visibility: "public", // Profile media should be public for viewing
-            });
-          } catch (error) {
-            console.error("Error setting ACL for media URL:", mediaUrl, error);
-          }
-        }
-      }
+      // Media URL handling now done via Google Cloud Storage
 
       const profile = await storage.updateTalentProfile(targetUserId, profileData);
       res.json(profile);
