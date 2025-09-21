@@ -309,12 +309,6 @@ export default function TalentProfile() {
                   <span className="font-medium">{talent.categories.join(', ')}</span>
                 </div>
               )}
-              {talent.rates?.hourly && (
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Hourly Rate:</span>
-                  <span className="font-medium">${talent.rates.hourly}</span>
-                </div>
-              )}
               {talent.availability && (
                 <div className="flex justify-between">
                   <span className="text-slate-600">Availability:</span>

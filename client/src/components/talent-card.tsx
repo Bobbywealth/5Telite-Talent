@@ -89,12 +89,7 @@ export default function TalentCard({ talent }: TalentCardProps) {
           </div>
         )}
         
-        <div className="flex justify-between items-center">
-          <div className="text-sm text-slate-600" data-testid={`text-talent-rate-${talent.id}`}>
-            {talent.rates?.day && (
-              <span className="font-semibold">${talent.rates.day}/day</span>
-            )}
-          </div>
+        <div className="flex justify-end items-center">
           <div className="flex gap-2">
             <Link href={`/talent/${talent.id}`}>
               <Button variant="ghost" size="sm" data-testid={`button-view-profile-${talent.id}`}>

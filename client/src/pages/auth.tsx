@@ -214,7 +214,7 @@ export default function AuthPage() {
             </div>
             
             <h1 className="text-5xl xl:text-7xl font-black text-white leading-tight tracking-tight">
-              Join the Future of
+              Welcome to the Future of
               <br />
               <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
