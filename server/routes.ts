@@ -289,6 +289,7 @@ Client Signature: _________________________ Date: _____________
     try {
       const id = req.params.id;
       const requestingUserId = req.user?.id;
+      console.log("Fetching talent profile:", { id, requestingUserId });
       let user = null;
       let profile = null;
 
@@ -296,18 +297,26 @@ Client Signature: _________________________ Date: _____________
       try {
         const allTalents = await storage.getAllTalents({ limit: 1000 });
         const talent = allTalents.talents.find(t => t.id === id);
+        console.log("Search by talent profile ID:", { found: !!talent, totalTalents: allTalents.talents.length });
         if (talent) {
           profile = talent;
           user = talent.user;
         }
       } catch (err) {
+        console.log("Error searching by talent profile ID:", err);
+      }
+
+      if (!user) {
         // If not found by talent profile ID, try by user ID
+        console.log("Trying to find by user ID:", id);
         user = await storage.getUser(id);
+        console.log("Found user:", { user: !!user, role: user?.role });
         if (user && user.role === 'talent') {
           try {
             profile = await storage.getTalentProfile(id);
+            console.log("Found talent profile:", !!profile);
           } catch (error) {
-            // Profile doesn't exist yet
+            console.log("No talent profile found for user:", error);
           }
         }
       }
