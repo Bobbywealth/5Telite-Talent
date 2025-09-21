@@ -114,8 +114,8 @@ export default function AdminNavbar() {
           </div>
 
           {/* Right: Notifications + User Profile */}
-          <div className="flex items-center space-x-2">
-            <NotificationBell />
+          <div className="flex items-center space-x-4">
+            <NotificationBell className="mr-2" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
