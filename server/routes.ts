@@ -276,7 +276,7 @@ Client Signature: _________________________ Date: _____________
       // 📧 Send welcome email with login credentials for admin-created users
       if (role === "talent") {
         try {
-          await emailService.sendAdminCreatedTalentWelcome(userWithoutPassword, tempPassword);
+          await emailService.sendAdminCreatedTalentWelcome({...userWithoutPassword, password: tempPassword} as any, tempPassword);
         } catch (emailError) {
           console.error("Failed to send welcome email to admin-created talent:", emailError);
           // Don't fail the request if email fails

@@ -114,8 +114,10 @@ export default function TalentProfileEdit() {
 
   // Populate form with existing data when profile loads
   useEffect(() => {
+    console.log("Profile data changed:", profileData);
     if (profileData?.talentProfile) {
       const profile = profileData.talentProfile;
+      console.log("Updating form with profile data:", profile);
       setFormData({
         stageName: profile.stageName || "",
         categories: profile.categories || [],
@@ -226,6 +228,7 @@ export default function TalentProfileEdit() {
       
       // Also refresh the query to update other parts of the app
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/talents", user?.id] });
     },
     onError: (error: Error) => {
       if (isUnauthorizedError(error)) {
@@ -283,6 +286,7 @@ export default function TalentProfileEdit() {
           description: "Your portfolio has been updated.",
         });
         queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/talents", user?.id] });
       } catch (error: any) {
         if (isUnauthorizedError(error)) {
           toast({
