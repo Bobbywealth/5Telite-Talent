@@ -42,6 +42,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create demo contracts endpoint for testing
+  app.post('/api/demo-contracts', async (req, res) => {
+    try {
+      // Find existing users
+      const adminUsers = await db.select().from(users).where(eq(users.role, 'admin')).limit(1);
+      const clientUsers = await db.select().from(users).where(eq(users.role, 'client')).limit(1);
+      const talentUsers = await db.select().from(users).where(eq(users.role, 'talent')).limit(1);
+
+      if (adminUsers.length === 0 || clientUsers.length === 0 || talentUsers.length === 0) {
+        return res.status(400).json({ 
+          message: "Missing required users", 
+          found: { 
+            admin: adminUsers.length, 
+            client: clientUsers.length, 
+            talent: talentUsers.length 
+          }
+        });
+      }
+
+      const adminUser = adminUsers[0];
+      const clientUser = clientUsers[0];
+      const talentUser = talentUsers[0];
+
+      // Create a demo booking first
+      const demoBooking = await storage.createBooking({
+        title: "Fashion Photography Session",
+        description: "Professional fashion shoot for spring collection",
+        location: "Manhattan Studio",
+        startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        endDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), // 8 days from now
+        rate: 500,
+        status: "confirmed",
+        createdById: adminUser.id,
+        clientId: clientUser.id,
+        deliverables: "High-quality fashion photography for spring collection",
+        usage: { web: true, print: true, social: true },
+        notes: "Please arrive 30 minutes early for hair and makeup"
+      });
+
+      // Add talent to booking
+      const bookingTalent = await storage.addTalentToBooking(demoBooking.id, talentUser.id);
+
+      // Create a contract for this booking
+      const contractData = {
+        booking: demoBooking,
+        talent: talentUser,
+        client: clientUser
+      };
+
+      const contract = await ContractService.createContract(
+        demoBooking.id,
+        bookingTalent.id,
+        adminUser.id,
+        contractData
+      );
+
+      res.json({ 
+        message: "Demo booking and contract created successfully",
+        booking: demoBooking,
+        bookingTalent,
+        contract
+      });
+    } catch (error) {
+      console.error("Error creating demo contracts:", error);
+      res.status(500).json({ message: "Failed to create demo contracts", error: error.message });
+    }
+  });
+
   // Auth routes are now handled in auth.ts
 
   // Update user profile
