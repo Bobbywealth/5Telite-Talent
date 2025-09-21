@@ -2109,23 +2109,61 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Create notifications table endpoint
+  app.post('/api/admin/create-notifications-table', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      // Create the notifications table with raw SQL
+      await db.execute(sql`
+        CREATE TYPE IF NOT EXISTS "notification_type" AS ENUM(
+          'booking_request', 'booking_accepted', 'booking_declined', 
+          'contract_created', 'contract_signed', 'task_assigned', 
+          'talent_approved', 'system_announcement'
+        );
+      `);
+      
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS "notifications" (
+          "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+          "user_id" varchar NOT NULL,
+          "type" "notification_type" NOT NULL,
+          "title" varchar NOT NULL,
+          "message" text NOT NULL,
+          "data" jsonb,
+          "read" boolean DEFAULT false NOT NULL,
+          "action_url" varchar,
+          "created_at" timestamp DEFAULT now(),
+          "updated_at" timestamp DEFAULT now()
+        );
+      `);
+      
+      await db.execute(sql`
+        ALTER TABLE "notifications" 
+        ADD CONSTRAINT IF NOT EXISTS "notifications_user_id_users_id_fk" 
+        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") 
+        ON DELETE no action ON UPDATE no action;
+      `);
+      
+      res.json({ success: true, message: "Notifications table created successfully" });
+    } catch (error) {
+      console.error("Error creating notifications table:", error);
+      res.status(500).json({ 
+        message: "Failed to create notifications table", 
+        error: (error as Error).message 
+      });
+    }
+  });
+
   // Test notification creation endpoint
   app.post('/api/notifications/test', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      
-      // First, check if notifications table exists
-      try {
-        const testQuery = await db.select().from(notifications).limit(1);
-        console.log("Notifications table exists, sample data:", testQuery);
-      } catch (tableError) {
-        console.error("Notifications table error:", tableError);
-        return res.status(500).json({ 
-          message: "Notifications table not found", 
-          error: (tableError as Error).message,
-          suggestion: "Run database migrations to create the notifications table"
-        });
-      }
       
       // Create a test notification
       const notification = await NotificationService.createNotification({
