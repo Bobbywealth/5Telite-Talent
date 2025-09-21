@@ -59,7 +59,7 @@ export default function TalentContractsPage() {
   const signContractMutation = useMutation({
     mutationFn: async ({ contractId, signature }: { contractId: string; signature: string }) => {
       return apiRequest("POST", `/api/contracts/${contractId}/sign`, {
-        signature,
+        signatureData: signature,
       });
     },
     onSuccess: () => {
