@@ -17,7 +17,7 @@ import { ContractService } from "./contractService";
 import { emailService } from "./emailService";
 import { enhancedEmailService } from "./emailServiceEnhanced";
 import { db } from "./db";
-import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema";
+import { bookings, users, talentProfiles, bookingTalents, contracts, signatures } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 import filesRouter from './routes/files';
 
@@ -1355,6 +1355,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error signing contract:", error);
       res.status(500).json({ message: "Failed to sign contract" });
+    }
+  });
+
+  // Test endpoint to create sample contract
+  app.post('/api/create-test-contract', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Create a simple test contract
+      const [contract] = await db.insert(contracts).values({
+        bookingId: "a8b25d8e-8df4-40de-81a6-eba37b898d19",
+        bookingTalentId: "153105e0-84a8-4b81-87d3-246a14d9cefc",
+        title: "Fashion Editorial Contract - Test Signature",
+        content: `
+<div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 40px;">
+
+<!-- Header -->
+<div style="text-align: center; border-bottom: 3px solid #1a1a1a; padding-bottom: 20px; margin-bottom: 30px;">
+  <h1 style="font-size: 24px; font-weight: bold; color: #1a1a1a; margin: 0;">PROFESSIONAL MODELING AGREEMENT</h1>
+  <p style="font-size: 14px; color: #666; margin: 10px 0 0 0;">5T Elite Talent, Inc.</p>
+  <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">122 W 26th St, Suite 902, New York, NY 10001</p>
+</div>
+
+<!-- Agreement Details -->
+<div style="margin-bottom: 25px;">
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td style="font-weight: bold; padding: 5px 0;">Agreement Number:</td>
+      <td>BK-2025-0001</td>
+      <td style="font-weight: bold; padding: 5px 0;">Date:</td>
+      <td>${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Parties Section -->
+<div style="margin-bottom: 30px;">
+  <h2 style="font-size: 18px; color: #1a1a1a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">PARTIES TO AGREEMENT</h2>
+  
+  <div style="display: flex; gap: 40px; margin-top: 15px;">
+    <div style="flex: 1;">
+      <h3 style="font-size: 14px; font-weight: bold; color: #333; margin-bottom: 10px;">CLIENT:</h3>
+      <p style="margin: 0; line-height: 1.4;">
+        <strong>Admin User</strong><br>
+        Email: admin.test@gmail.com<br>
+      </p>
+    </div>
+    
+    <div style="flex: 1;">
+      <h3 style="font-size: 14px; font-weight: bold; color: #333; margin-bottom: 10px;">TALENT:</h3>
+      <p style="margin: 0; line-height: 1.4;">
+        <strong>Test Talent</strong><br>
+        Stage Name: Test Star<br>
+        Email: test.talent@example.com<br>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Project Details -->
+<div style="margin-bottom: 30px;">
+  <h2 style="font-size: 18px; color: #1a1a1a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">PROJECT SPECIFICATIONS</h2>
+  
+  <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+    <tr style="background-color: #f8f9fa;">
+      <td style="padding: 12px; border: 1px solid #e9ecef; font-weight: bold; width: 30%;">Project Title:</td>
+      <td style="padding: 12px; border: 1px solid #e9ecef;">Fashion Editorial Shoot - Contract Test</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; border: 1px solid #e9ecef; font-weight: bold;">Shoot Location:</td>
+      <td style="padding: 12px; border: 1px solid #e9ecef;">SoHo Photography Studio, NYC</td>
+    </tr>
+    <tr style="background-color: #f8f9fa;">
+      <td style="padding: 12px; border: 1px solid #e9ecef; font-weight: bold;">Shoot Date:</td>
+      <td style="padding: 12px; border: 1px solid #e9ecef;">October 25, 2025</td>
+    </tr>
+    <tr>
+      <td style="padding: 12px; border: 1px solid #e9ecef; font-weight: bold;">Session Fee:</td>
+      <td style="padding: 12px; border: 1px solid #e9ecef;">$3,000.00</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Terms -->
+<div style="margin-bottom: 30px;">
+  <h2 style="font-size: 18px; color: #1a1a1a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">TERMS AND CONDITIONS</h2>
+  
+  <div style="margin-top: 15px;">
+    <h3 style="font-size: 14px; font-weight: bold; color: #333; margin: 20px 0 10px 0;">1. ENGAGEMENT</h3>
+    <p style="margin: 0 0 15px 0; text-align: justify;">
+      Talent agrees to provide professional modeling services for the specified fashion editorial shoot, maintaining the highest standards of professionalism and punctuality.
+    </p>
+    
+    <h3 style="font-size: 14px; font-weight: bold; color: #333; margin: 20px 0 10px 0;">2. COMPENSATION</h3>
+    <p style="margin: 0 0 15px 0; text-align: justify;">
+      Payment of $3,000.00 shall be made within 30 days of completion of services. This covers the full session fee for the editorial shoot.
+    </p>
+    
+    <h3 style="font-size: 14px; font-weight: bold; color: #333; margin: 20px 0 10px 0;">3. USAGE RIGHTS</h3>
+    <p style="margin: 0 0 15px 0; text-align: justify;">
+      Images may be used for editorial purposes in print and digital formats. Commercial usage requires separate licensing agreement.
+    </p>
+    
+    <h3 style="font-size: 14px; font-weight: bold; color: #333; margin: 20px 0 10px 0;">4. PROFESSIONAL CONDUCT</h3>
+    <p style="margin: 0 0 15px 0; text-align: justify;">
+      Talent shall arrive punctually, prepared, and maintain professional behavior throughout the engagement.
+    </p>
+    
+    <h3 style="font-size: 14px; font-weight: bold; color: #333; margin: 20px 0 10px 0;">5. CANCELLATION POLICY</h3>
+    <p style="margin: 0 0 15px 0; text-align: justify;">
+      Either party may cancel with 48-hour notice. Cancellations within 24 hours may be subject to a 50% cancellation fee.
+    </p>
+  </div>
+</div>
+
+<!-- Signature Section -->
+<div style="margin-top: 40px;">
+  <h2 style="font-size: 18px; color: #1a1a1a; border-bottom: 1px solid #ccc; padding-bottom: 5px;">SIGNATURES</h2>
+  
+  <div style="display: flex; gap: 60px; margin-top: 30px;">
+    <div style="flex: 1;">
+      <p style="margin: 0 0 40px 0; font-weight: bold;">TALENT SIGNATURE:</p>
+      <div style="border-bottom: 2px solid #333; height: 60px; margin-bottom: 10px;"></div>
+      <p style="margin: 0; font-size: 12px; color: #666;">
+        Test Talent<br>
+        Date: _______________
+      </p>
+    </div>
+    
+    <div style="flex: 1;">
+      <p style="margin: 0 0 40px 0; font-weight: bold;">CLIENT SIGNATURE:</p>
+      <div style="border-bottom: 2px solid #333; height: 60px; margin-bottom: 10px;"></div>
+      <p style="margin: 0; font-size: 12px; color: #666;">
+        Admin User<br>
+        Date: _______________
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; text-align: center;">
+  <p style="font-size: 11px; color: #666; margin: 0;">
+    This agreement constitutes the entire understanding between the parties and supersedes all prior negotiations, representations, or agreements relating to this subject matter.
+  </p>
+  <p style="font-size: 11px; color: #666; margin: 10px 0 0 0;">
+    <strong>5T Elite Talent, Inc.</strong> | 122 W 26th St, Suite 902, New York, NY 10001
+  </p>
+</div>
+
+</div>
+        `,
+        pdfUrl: `/contracts/test-contract-${Date.now()}.pdf`,
+        status: 'sent',
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        createdBy: userId,
+      }).returning();
+
+      // Create signature record for the talent
+      await db.insert(signatures).values({
+        contractId: contract.id,
+        signerId: "1bfb8178-15cb-44b8-8ec9-9b29f2657793",
+        status: 'pending',
+      });
+
+      res.json({ message: "Test contract created successfully", contract });
+    } catch (error) {
+      console.error("Error creating test contract:", error);
+      res.status(500).json({ message: "Failed to create test contract" });
     }
   });
 
