@@ -193,7 +193,7 @@ export default function TalentDashboard() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link href="/talent/profile">
+                <Link href="/talent/profile-edit">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105" data-testid="button-edit-profile">
                     <UserPen className="w-4 h-4 mr-2" />Edit Profile
                   </Button>
