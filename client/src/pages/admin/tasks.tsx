@@ -46,7 +46,7 @@ export default function AdminTasks() {
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    scope: "booking" as "booking" | "talent",
+    scope: "general" as "booking" | "talent" | "general",
     bookingId: "",
     talentId: "",
     assigneeId: "",
@@ -169,7 +169,7 @@ export default function AdminTasks() {
       setNewTask({
         title: "",
         description: "",
-        scope: "booking" as "booking" | "talent",
+        scope: "general" as "booking" | "talent" | "general",
         bookingId: "",
         talentId: "",
         assigneeId: "",
@@ -394,12 +394,12 @@ export default function AdminTasks() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Create New Task</DialogTitle>
-                    <DialogDescription>
-                      Create a new task for booking or talent management
-                    </DialogDescription>
-                  </DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Create New Task</DialogTitle>
+            <DialogDescription>
+              Create a task and assign it to any talent. Choose scope: General (standalone task), Booking Related (tied to specific booking), or Talent Specific (about a particular talent).
+            </DialogDescription>
+          </DialogHeader>
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     if (!newTask.title.trim()) {
@@ -436,13 +436,14 @@ export default function AdminTasks() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="scope">Scope *</Label>
-                        <Select value={newTask.scope} onValueChange={(value: "booking" | "talent") => setNewTask(prev => ({ ...prev, scope: value }))}>
+                        <Select value={newTask.scope} onValueChange={(value: "booking" | "talent" | "general") => setNewTask(prev => ({ ...prev, scope: value }))}>
                           <SelectTrigger data-testid="select-task-scope">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="booking">Booking</SelectItem>
-                            <SelectItem value="talent">Talent</SelectItem>
+                            <SelectItem value="general">General Task</SelectItem>
+                            <SelectItem value="booking">Booking Related</SelectItem>
+                            <SelectItem value="talent">Talent Specific</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -459,9 +460,31 @@ export default function AdminTasks() {
                       </div>
                     </div>
 
+                    {/* Assignee - Who will complete this task */}
+                    <div>
+                      <Label htmlFor="assigneeId">Assign To *</Label>
+                      <p className="text-xs text-slate-500 mb-2">Who should complete this task?</p>
+                      <Select value={newTask.assigneeId} onValueChange={(value) => setNewTask(prev => ({ ...prev, assigneeId: value }))}>
+                        <SelectTrigger data-testid="select-task-assignee">
+                          <SelectValue placeholder="Select assignee" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Unassigned</SelectItem>
+                          {talentsData?.talents?.map((talent: any) => (
+                            <SelectItem key={talent.userId} value={talent.userId}>
+                              {talent.user.firstName} {talent.user.lastName}
+                              {talent.stageName && ` (${talent.stageName})`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Conditional fields based on scope */}
                     {newTask.scope === 'booking' && (
                       <div>
                         <Label htmlFor="bookingId">Related Booking</Label>
+                        <p className="text-xs text-slate-500 mb-2">Link this task to a specific booking</p>
                         <Select value={newTask.bookingId} onValueChange={(value) => setNewTask(prev => ({ ...prev, bookingId: value }))}>
                           <SelectTrigger data-testid="select-task-booking">
                             <SelectValue placeholder="Select booking" />
@@ -480,6 +503,7 @@ export default function AdminTasks() {
                     {newTask.scope === 'talent' && (
                       <div>
                         <Label htmlFor="talentId">Related Talent</Label>
+                        <p className="text-xs text-slate-500 mb-2">Link this task to a specific talent (different from assignee)</p>
                         <Select value={newTask.talentId} onValueChange={(value) => setNewTask(prev => ({ ...prev, talentId: value }))}>
                           <SelectTrigger data-testid="select-task-talent">
                             <SelectValue placeholder="Select talent" />
@@ -488,28 +512,13 @@ export default function AdminTasks() {
                             {talentsData?.talents?.map((talent: any) => (
                               <SelectItem key={talent.userId} value={talent.userId}>
                                 {talent.user.firstName} {talent.user.lastName}
+                                {talent.stageName && ` (${talent.stageName})`}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                     )}
-
-                    <div>
-                      <Label htmlFor="assigneeId">Assignee</Label>
-                      <Select value={newTask.assigneeId} onValueChange={(value) => setNewTask(prev => ({ ...prev, assigneeId: value }))}>
-                        <SelectTrigger data-testid="select-task-assignee">
-                          <SelectValue placeholder="Select assignee" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {talentsData?.talents?.map((talent: any) => (
-                            <SelectItem key={talent.userId} value={talent.userId}>
-                              {talent.user.firstName} {talent.user.lastName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
 
                     <div className="flex space-x-2">
                       <Button type="submit" disabled={createTaskMutation.isPending} data-testid="button-submit-task">
@@ -601,8 +610,9 @@ export default function AdminTasks() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Scopes</SelectItem>
-                      <SelectItem value="booking">Booking</SelectItem>
-                      <SelectItem value="talent">Talent</SelectItem>
+                      <SelectItem value="general">General Tasks</SelectItem>
+                      <SelectItem value="booking">Booking Related</SelectItem>
+                      <SelectItem value="talent">Talent Specific</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
