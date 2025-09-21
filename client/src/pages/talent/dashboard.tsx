@@ -94,18 +94,29 @@ export default function TalentDashboard() {
   });
 
   // Fetch talent profile for completion status
-  const { data: talentProfile, isLoading: profileLoading } = useQuery({
+  const { data: talentProfile, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ["/api/talents", user?.id],
     queryFn: async () => {
+      console.log("Fetching talent profile for user:", user?.id);
       const response = await fetch(`/api/talents/${user?.id}`, {
         credentials: "include",
       });
-      if (!response.ok) throw new Error("Failed to fetch profile");
-      return response.json();
+      console.log("Profile fetch response:", response.status, response.statusText);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Profile fetch error:", errorText);
+        throw new Error(`Failed to fetch profile: ${response.status} ${errorText}`);
+      }
+      const profileData = await response.json();
+      console.log("Fetched talent profile:", profileData);
+      return profileData;
     },
     enabled: !!(isAuthenticated && user?.role === 'talent' && user?.id),
     retry: false,
   });
+
+  // Log profile fetch status
+  console.log("Profile loading:", profileLoading, "Profile error:", profileError, "Profile data:", talentProfile);
 
   if (isLoading) {
     return (
@@ -143,7 +154,16 @@ export default function TalentDashboard() {
   };
 
   const calculateProfileCompletion = (profile: any) => {
-    if (!profile) return { percentage: 0, completed: [], missing: [], details: {} };
+    console.log("Profile data for completion calculation:", profile);
+    if (!profile) {
+      console.log("No profile data found");
+      return { 
+        percentage: 0, 
+        completed: [], 
+        missing: ['Stage Name', 'Bio/Description', 'Categories', 'Skills', 'Location', 'Union Status', 'Hourly Rate', 'Height', 'Hair Color', 'Eye Color', 'Profile Photo'], 
+        details: { totalRequired: 11, completedRequired: 0, completedOptional: 0 } 
+      };
+    }
     
     const profileFields = [
       { key: 'stageName', label: 'Stage Name', required: true },

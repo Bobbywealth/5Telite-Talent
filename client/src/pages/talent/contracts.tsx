@@ -239,6 +239,7 @@ export default function TalentContractsPage() {
                           size="sm"
                           onClick={() => setSelectedContract(contract)}
                           className="flex-1"
+                          title=""
                         >
                           <FileText className="h-4 w-4 mr-2" />
                           View
@@ -268,8 +269,11 @@ export default function TalentContractsPage() {
         )}
 
         {/* Contract Viewer Dialog */}
-        <Dialog open={!!selectedContract && !showSignature} onOpenChange={() => setSelectedContract(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <Dialog open={!!selectedContract && !showSignature} onOpenChange={() => {
+          setSelectedContract(null);
+          setShowSignature(false);
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" style={{ zIndex: 50 }}>
             <DialogHeader>
               <DialogTitle>{selectedContract?.title}</DialogTitle>
               <DialogDescription>
@@ -287,7 +291,7 @@ export default function TalentContractsPage() {
 
         {/* Signature Dialog */}
         <Dialog open={showSignature} onOpenChange={() => setShowSignature(false)}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" style={{ zIndex: 60 }}>
             <DialogHeader>
               <DialogTitle>Sign Contract</DialogTitle>
               <DialogDescription>
