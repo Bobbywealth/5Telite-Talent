@@ -2121,7 +2121,7 @@ Client Signature: _________________________ Date: _____________
       
       // Create the notifications table with raw SQL
       await db.execute(sql`
-        CREATE TYPE IF NOT EXISTS "notification_type" AS ENUM(
+        CREATE TYPE IF NOT EXISTS notification_type AS ENUM(
           'booking_request', 'booking_accepted', 'booking_declined', 
           'contract_created', 'contract_signed', 'task_assigned', 
           'talent_approved', 'system_announcement'
@@ -2129,25 +2129,24 @@ Client Signature: _________________________ Date: _____________
       `);
       
       await db.execute(sql`
-        CREATE TABLE IF NOT EXISTS "notifications" (
-          "id" varchar PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-          "user_id" varchar NOT NULL,
-          "type" "notification_type" NOT NULL,
-          "title" varchar NOT NULL,
-          "message" text NOT NULL,
-          "data" jsonb,
-          "read" boolean DEFAULT false NOT NULL,
-          "action_url" varchar,
-          "created_at" timestamp DEFAULT now(),
-          "updated_at" timestamp DEFAULT now()
+        CREATE TABLE IF NOT EXISTS notifications (
+          id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id varchar NOT NULL,
+          type notification_type NOT NULL,
+          title varchar NOT NULL,
+          message text NOT NULL,
+          data jsonb,
+          read boolean DEFAULT false NOT NULL,
+          action_url varchar,
+          created_at timestamp DEFAULT now(),
+          updated_at timestamp DEFAULT now()
         );
       `);
       
       await db.execute(sql`
-        ALTER TABLE "notifications" 
-        ADD CONSTRAINT IF NOT EXISTS "notifications_user_id_users_id_fk" 
-        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") 
-        ON DELETE no action ON UPDATE no action;
+        ALTER TABLE notifications 
+        ADD CONSTRAINT IF NOT EXISTS notifications_user_id_users_id_fk 
+        FOREIGN KEY (user_id) REFERENCES users(id);
       `);
       
       res.json({ success: true, message: "Notifications table created successfully" });
