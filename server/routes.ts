@@ -1516,6 +1516,74 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Test endpoint to create booking request for Bobby
+  app.post('/api/create-test-booking-for-bobby', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Get Bobby's user account
+      const bobbyUser = await storage.getUserByEmail("bobby@5t.com");
+      if (!bobbyUser) {
+        return res.status(404).json({ message: "Bobby Craig account not found. Please seed demo data first." });
+      }
+
+      // Create a test booking
+      const booking = await storage.createBooking({
+        title: "Fashion Commercial Shoot - Fall Campaign",
+        description: "High-end fashion commercial for luxury brand fall campaign. Looking for versatile talent with commercial acting experience.",
+        startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next week
+        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Same day
+        location: "NYC Studio - Manhattan",
+        budget: 1200,
+        clientId: user.id, // Admin creating as client
+        createdBy: user.id,
+        status: "inquiry"
+      });
+
+      // Send booking request to Bobby
+      const bookingTalent = await storage.addTalentToBooking(booking.id, bobbyUser.id);
+      
+      // Send email notification to Bobby
+      try {
+        const bookingWithClient = await storage.getBooking(booking.id);
+        if (bookingWithClient) {
+          await emailService.notifyTalentBookingRequest(bobbyUser, bookingWithClient, bookingWithClient.client);
+        }
+      } catch (emailError) {
+        console.error("Failed to send booking request email:", emailError);
+      }
+
+      // Create in-app notification for Bobby
+      try {
+        await NotificationService.notifyTalentBookingRequest(bobbyUser.id, {
+          bookingTitle: booking.title,
+          clientName: `${user.firstName} ${user.lastName}`,
+          bookingId: booking.id
+        });
+      } catch (notificationError) {
+        console.error("Failed to send in-app notification:", notificationError);
+      }
+
+      res.json({ 
+        message: "Test booking request created and sent to Bobby Craig",
+        booking,
+        bookingTalent,
+        bobbyLogin: {
+          email: "bobby@5t.com",
+          password: "bobby123"
+        }
+      });
+    } catch (error) {
+      console.error("Error creating test booking:", error);
+      res.status(500).json({ message: "Failed to create test booking" });
+    }
+  });
+
   // Test endpoint to create sample contract
   app.post('/api/create-test-contract', isAuthenticated, async (req: any, res) => {
     try {

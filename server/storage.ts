@@ -738,6 +738,15 @@ export class DatabaseStorage implements IStorage {
       role: "talent",
     });
 
+    // Create Bobby Craig talent user for testing
+    const bobbyUser = await this.createUser({
+      email: "bobby@5t.com",
+      password: await hashPassword("bobby123"),
+      firstName: "Bobby",
+      lastName: "Craig",
+      role: "talent",
+    });
+
     // Create a demo client user
     const clientUser = await this.createUser({
       email: "client@5t.com",
@@ -830,6 +839,32 @@ export class DatabaseStorage implements IStorage {
       },
       social: {
         instagram: "@elenacouture"
+      },
+      approvalStatus: "approved",
+    });
+
+    // Create Bobby Craig talent profile for testing
+    await this.createTalentProfile({
+      userId: bobbyUser.id,
+      stageName: "Bobby Craig",
+      categories: ["Commercial", "On-Camera", "Corporate"],
+      skills: ["Acting", "Voice Acting", "Presenting", "Comedy"],
+      bio: "Versatile talent with experience in commercial acting, corporate presentations, and voice work. Professional, reliable, and great with client direction.",
+      location: "New York, NY",
+      unionStatus: "SAG-AFTRA",
+      measurements: {
+        height: "5'11\"",
+        weight: "175 lbs",
+        hair: "Brown",
+        eyes: "Brown"
+      },
+      rates: {
+        hourly: 150,
+        halfDay: 600,
+        day: 1000
+      },
+      social: {
+        instagram: "@bobbycraig"
       },
       approvalStatus: "approved",
     });
