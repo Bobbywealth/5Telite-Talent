@@ -94,7 +94,7 @@ export default function TalentProfileEdit() {
 
   // Fetch current profile data
   const { data: profileData, isLoading: profileLoading, error: profileError } = useQuery({
-    queryKey: ["/api/auth/user", Date.now()], // Add timestamp to force fresh data
+    queryKey: ["/api/auth/user"], // Remove timestamp to prevent constant refetching
     queryFn: async () => {
       const userData = await apiRequest("GET", "/api/auth/user");
       // Try to fetch talent profile
@@ -110,8 +110,8 @@ export default function TalentProfileEdit() {
     },
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
-    staleTime: 0, // No caching - always fetch fresh data
-    refetchOnWindowFocus: true, // Refresh when window gets focus
+    staleTime: 30 * 1000, // Cache for 30 seconds
+    refetchOnWindowFocus: false, // Don't constantly refetch
   });
 
   // Populate form with existing data when profile loads
@@ -366,6 +366,18 @@ export default function TalentProfileEdit() {
           </p>
           
           {/* Profile Status */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="bg-blue-50 p-4 rounded-lg text-sm">
+              <strong>Debug Info:</strong>
+              <br />• Is Authenticated: {isAuthenticated ? 'true' : 'false'}
+              <br />• User Role: {user?.role || 'none'}
+              <br />• Auth Loading: {isLoading ? 'true' : 'false'}
+              <br />• Profile Loading: {profileLoading ? 'true' : 'false'}
+              <br />• Profile Error: {profileError ? profileError.message : 'none'}
+              <br />• Profile Data: {profileData ? 'loaded' : 'null'}
+              <br />• Talent Profile: {profileData?.talentProfile ? 'exists' : 'null'}
+            </div>
+          )}
         </div>
 
         {profileLoading ? (
@@ -376,6 +388,18 @@ export default function TalentProfileEdit() {
                 <Skeleton className="h-20 w-full" />
                 <Skeleton className="h-8 w-1/2" />
                 <Skeleton className="h-32 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+        ) : profileError ? (
+          <Card>
+            <CardContent className="p-8">
+              <div className="text-center">
+                <p className="text-red-600 mb-4">Error loading profile data</p>
+                <p className="text-sm text-gray-600 mb-4">{profileError.message}</p>
+                <Button onClick={() => window.location.reload()}>
+                  Reload Page
+                </Button>
               </div>
             </CardContent>
           </Card>
