@@ -282,16 +282,16 @@ export default function TalentDashboard() {
                   <div className="flex-1">
                     <p className="text-sm font-medium text-blue-700 mb-1">Profile Completion</p>
                     <p className="text-3xl font-bold text-blue-900 mb-2">
-                      {calculateProfileCompletion(talentProfile).percentage}%
+                      {calculateProfileCompletion(talentProfile?.talentProfile).percentage}%
                     </p>
                     <div className="w-full bg-blue-200 rounded-full h-2 mb-3">
                       <div 
                         className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500" 
-                        style={{width: `${calculateProfileCompletion(talentProfile).percentage}%`}}
+                        style={{width: `${calculateProfileCompletion(talentProfile?.talentProfile).percentage}%`}}
                       ></div>
                     </div>
                     {(() => {
-                      const completion = calculateProfileCompletion(talentProfile);
+                      const completion = calculateProfileCompletion(talentProfile?.talentProfile);
                       return (
                         <div className="space-y-1">
                           <div className="text-xs text-blue-700 font-medium">
@@ -364,7 +364,7 @@ export default function TalentDashboard() {
 
           {/* Profile Completion Details */}
           {(() => {
-            const completion = calculateProfileCompletion(talentProfile);
+            const completion = calculateProfileCompletion(talentProfile?.talentProfile);
             if (completion.percentage < 100 && completion.missing.length > 0) {
               return (
                 <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
