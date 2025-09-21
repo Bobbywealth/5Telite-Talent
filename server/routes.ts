@@ -371,7 +371,7 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
-  app.get('/api/talents/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/talents/:id', async (req: any, res) => {
     try {
       const id = req.params.id;
       const requestingUserId = req.user?.id;
@@ -412,7 +412,7 @@ Client Signature: _________________________ Date: _____________
       }
 
       // If requesting their own profile, always allow access (even if profile doesn't exist)
-      if (requestingUserId === id) {
+      if (requestingUserId && requestingUserId === id) {
         return res.json({ 
           ...user,
           talentProfile: profile || null // Allow null profile for own access
@@ -424,6 +424,7 @@ Client Signature: _________________________ Date: _____________
         return res.status(404).json({ message: "Talent profile not found or not approved" });
       }
 
+      // Return profile data for public viewing
       res.json({ ...profile, user });
     } catch (error) {
       console.error("Error fetching talent:", error);
