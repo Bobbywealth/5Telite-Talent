@@ -401,7 +401,7 @@ export const notifications = pgTable("notifications", {
   type: notificationTypeEnum("type").notNull(),
   title: varchar("title").notNull(),
   message: text("message").notNull(),
-  data: json("data"), // Additional data (booking id, contract id, etc.)
+  data: jsonb("data"), // Additional data (booking id, contract id, etc.)
   read: boolean("read").notNull().default(false),
   actionUrl: varchar("action_url"), // URL to navigate when clicked
   createdAt: timestamp("created_at").defaultNow(),
