@@ -52,7 +52,7 @@ export default function Navbar() {
 
   const getDashboardLink = () => {
     if (user?.role === 'admin') return '/admin';
-    if (user?.role === 'talent') return '/dashboard';
+    if (user?.role === 'talent') return '/talent/dashboard';
     return '/';
   };
 

@@ -209,7 +209,7 @@ class EmailService {
             </div>
             
             <div style="text-align: center; margin: 20px 0;">
-              <a href="${process.env.FRONTEND_URL || 'https://fivetelite-talent.onrender.com'}/dashboard" 
+              <a href="${process.env.FRONTEND_URL || 'https://fivetelite-talent.onrender.com'}/talent/dashboard" 
                  style="background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                 Access Your Dashboard
               </a>

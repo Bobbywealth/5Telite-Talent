@@ -80,7 +80,7 @@ export default function Profile() {
   const getDashboardLink = () => {
     switch (user?.role) {
       case 'admin': return '/admin';
-      case 'talent': return '/dashboard';
+      case 'talent': return '/talent/dashboard';
       case 'client': return '/client';
       default: return '/';
     }
