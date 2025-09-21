@@ -15,6 +15,7 @@ import {
 import { ObjectPermission } from "./objectAcl";
 import { ContractService } from "./contractService";
 import { emailService } from "./emailService";
+import { enhancedEmailService } from "./emailServiceEnhanced";
 import { db } from "./db";
 import { bookings, users, talentProfiles, bookingTalents } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
@@ -292,11 +293,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const profile = await storage.createTalentProfile(profileData);
       
-      // 📧 Send email notification to admin about new talent signup
+      // 📧 Send email notification to admin about new talent signup (Enhanced)
       try {
         const user = await storage.getUser(userId);
         if (user) {
-          await emailService.notifyAdminNewTalentSignup(user, profile);
+          await enhancedEmailService.notifyAdminNewTalentSignup(user, profile);
         }
       } catch (emailError) {
         console.error("Failed to send new talent notification email:", emailError);
@@ -633,7 +634,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const recipients = [updatedBooking.client];
             updatedBooking.bookingTalents.forEach(bt => recipients.push(bt.talent));
             
-            await emailService.notifyBookingConfirmed(recipients, updatedBooking);
+            await enhancedEmailService.notifyBookingConfirmed(recipients, updatedBooking);
           }
         }
       } catch (emailError) {

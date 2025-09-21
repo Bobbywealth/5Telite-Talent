@@ -6,6 +6,7 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { emailService } from "./emailService";
+import { enhancedEmailService } from "./emailServiceEnhanced";
 import { User as DbUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 
@@ -125,10 +126,10 @@ export function setupAuth(app: Express) {
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
 
-      // 📧 Send welcome email for talent signups
+      // 📧 Send welcome email for talent signups (Enhanced)
       if (role === "talent") {
         try {
-          await emailService.sendTalentWelcomeEmail(userWithoutPassword);
+          await enhancedEmailService.sendTalentWelcomeEmail(userWithoutPassword);
         } catch (emailError) {
           console.error("Failed to send welcome email to new talent:", emailError);
           // Don't fail the request if email fails
