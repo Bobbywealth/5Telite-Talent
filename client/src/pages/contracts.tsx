@@ -112,7 +112,11 @@ export default function ContractsPage() {
     queryKey: ["/api/bookings"],
   });
 
-  const bookings = bookingsData?.bookings || [];
+  // Filter bookings that have accepted talents (ready for contracts)
+  const allBookings = bookingsData?.bookings || [];
+  const bookings = allBookings.filter((booking: any) => 
+    booking.bookingTalents && booking.bookingTalents.some((bt: any) => bt.requestStatus === 'accepted')
+  );
 
   const createContractMutation = useMutation({
     mutationFn: async ({ bookingId, bookingTalentId }: { bookingId: string; bookingTalentId: string }) => {
@@ -243,7 +247,7 @@ export default function ContractsPage() {
                         <SelectValue placeholder="Choose a talent" />
                       </SelectTrigger>
                       <SelectContent>
-                        {selectedBookingData.bookingTalents?.map((bt: any) => (
+                        {selectedBookingData.bookingTalents?.filter((bt: any) => bt.requestStatus === 'accepted').map((bt: any) => (
                           <SelectItem key={bt.id} value={bt.id}>
                             {bt.talent.firstName} {bt.talent.lastName} ({bt.talent.email})
                           </SelectItem>

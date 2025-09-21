@@ -1679,6 +1679,40 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Debug endpoint for contracts page
+  app.get('/api/debug/bookings-for-contracts', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { bookings } = await storage.getAllBookings();
+      
+      // Filter bookings that have accepted talents (ready for contracts)
+      const contractReadyBookings = bookings.filter(booking => 
+        booking.bookingTalents && booking.bookingTalents.some(bt => bt.requestStatus === 'accepted')
+      );
+
+      return res.json({ 
+        allBookings: bookings.length,
+        contractReadyBookings: contractReadyBookings.length,
+        bookings: contractReadyBookings.map(b => ({
+          id: b.id,
+          title: b.title,
+          code: b.code,
+          status: b.status,
+          acceptedTalents: b.bookingTalents.filter(bt => bt.requestStatus === 'accepted').length
+        }))
+      });
+    } catch (error) {
+      console.error("Error debugging bookings:", error);
+      return res.status(500).json({ message: "Failed to debug bookings" });
+    }
+  });
+
   // Test endpoint to create sample contract
   app.post('/api/create-test-contract', isAuthenticated, async (req: any, res) => {
     try {
