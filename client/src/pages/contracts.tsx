@@ -243,17 +243,20 @@ export default function ContractsPage() {
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Select Booking</label>
+                  <label className="text-sm font-medium">Select Booking ({bookings.length} available)</label>
                   <Select value={selectedBooking} onValueChange={setSelectedBooking}>
                     <SelectTrigger data-testid="select-booking">
                       <SelectValue placeholder="Choose a booking" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.isArray(bookings) ? bookings.map((booking: Booking) => (
-                        <SelectItem key={booking.id} value={booking.id}>
-                          {booking.title} ({booking.code})
-                        </SelectItem>
-                      )) : null}
+                      {bookings.map((booking: any) => {
+                        console.log("Rendering booking:", booking);
+                        return (
+                          <SelectItem key={booking.id} value={booking.id}>
+                            {booking.title} ({booking.code})
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
