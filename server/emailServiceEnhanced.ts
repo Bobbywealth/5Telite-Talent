@@ -369,6 +369,58 @@ class EmailServiceEnhanced {
     const html = this.createEmailTemplate("Contract Creation Needed", content, ctaButton);
     await this.sendEmail(this.adminEmail, subject, html);
   }
+
+  // 📄 Talent Contract Ready for Signing - NEW
+  async notifyTalentContractReady(data: {
+    talent: User;
+    booking: any;
+    client: any;
+    contractId: string;
+  }) {
+    const { talent, booking, client, contractId } = data;
+    const subject = `📄 Contract Ready for Signature: ${booking.title}`;
+    
+    const content = `
+      <h2>Hi ${talent.firstName},</h2>
+      
+      <p>🎉 Great news! Your contract is ready for signature and the project is moving forward.</p>
+      
+      <div class="card" style="border-left: 4px solid #007bff;">
+        <h3 style="margin-top: 0; color: #007bff;">📄 Contract Details</h3>
+        <p><strong>Project:</strong> ${booking.title}</p>
+        <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
+        <p><strong>Date:</strong> ${new Date(booking.startDate).toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</p>
+        <p><strong>Location:</strong> ${booking.location || 'TBD'}</p>
+        <p><strong>Rate:</strong> $${booking.rate || 'TBD'}</p>
+      </div>
+      
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">📋 Next Steps</h3>
+        <ul>
+          <li>Review the contract terms carefully</li>
+          <li>Sign electronically using your secure signature</li>
+          <li>Download a copy for your records</li>
+          <li>Contact us if you have any questions</li>
+        </ul>
+      </div>
+      
+      <p><strong>Please sign within 7 days</strong> to secure your booking and keep the project on schedule.</p>
+    `;
+
+    const ctaButton = {
+      text: 'Review & Sign Contract',
+      url: `${this.frontendUrl}/contracts`,
+      color: "#007bff"
+    };
+
+    const html = this.createEmailTemplate("Contract Ready for Signature", content, ctaButton);
+    await this.sendEmail(talent.email, subject, html);
+  }
 }
 
 export const enhancedEmailService = new EmailServiceEnhanced();

@@ -16,6 +16,7 @@ import { ObjectPermission } from "./objectAcl";
 import { ContractService } from "./contractService";
 import { emailService } from "./emailService";
 import { enhancedEmailService } from "./emailServiceEnhanced";
+import { NotificationService } from "./notificationService";
 import { db } from "./db";
 import { bookings, users, talentProfiles, bookingTalents, contracts, signatures } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
@@ -925,6 +926,17 @@ Client Signature: _________________________ Date: _____________
               client: data.client,
               bookingTalentId: data.bookingTalent.id
             });
+
+            // Create in-app notification for admin
+            const adminUsers = await db.select().from(users).where(eq(users.role, 'admin'));
+            for (const admin of adminUsers) {
+              await NotificationService.notifyAdminBookingAccepted(admin.id, {
+                talentName: `${data.talent.firstName} ${data.talent.lastName}`,
+                bookingTitle: data.booking.title,
+                bookingId: data.booking.id,
+                bookingTalentId: data.bookingTalent.id
+              });
+            }
           }
         } catch (emailError) {
           console.error("Failed to send admin contract notification:", emailError);
@@ -1700,6 +1712,59 @@ Client Signature: _________________________ Date: _____________
     } catch (error) {
       console.error("Error creating contract:", error);
       res.status(500).json({ message: "Failed to create contract" });
+    }
+  });
+
+  // Notification routes
+  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { limit, unreadOnly } = req.query;
+      
+      const notifications = await NotificationService.getUserNotifications(userId, {
+        limit: limit ? parseInt(limit) : 20,
+        unreadOnly: unreadOnly === 'true'
+      });
+      
+      res.json({ notifications });
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.get('/api/notifications/unread-count', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const count = await NotificationService.getUnreadCount(userId);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+      res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  app.patch('/api/notifications/:id/read', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const notificationId = req.params.id;
+      
+      await NotificationService.markAsRead(notificationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.patch('/api/notifications/mark-all-read', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      await NotificationService.markAllAsRead(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "Failed to mark all notifications as read" });
     }
   });
 

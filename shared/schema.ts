@@ -382,3 +382,34 @@ export type Signature = typeof signatures.$inferSelect;
 export type InsertSignature = z.infer<typeof insertSignatureSchema>;
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
+
+// Notifications
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "booking_request",
+  "booking_accepted", 
+  "booking_declined",
+  "contract_created",
+  "contract_signed",
+  "task_assigned",
+  "talent_approved",
+  "system_announcement"
+]);
+
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  type: notificationTypeEnum("type").notNull(),
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  data: json("data"), // Additional data (booking id, contract id, etc.)
+  read: boolean("read").notNull().default(false),
+  actionUrl: varchar("action_url"), // URL to navigate when clicked
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Notification schema for validation
+export const insertNotificationSchema = createInsertSchema(notifications);
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;

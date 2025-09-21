@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
+import { useLocation } from "wouter";
 
 interface NotificationBellProps {
   className?: string;
@@ -12,10 +13,12 @@ interface NotificationBellProps {
 
 export function NotificationBell({ className = "" }: NotificationBellProps) {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
-  // Fetch notifications based on user role
-  const { data: notifications, isLoading } = useQuery({
-    queryKey: ["/api/notifications", user?.role],
+  // Fetch notifications
+  const { data: notificationsData, isLoading } = useQuery({
+    queryKey: ["/api/notifications"],
     queryFn: async () => {
       const response = await fetch("/api/notifications", {
         credentials: "include",
@@ -27,17 +30,59 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
     retry: false,
   });
 
-  const totalCount = notifications?.total || 0;
-  const items = notifications?.items || [];
+  // Fetch unread count
+  const { data: unreadData } = useQuery({
+    queryKey: ["/api/notifications/unread-count"],
+    queryFn: async () => {
+      const response = await fetch("/api/notifications/unread-count", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch unread count");
+      return response.json();
+    },
+    enabled: !!user,
+    retry: false,
+  });
+
+  // Mark notification as read
+  const markAsReadMutation = useMutation({
+    mutationFn: async (notificationId: string) => {
+      const response = await fetch(`/api/notifications/${notificationId}/read`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to mark as read");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications/unread-count"] });
+    },
+  });
+
+  const notifications = notificationsData?.notifications || [];
+  const unreadCount = unreadData?.count || 0;
+
+  const handleNotificationClick = (notification: any) => {
+    // Mark as read if not already read
+    if (!notification.read) {
+      markAsReadMutation.mutate(notification.id);
+    }
+    
+    // Navigate to action URL if provided
+    if (notification.actionUrl) {
+      setLocation(notification.actionUrl);
+    }
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className={`relative p-2 ${className}`} data-testid="button-notifications">
           <i className="fas fa-bell text-slate-400 text-lg"></i>
-          {totalCount > 0 && (
+          {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {totalCount > 99 ? "99+" : totalCount}
+              {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}
         </Button>
@@ -45,9 +90,9 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
       <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notifications</span>
-          {totalCount > 0 && (
+          {unreadCount > 0 && (
             <Badge variant="secondary" className="text-xs">
-              {totalCount}
+              {unreadCount}
             </Badge>
           )}
         </DropdownMenuLabel>
@@ -65,29 +110,28 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
               </div>
             ))}
           </div>
-        ) : items.length > 0 ? (
-          items.map((item: any, index: number) => (
+        ) : notifications.length > 0 ? (
+          notifications.map((notification: any, index: number) => (
             <DropdownMenuItem 
-              key={index} 
-              className="flex items-start space-x-3 p-4 cursor-pointer hover:bg-slate-50"
+              key={notification.id} 
+              className={`flex items-start space-x-3 p-4 cursor-pointer hover:bg-slate-50 ${!notification.read ? 'bg-blue-50' : ''}`}
+              onClick={() => handleNotificationClick(notification)}
               data-testid={`notification-item-${index}`}
             >
-              <div className={`w-2 h-2 rounded-full mt-2 ${getNotificationColor(item.type)}`}></div>
+              <div className={`w-2 h-2 rounded-full mt-2 ${getNotificationColor(notification.type)}`}></div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">
-                  {item.title}
+                <p className={`text-sm font-medium truncate ${!notification.read ? 'text-slate-900' : 'text-slate-600'}`}>
+                  {notification.title}
                 </p>
                 <p className="text-xs text-slate-600 mt-1">
-                  {item.description}
+                  {notification.message}
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                 </p>
               </div>
-              {item.badge && (
-                <Badge variant="outline" className="text-xs">
-                  {item.badge}
-                </Badge>
+              {!notification.read && (
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               )}
             </DropdownMenuItem>
           ))
@@ -105,18 +149,22 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
 
 function getNotificationColor(type: string): string {
   switch (type) {
-    case 'approval':
-      return 'bg-orange-500';
-    case 'booking':
+    case 'booking_request':
       return 'bg-blue-500';
-    case 'task':
-      return 'bg-purple-500';
-    case 'message':
+    case 'booking_accepted':
       return 'bg-green-500';
-    case 'payment':
-      return 'bg-yellow-500';
-    case 'urgent':
+    case 'booking_declined':
       return 'bg-red-500';
+    case 'contract_created':
+      return 'bg-purple-500';
+    case 'contract_signed':
+      return 'bg-green-600';
+    case 'task_assigned':
+      return 'bg-orange-500';
+    case 'talent_approved':
+      return 'bg-emerald-500';
+    case 'system_announcement':
+      return 'bg-slate-500';
     default:
       return 'bg-slate-400';
   }

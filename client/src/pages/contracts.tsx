@@ -82,6 +82,25 @@ export default function ContractsPage() {
       navigate('/admin/contracts');
     }
   }, [user, location, navigate]);
+
+  // Handle URL parameters for quick contract creation from email notifications
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const bookingId = urlParams.get('booking');
+      const talentId = urlParams.get('talent');
+      
+      if (bookingId && talentId) {
+        setSelectedBooking(bookingId);
+        setSelectedBookingTalent(talentId);
+        setShowCreateDialog(true);
+        
+        // Clean up URL parameters
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, [user, bookings]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -101,8 +120,8 @@ export default function ContractsPage() {
     },
     onSuccess: () => {
       toast({
-        title: "Contract Created",
-        description: "The contract has been created successfully.",
+        title: "Contract Created & Sent",
+        description: "The contract has been created and sent to the talent for signing. They will receive an email notification.",
       });
       handleCloseDialog();
       queryClient.invalidateQueries({ queryKey: ["/api/contracts"] });
