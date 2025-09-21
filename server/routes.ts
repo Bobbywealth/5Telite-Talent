@@ -891,6 +891,46 @@ Client Signature: _________________________ Date: _____________
         action === 'accept' ? 'accepted' : 'declined',
         message
       );
+
+      // If talent accepted, send notification to admin about contract creation
+      if (action === 'accept') {
+        try {
+          // Get booking details for the notification
+          const bookingTalent = await db
+            .select({
+              bookingTalent: bookingTalents,
+              booking: bookings,
+              talent: users,
+              client: {
+                id: sql<string>`client_user.id`,
+                firstName: sql<string>`client_user.first_name`,
+                lastName: sql<string>`client_user.last_name`,
+                email: sql<string>`client_user.email`,
+              }
+            })
+            .from(bookingTalents)
+            .innerJoin(bookings, eq(bookingTalents.bookingId, bookings.id))
+            .innerJoin(users, eq(bookingTalents.talentId, users.id))
+            .innerJoin(sql`users as client_user`, eq(bookings.clientId, sql`client_user.id`))
+            .where(eq(bookingTalents.id, req.params.requestId))
+            .limit(1);
+
+          if (bookingTalent.length > 0) {
+            const data = bookingTalent[0];
+            
+            // Send email notification to admin about contract creation needed
+            await enhancedEmailService.notifyAdminContractNeeded({
+              booking: data.booking,
+              talent: data.talent,
+              client: data.client,
+              bookingTalentId: data.bookingTalent.id
+            });
+          }
+        } catch (emailError) {
+          console.error("Failed to send admin contract notification:", emailError);
+          // Don't fail the request if email fails
+        }
+      }
       
       res.json(result);
     } catch (error) {

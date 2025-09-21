@@ -478,6 +478,12 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Booking request not found or access denied");
     }
 
+    // If talent accepted, trigger contract creation notification
+    if (status === 'accepted') {
+      // This will be handled by the route handler to send admin notification
+      console.log(`Talent accepted booking request ${requestId} - admin should be notified to create contract`);
+    }
+
     return updated;
   }
 

@@ -316,6 +316,59 @@ class EmailServiceEnhanced {
       await this.sendEmail(recipient.email, subject, html);
     }
   }
+
+  // 📄 Admin Contract Creation Needed - NEW
+  async notifyAdminContractNeeded(data: {
+    booking: any;
+    talent: User;
+    client: any;
+    bookingTalentId: string;
+  }) {
+    const { booking, talent, client, bookingTalentId } = data;
+    const subject = `📄 Contract Needed: ${talent.firstName} ${talent.lastName} Accepted Booking`;
+    
+    const content = `
+      <h2>Hi Admin,</h2>
+      
+      <p>🎉 Great news! A talent has accepted a booking and is ready for contracting.</p>
+      
+      <div class="card" style="border-left: 4px solid #28a745;">
+        <h3 style="margin-top: 0; color: #28a745;">✅ Booking Accepted</h3>
+        <p><strong>Talent:</strong> ${talent.firstName} ${talent.lastName} (${talent.email})</p>
+        <p><strong>Client:</strong> ${client.firstName} ${client.lastName} (${client.email})</p>
+        <p><strong>Project:</strong> ${booking.title}</p>
+        <p><strong>Date:</strong> ${new Date(booking.startDate).toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</p>
+        <p><strong>Location:</strong> ${booking.location || 'TBD'}</p>
+        <p><strong>Rate:</strong> $${booking.rate || 'TBD'}</p>
+      </div>
+      
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">📋 Next Steps</h3>
+        <ul>
+          <li>Create and send contract to the talent</li>
+          <li>Include all project details and terms</li>
+          <li>Set appropriate signing deadline</li>
+          <li>Monitor contract signing progress</li>
+        </ul>
+      </div>
+      
+      <p><strong>Action Required:</strong> Please create and send the contract as soon as possible to keep the project moving forward.</p>
+    `;
+
+    const ctaButton = {
+      text: 'Create Contract',
+      url: `${this.frontendUrl}/admin/contracts?booking=${booking.id}&talent=${bookingTalentId}`,
+      color: "#28a745"
+    };
+
+    const html = this.createEmailTemplate("Contract Creation Needed", content, ctaButton);
+    await this.sendEmail(this.adminEmail, subject, html);
+  }
 }
 
 export const enhancedEmailService = new EmailServiceEnhanced();
