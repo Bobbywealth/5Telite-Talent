@@ -823,6 +823,18 @@ Client Signature: _________________________ Date: _____________
           console.error(`Failed to send booking request notification to talent ${talentId}:`, emailError);
           // Don't fail the request if email fails
         }
+
+        // 🔔 Create in-app notification for talent
+        try {
+          await NotificationService.notifyTalentBookingRequest(talentId, {
+            bookingTitle: booking.title,
+            clientName: `${booking.client.firstName} ${booking.client.lastName}`,
+            bookingId: booking.id
+          });
+        } catch (notificationError) {
+          console.error(`Failed to send in-app notification to talent ${talentId}:`, notificationError);
+          // Don't fail the request if notification fails
+        }
       }
 
       res.json({ 
@@ -1452,6 +1464,23 @@ Client Signature: _________________________ Date: _____________
       if (!signatureData) {
         return res.status(400).json({ message: "Signature data is required" });
       }
+
+      // Get contract details before signing for notifications
+      const contractDetails = await db.query.contracts.findFirst({
+        where: eq(contracts.id, contractId),
+        with: {
+          booking: true,
+          bookingTalent: {
+            with: {
+              talent: true,
+            },
+          },
+        },
+      });
+
+      if (!contractDetails) {
+        return res.status(404).json({ message: "Contract not found" });
+      }
       
       // Get user agent and IP
       const userAgent = req.get('User-Agent') || '';
@@ -1464,6 +1493,21 @@ Client Signature: _________________________ Date: _____________
         ipAddress,
         userAgent
       );
+
+      // 🔔 Notify admin that contract has been signed
+      try {
+        const adminUsers = await db.select().from(users).where(eq(users.role, 'admin'));
+        for (const admin of adminUsers) {
+          await NotificationService.notifyAdminContractSigned(admin.id, {
+            talentName: `${contractDetails.bookingTalent.talent.firstName} ${contractDetails.bookingTalent.talent.lastName}`,
+            bookingTitle: contractDetails.booking.title,
+            contractId: contractId
+          });
+        }
+      } catch (notificationError) {
+        console.error("Failed to send contract signed notification:", notificationError);
+        // Don't fail the request if notification fails
+      }
       
       res.json({ message: "Contract signed successfully" });
     } catch (error) {
@@ -1706,6 +1750,17 @@ Client Signature: _________________________ Date: _____________
       } catch (emailError) {
         console.error("Failed to send contract notification emails:", emailError);
         // Don't fail the request if email fails
+      }
+
+      // 🔔 Create in-app notification for talent
+      try {
+        await NotificationService.notifyTalentContractCreated(bookingTalent.talent.id, {
+          bookingTitle: booking.title,
+          contractId: contract.id
+        });
+      } catch (notificationError) {
+        console.error("Failed to send in-app notification:", notificationError);
+        // Don't fail the request if notification fails
       }
       
       res.json(contract);

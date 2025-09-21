@@ -118,17 +118,24 @@ This is a legally binding agreement. Please read carefully before signing.
     const pdfBuffer = this.generateContractPDF(content, title);
     const pdfUrl = `/contracts/${nanoid()}.pdf`; // This would be the actual file path/URL
     
-    // Create contract in database
+    // Create contract in database with "sent" status (ready for signing)
     const [contract] = await db.insert(contracts).values({
       bookingId,
       bookingTalentId,
       title,
       content,
       pdfUrl,
-      status: 'draft',
+      status: 'sent', // Contract is immediately sent to talent for signing
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       createdBy,
     }).returning();
+
+    // Create signature record for the talent
+    await db.insert(signatures).values({
+      contractId: contract.id,
+      signerId: contractData.talent.id, // Talent who needs to sign
+      status: 'pending',
+    });
 
     return contract;
   }
