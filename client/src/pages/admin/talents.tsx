@@ -5,7 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
-import type { UploadResult } from "@uppy/core";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
@@ -85,30 +84,17 @@ export default function AdminTalents() {
     };
   };
 
-  const handleImageUploadComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
-    if (result.successful && result.successful.length > 0) {
-      const uploadedUrl = result.successful[0].uploadURL;
-
-      // Process the uploaded image and add to collection
-      apiRequest("PUT", "/api/talents/me/media", {
-        mediaUrl: uploadedUrl
-      }).then((response) => {
-        setNewTalentData(prev => ({
-          ...prev,
-          uploadedImages: [...prev.uploadedImages, response.objectPath]
-        }));
-        toast({
-          title: "Image uploaded successfully!",
-          description: "Your image has been added to the talent profile.",
-        });
-      }).catch((error) => {
-        toast({
-          title: "Upload processing failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      });
-    }
+  const handleImageUploadComplete = (uploadedFiles: { objectName: string; fileName: string }[]) => {
+    // Add the uploaded files to the talent data
+    setNewTalentData(prev => ({
+      ...prev,
+      uploadedImages: [...prev.uploadedImages, ...uploadedFiles.map(f => f.objectName)]
+    }));
+    
+    toast({
+      title: "Upload successful",
+      description: `${uploadedFiles.length} photo(s) uploaded successfully`,
+    });
   };
 
   // Authentication is handled by the Router component
@@ -757,9 +743,9 @@ export default function AdminTalents() {
                 <ObjectUploader
                   maxNumberOfFiles={5}
                   maxFileSize={10485760}
-                  onGetUploadParameters={handleGetUploadParameters}
                   onComplete={handleImageUploadComplete}
                   buttonClassName="w-full"
+                  prefix="headshots"
                 >
                   <div className="flex items-center gap-2">
                     <i className="fas fa-camera"></i>
