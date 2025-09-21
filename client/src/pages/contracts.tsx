@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ContractViewer } from "@/components/contracts/ContractViewer";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
@@ -244,38 +244,40 @@ export default function ContractsPage() {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium">Select Booking ({bookings.length} available)</label>
-                  <Select value={selectedBooking} onValueChange={setSelectedBooking}>
-                    <SelectTrigger data-testid="select-booking">
-                      <SelectValue placeholder="Choose a booking" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {bookings.map((booking: any) => {
-                        console.log("Rendering booking:", booking);
-                        return (
-                          <SelectItem key={booking.id} value={booking.id}>
-                            {booking.title} ({booking.code})
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
+                  <select 
+                    value={selectedBooking} 
+                    onChange={(e) => setSelectedBooking(e.target.value)}
+                    className="w-full h-12 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    data-testid="select-booking"
+                  >
+                    <option value="">Choose a booking</option>
+                    {bookings.map((booking: any) => {
+                      console.log("Rendering booking:", booking);
+                      return (
+                        <option key={booking.id} value={booking.id}>
+                          {booking.title} ({booking.code})
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
 
                 {selectedBookingData && (
                   <div>
                     <label className="text-sm font-medium">Select Talent</label>
-                    <Select value={selectedBookingTalent} onValueChange={setSelectedBookingTalent}>
-                      <SelectTrigger data-testid="select-talent">
-                        <SelectValue placeholder="Choose a talent" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {selectedBookingData.bookingTalents?.map((bt: any) => (
-                          <SelectItem key={bt.id} value={bt.id}>
-                            {bt.talent.firstName} {bt.talent.lastName} ({bt.talent.email}) - {bt.requestStatus}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <select 
+                      value={selectedBookingTalent} 
+                      onChange={(e) => setSelectedBookingTalent(e.target.value)}
+                      className="w-full h-12 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      data-testid="select-talent"
+                    >
+                      <option value="">Choose a talent</option>
+                      {selectedBookingData.bookingTalents?.map((bt: any) => (
+                        <option key={bt.id} value={bt.id}>
+                          {bt.talent.firstName} {bt.talent.lastName} ({bt.talent.email}) - {bt.requestStatus}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
 
