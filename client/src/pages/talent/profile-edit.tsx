@@ -177,11 +177,54 @@ export default function TalentProfileEdit() {
         return apiRequest("POST", "/api/talents", payload);
       }
     },
-    onSuccess: () => {
+    onSuccess: (savedProfile) => {
       toast({
         title: "Profile updated successfully!",
         description: "Your changes have been saved.",
       });
+      
+      // Update the form data with the saved profile data
+      if (savedProfile) {
+        setFormData({
+          stageName: savedProfile.stageName || "",
+          categories: savedProfile.categories || [],
+          skills: savedProfile.skills || [],
+          bio: savedProfile.bio || "",
+          location: savedProfile.location || "",
+          unionStatus: savedProfile.unionStatus || "",
+          experience: savedProfile.experience || "",
+          measurements: savedProfile.measurements || {
+            height: "",
+            weight: "",
+            bust: "",
+            waist: "",
+            hips: "",
+            jacket: "",
+            inseam: "",
+            shoe: "",
+            hair: "",
+            eyes: "",
+          },
+          rates: {
+            day: savedProfile.rates?.day?.toString() || "",
+            halfDay: savedProfile.rates?.halfDay?.toString() || "",
+            hourly: savedProfile.rates?.hourly?.toString() || "",
+          },
+          social: savedProfile.social || {
+            instagram: "",
+            tiktok: "",
+            youtube: "",
+            website: "",
+          },
+          guardian: savedProfile.guardian || {
+            name: "",
+            email: "",
+            phone: "",
+          },
+        });
+      }
+      
+      // Also refresh the query to update other parts of the app
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: (error: Error) => {
