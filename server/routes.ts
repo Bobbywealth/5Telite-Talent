@@ -1976,7 +1976,7 @@ Client Signature: _________________________ Date: _____________
   });
 
   // Notification routes
-  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
+  app.get('/api/notifications-new', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const { limit, unreadOnly } = req.query;
