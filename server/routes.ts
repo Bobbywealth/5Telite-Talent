@@ -2121,11 +2121,15 @@ Client Signature: _________________________ Date: _____________
       
       // Create the notifications table with raw SQL
       await db.execute(sql`
-        CREATE TYPE IF NOT EXISTS notification_type AS ENUM(
-          'booking_request', 'booking_accepted', 'booking_declined', 
-          'contract_created', 'contract_signed', 'task_assigned', 
-          'talent_approved', 'system_announcement'
-        );
+        DO $$ BEGIN
+          CREATE TYPE notification_type AS ENUM(
+            'booking_request', 'booking_accepted', 'booking_declined', 
+            'contract_created', 'contract_signed', 'task_assigned', 
+            'talent_approved', 'system_announcement'
+          );
+        EXCEPTION
+          WHEN duplicate_object THEN null;
+        END $$;
       `);
       
       await db.execute(sql`
@@ -2136,17 +2140,11 @@ Client Signature: _________________________ Date: _____________
           title varchar NOT NULL,
           message text NOT NULL,
           data jsonb,
-          read boolean DEFAULT false NOT NULL,
+          read boolean DEFAULT false,
           action_url varchar,
           created_at timestamp DEFAULT now(),
           updated_at timestamp DEFAULT now()
         );
-      `);
-      
-      await db.execute(sql`
-        ALTER TABLE notifications 
-        ADD CONSTRAINT IF NOT EXISTS notifications_user_id_users_id_fk 
-        FOREIGN KEY (user_id) REFERENCES users(id);
       `);
       
       res.json({ success: true, message: "Notifications table created successfully" });
