@@ -4,7 +4,7 @@ import path from "path";
 import express from "express";
 import { z } from "zod";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./auth";
+import { setupAuth, isAuthenticated, hashPassword } from "./auth";
 import {
   insertTalentProfileSchema,
   insertBookingSchema,
@@ -82,6 +82,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error switching role:", error);
       res.status(500).json({ message: "Failed to switch role" });
+    }
+  });
+
+  // Admin endpoint to create new users
+  app.post('/api/admin/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { firstName, lastName, email, role = "talent", status = "active" } = req.body;
+
+      if (!firstName || !lastName || !email) {
+        return res.status(400).json({ message: "firstName, lastName, and email are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Generate a temporary password (user should change it)
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await hashPassword(tempPassword);
+      
+      const newUser = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        role,
+      });
+
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = newUser;
+      
+      res.status(201).json({
+        ...userWithoutPassword,
+        tempPassword // Include temp password in response for admin to share
+      });
+    } catch (error) {
+      console.error("Error creating user (admin):", error);
+      res.status(500).json({ message: "Failed to create user" });
     }
   });
 
@@ -239,6 +286,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }
       console.error("Error creating talent profile:", error);
+      res.status(500).json({ message: "Failed to create talent profile" });
+    }
+  });
+
+  // Admin endpoint to create talent profiles for new users
+  app.post('/api/talents/admin-create', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId: targetUserId, ...profileData } = req.body;
+
+      if (!targetUserId) {
+        return res.status(400).json({ message: "userId is required" });
+      }
+
+      // Check if profile already exists for target user
+      const existingProfile = await storage.getTalentProfile(targetUserId);
+      if (existingProfile) {
+        return res.status(400).json({ message: "Talent profile already exists for this user" });
+      }
+
+      const parsedProfileData = insertTalentProfileSchema.parse({
+        ...profileData,
+        userId: targetUserId,
+        approvalStatus: 'approved' // Admin-created profiles are auto-approved
+      });
+
+      const profile = await storage.createTalentProfile(parsedProfileData);
+      res.json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating talent profile (admin):", error);
       res.status(500).json({ message: "Failed to create talent profile" });
     }
   });
