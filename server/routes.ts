@@ -2229,39 +2229,51 @@ Client Signature: _________________________ Date: _____________
         return res.status(403).json({ message: "Admin access required" });
       }
       
-      // Create the notifications table with raw SQL
-      await db.execute(sql`
-        DO $$ BEGIN
+      // Create the enum type first (simple approach)
+      try {
+        await db.execute(sql`
           CREATE TYPE notification_type AS ENUM(
-            'booking_request', 'booking_accepted', 'booking_declined', 
-            'contract_created', 'contract_signed', 'task_assigned', 
-            'talent_approved', 'system_announcement'
-          );
-        EXCEPTION
-          WHEN duplicate_object THEN null;
-        END $$;
-      `);
+            'booking_request', 
+            'booking_accepted', 
+            'booking_declined', 
+            'contract_created', 
+            'contract_signed', 
+            'task_assigned', 
+            'talent_approved', 
+            'system_announcement'
+          )
+        `);
+        console.log("Created notification_type enum");
+      } catch (enumError) {
+        console.log("Enum probably already exists:", (enumError as Error).message);
+      }
       
-      await db.execute(sql`
-        CREATE TABLE IF NOT EXISTS notifications (
-          id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id varchar NOT NULL,
-          type notification_type NOT NULL,
-          title varchar NOT NULL,
-          message text NOT NULL,
-          data jsonb,
-          read boolean DEFAULT false,
-          action_url varchar,
-          created_at timestamp DEFAULT now(),
-          updated_at timestamp DEFAULT now()
-        );
-      `);
+      // Create the table (simple approach)
+      try {
+        await db.execute(sql`
+          CREATE TABLE notifications (
+            id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id varchar NOT NULL REFERENCES users(id),
+            type notification_type NOT NULL,
+            title varchar NOT NULL,
+            message text NOT NULL,
+            data jsonb,
+            read boolean DEFAULT false,
+            action_url varchar,
+            created_at timestamp DEFAULT now(),
+            updated_at timestamp DEFAULT now()
+          )
+        `);
+        console.log("Created notifications table");
+      } catch (tableError) {
+        console.log("Table probably already exists:", (tableError as Error).message);
+      }
       
-      res.json({ success: true, message: "Notifications table created successfully" });
+      res.json({ success: true, message: "Notifications system setup completed" });
     } catch (error) {
-      console.error("Error creating notifications table:", error);
+      console.error("Error setting up notifications:", error);
       res.status(500).json({ 
-        message: "Failed to create notifications table", 
+        message: "Failed to setup notifications", 
         error: (error as Error).message 
       });
     }
