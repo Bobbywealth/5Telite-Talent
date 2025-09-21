@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { GcsImage } from "@/components/GcsImage";
 
 interface TalentCardProps {
   talent: {
@@ -15,6 +16,7 @@ interface TalentCardProps {
     categories?: string[];
     skills?: string[];
     location?: string;
+    mediaUrls?: string[];
     rates?: {
       day?: number;
       halfDay?: number;
@@ -30,12 +32,16 @@ export default function TalentCard({ talent }: TalentCardProps) {
     <Card className="hover:shadow-xl transition-shadow cursor-pointer overflow-hidden" data-testid={`card-talent-${talent.id}`}>
       <Link href={`/talent/${talent.id}`}>
         <div className="relative">
-          {talent.user.profileImageUrl ? (
-            <img 
-              src={talent.user.profileImageUrl} 
+          {talent.mediaUrls && talent.mediaUrls.length > 0 ? (
+            <GcsImage 
+              objectName={talent.mediaUrls[0]}
               alt={displayName}
               className="w-full h-64 object-cover"
-              data-testid={`img-talent-${talent.id}`}
+              fallback={
+                <div className="w-full h-64 bg-slate-200 flex items-center justify-center">
+                  <i className="fas fa-user text-slate-400 text-4xl"></i>
+                </div>
+              }
             />
           ) : (
             <div className="w-full h-64 bg-slate-200 flex items-center justify-center">

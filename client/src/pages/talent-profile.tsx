@@ -1,6 +1,7 @@
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { getQueryFn } from "@/lib/queryClient";
 import Navbar from "@/components/layout/navbar";
 import AdminSidebar from "@/components/layout/admin-sidebar";
 import TalentNavbar from "@/components/layout/talent-navbar";
@@ -10,20 +11,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GcsImage } from "@/components/GcsImage";
 
 export default function TalentProfile() {
   const { id } = useParams();
   const { isAuthenticated, user } = useAuth();
 
   const { data: talent, isLoading, error } = useQuery({
-    queryKey: ["/api/talents", id],
-    queryFn: async () => {
-      const response = await fetch(`/api/talents/${id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch talent profile");
-      }
-      return response.json();
-    },
+    queryKey: [`/api/talents/${id}`],
+    queryFn: getQueryFn(),
     retry: false,
   });
 
@@ -178,11 +174,16 @@ export default function TalentProfile() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Profile Picture */}
             <div className="flex-shrink-0">
-              {talent.profileImageUrl ? (
-                <img 
-                  src={talent.profileImageUrl} 
+              {talent.mediaUrls && talent.mediaUrls.length > 0 ? (
+                <GcsImage 
+                  objectName={talent.mediaUrls[0]}
                   alt={`${talent.firstName} ${talent.lastName}`}
                   className="w-48 h-48 rounded-xl object-cover shadow-lg"
+                  fallback={
+                    <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
+                      <span className="text-4xl text-slate-400">{talent.firstName?.[0]}{talent.lastName?.[0]}</span>
+                    </div>
+                  }
                 />
               ) : (
                 <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
@@ -245,30 +246,26 @@ export default function TalentProfile() {
             </Card>
           )}
 
-          {/* Portfolio */}
-          {talent.portfolioItems && talent.portfolioItems.length > 0 && (
+          {/* Photo Gallery */}
+          {talent.mediaUrls && talent.mediaUrls.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Portfolio</CardTitle>
+                <CardTitle>Photos</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {talent.portfolioItems.map((item: any, index: number) => (
-                    <div key={index} className="space-y-3">
-                      {item.imageUrl && (
-                        <img 
-                          src={item.imageUrl} 
-                          alt={item.title || `Portfolio item ${index + 1}`}
-                          className="w-full h-48 object-cover rounded-lg shadow-sm"
-                        />
-                      )}
-                      {item.title && (
-                        <h4 className="font-semibold text-slate-900">{item.title}</h4>
-                      )}
-                      {item.description && (
-                        <p className="text-sm text-slate-600">{item.description}</p>
-                      )}
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {talent.mediaUrls.map((objectName: string, index: number) => (
+                    <GcsImage 
+                      key={objectName}
+                      objectName={objectName}
+                      alt={`${talent.firstName} ${talent.lastName} - Photo ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                      fallback={
+                        <div className="w-full h-32 bg-slate-200 rounded-lg flex items-center justify-center">
+                          <i className="fas fa-image text-slate-400"></i>
+                        </div>
+                      }
+                    />
                   ))}
                 </div>
               </CardContent>
