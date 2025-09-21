@@ -74,11 +74,17 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
-          <Route path="/talent" component={TalentDirectory} />
-          <Route path="/talent/:id" component={TalentProfile} />
-          <Route path="/announcements" component={Announcements} />
-          <Route path="/book" component={BookRequest} />
-          <Route path="/register" component={Register} />
+          
+          {/* Talent-specific routes (must come before /talent/:id) */}
+          {user?.role === 'talent' && (
+            <>
+              <Route path="/talent/dashboard" component={TalentDashboard} />
+              <Route path="/talent/profile" component={TalentProfileEdit} />
+              <Route path="/talent/bookings" component={TalentBookings} />
+              <Route path="/talent/tasks" component={TalentTasks} />
+              <Route path="/talent/settings" component={Settings} />
+            </>
+          )}
 
           {/* Admin routes */}
           {user?.role === 'admin' && (
@@ -95,16 +101,12 @@ function Router() {
             </>
           )}
 
-          {/* Talent routes */}
-          {user?.role === 'talent' && (
-            <>
-              <Route path="/talent/dashboard" component={TalentDashboard} />
-              <Route path="/talent/profile" component={TalentProfileEdit} />
-              <Route path="/talent/bookings" component={TalentBookings} />
-              <Route path="/talent/tasks" component={TalentTasks} />
-              <Route path="/talent/settings" component={Settings} />
-            </>
-          )}
+          {/* Public routes */}
+          <Route path="/talent" component={TalentDirectory} />
+          <Route path="/talent/:id" component={TalentProfile} />
+          <Route path="/announcements" component={Announcements} />
+          <Route path="/book" component={BookRequest} />
+          <Route path="/register" component={Register} />
 
           {/* Client routes */}
           {user?.role === 'client' && (

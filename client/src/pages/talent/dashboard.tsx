@@ -193,7 +193,7 @@ export default function TalentDashboard() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link href="/dashboard/profile">
+                <Link href="/talent/profile">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105" data-testid="button-edit-profile">
                     <UserPen className="w-4 h-4 mr-2" />Edit Profile
                   </Button>
@@ -203,7 +203,7 @@ export default function TalentDashboard() {
                     <Search className="w-4 h-4 mr-2" />Browse Directory
                   </Button>
                 </Link>
-                <Link href="/bookings">
+                <Link href="/talent/bookings">
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
                     <Calendar className="w-4 h-4 mr-2" />View Bookings
                   </Button>
@@ -447,7 +447,7 @@ export default function TalentDashboard() {
           <h2 className="text-xl font-semibold text-slate-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <Link href="/dashboard/profile">
+              <Link href="/talent/profile">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <UserPen className="w-5 h-5 text-primary" />
