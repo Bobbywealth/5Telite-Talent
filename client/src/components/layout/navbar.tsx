@@ -77,8 +77,8 @@ export default function Navbar() {
               href="/"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 location === "/" 
-                  ? "text-slate-900 bg-slate-100 shadow-md" 
-                  : "text-slate-900 hover:text-primary hover:bg-slate-50"
+                  ? "text-white bg-blue-600 shadow-md" 
+                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
               }`}
               data-testid="link-home"
             >
@@ -88,8 +88,8 @@ export default function Navbar() {
               href="/talent"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/talent") 
-                  ? "text-white bg-primary shadow-md" 
-                  : "text-slate-900 hover:text-primary hover:bg-slate-50"
+                  ? "text-white bg-blue-600 shadow-md" 
+                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
               }`}
               data-testid="link-find-talent"
             >

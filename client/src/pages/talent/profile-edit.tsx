@@ -61,6 +61,7 @@ export default function TalentProfileEdit() {
     bio: "",
     location: "",
     unionStatus: "",
+    experience: "",
     measurements: {
       height: "",
       weight: "",
@@ -122,6 +123,7 @@ export default function TalentProfileEdit() {
         bio: profile.bio || "",
         location: profile.location || "",
         unionStatus: profile.unionStatus || "",
+        experience: profile.experience || "",
         measurements: profile.measurements || {
           height: "",
           weight: "",
@@ -382,6 +384,24 @@ export default function TalentProfileEdit() {
                           {unionStatuses.map(status => (
                             <SelectItem key={status} value={status}>{status}</SelectItem>
                           ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="experience">Years of Experience</Label>
+                      <Select 
+                        value={formData.experience} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, experience: value }))}
+                      >
+                        <SelectTrigger data-testid="select-experience">
+                          <SelectValue placeholder="Select experience level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0-1">0-1 years</SelectItem>
+                          <SelectItem value="2-5">2-5 years</SelectItem>
+                          <SelectItem value="6-10">6-10 years</SelectItem>
+                          <SelectItem value="10+">10+ years</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
