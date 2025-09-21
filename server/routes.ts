@@ -285,7 +285,7 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
-  app.get('/api/talents/:id', async (req: any, res) => {
+  app.get('/api/talents/:id', isAuthenticated, async (req: any, res) => {
     try {
       const id = req.params.id;
       const requestingUserId = req.user?.id;
@@ -332,6 +332,45 @@ Client Signature: _________________________ Date: _____________
       res.json({ ...profile, user });
     } catch (error) {
       console.error("Error fetching talent:", error);
+      res.status(500).json({ message: "Failed to fetch talent" });
+    }
+  });
+
+  // Public talent profile endpoint (for talent directory)
+  app.get('/api/talents/public/:id', async (req: any, res) => {
+    try {
+      const id = req.params.id;
+      let user = null;
+      let profile = null;
+
+      // Try to get talent profile by talent profile ID
+      try {
+        const allTalents = await storage.getAllTalents({ limit: 1000 });
+        const talent = allTalents.talents.find(t => t.id === id);
+        if (talent) {
+          profile = talent;
+          user = talent.user;
+        }
+      } catch (err) {
+        // If not found by talent profile ID, try by user ID
+        user = await storage.getUser(id);
+        if (user && user.role === 'talent') {
+          try {
+            profile = await storage.getTalentProfile(id);
+          } catch (error) {
+            // Profile doesn't exist yet
+          }
+        }
+      }
+
+      // For public viewing, only show approved profiles
+      if (!profile || profile.approvalStatus !== 'approved') {
+        return res.status(404).json({ message: "Talent profile not found or not approved" });
+      }
+
+      res.json({ ...profile, user });
+    } catch (error) {
+      console.error("Error fetching public talent:", error);
       res.status(500).json({ message: "Failed to fetch talent" });
     }
   });
