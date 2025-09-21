@@ -12,9 +12,10 @@ interface SignatureCaptureProps {
 }
 
 export function SignatureCapture({ 
-  onSignature, 
-  onClear, 
-  disabled = false,
+  contractTitle,
+  onSign, 
+  onCancel, 
+  isLoading = false,
   width = 400,
   height = 200 
 }: SignatureCaptureProps) {
@@ -84,14 +85,6 @@ export function SignatureCapture({
 
   const stopDrawing = () => {
     setIsDrawing(false);
-    
-    if (hasSignature) {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      
-      const signatureDataUrl = canvas.toDataURL('image/png');
-      onSignature(signatureDataUrl);
-    }
   };
 
   const clearSignature = () => {
@@ -104,7 +97,16 @@ export function SignatureCapture({
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
     setHasSignature(false);
-    onClear?.();
+  };
+
+  const handleSign = () => {
+    if (!hasSignature) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const signatureDataUrl = canvas.toDataURL('image/png');
+    onSign(signatureDataUrl);
   };
 
   return (

@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { FileText, Clock, CheckCircle, AlertCircle, PenTool } from "lucide-react";
+import TalentNavbar from "@/components/layout/talent-navbar";
+import Footer from "@/components/layout/footer";
 
 interface Contract {
   id: string;
@@ -139,32 +141,38 @@ export default function TalentContractsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-slate-200 rounded w-64 mb-6"></div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
-                  <div className="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
-                  <div className="h-3 bg-slate-200 rounded w-1/2 mb-4"></div>
-                  <div className="h-10 bg-slate-200 rounded"></div>
-                </div>
-              ))}
+      <>
+        <TalentNavbar />
+        <div className="min-h-screen bg-slate-50 p-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-slate-200 rounded w-64 mb-6"></div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                    <div className="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
+                    <div className="h-3 bg-slate-200 rounded w-1/2 mb-4"></div>
+                    <div className="h-10 bg-slate-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">My Contracts</h1>
-          <p className="text-slate-600">View and sign your contracts</p>
-        </div>
+    <>
+      <TalentNavbar />
+      <div className="min-h-screen bg-slate-50 p-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">My Contracts</h1>
+            <p className="text-slate-600">View and sign your contracts</p>
+          </div>
 
         {talentContracts.length === 0 ? (
           <Card>
@@ -295,7 +303,9 @@ export default function TalentContractsPage() {
             )}
           </DialogContent>
         </Dialog>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

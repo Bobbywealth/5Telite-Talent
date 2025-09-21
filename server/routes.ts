@@ -1189,7 +1189,7 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
-  // Notifications endpoint
+  // Notifications endpoint - Updated to use NotificationService
   app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
