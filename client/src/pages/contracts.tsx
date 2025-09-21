@@ -108,8 +108,16 @@ export default function ContractsPage() {
     queryKey: ["/api/contracts"],
   });
 
-  const { data: bookingsData } = useQuery({
+  const { data: bookingsData, error: bookingsError, isLoading: bookingsLoading } = useQuery({
     queryKey: ["/api/bookings"],
+    queryFn: async () => {
+      const response = await fetch("/api/bookings", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error(`Failed to fetch bookings: ${response.status}`);
+      return response.json();
+    },
+    retry: false,
   });
 
   // Show all bookings (simplified - no filtering for now)
@@ -119,9 +127,14 @@ export default function ContractsPage() {
   // Debug logging
   console.log("Contracts Debug:", {
     bookingsData,
+    bookingsError,
+    bookingsLoading,
     allBookings,
     bookings,
-    bookingsLength: bookings.length
+    bookingsLength: bookings.length,
+    bookingsDataType: typeof bookingsData,
+    hasBookingsArray: !!bookingsData?.bookings,
+    bookingsArrayLength: bookingsData?.bookings?.length
   });
 
   const createContractMutation = useMutation({
