@@ -1963,7 +1963,26 @@ Client Signature: _________________________ Date: _____________
           contractId: contract.id
         });
       } catch (notificationError) {
-        console.error("Failed to send in-app notification:", notificationError);
+        console.error("Failed to send talent contract notification:", notificationError);
+        // Don't fail the request if notification fails
+      }
+
+      // 🔔 Create in-app notification for admins
+      try {
+        const adminUsers = await db.select().from(users).where(eq(users.role, 'admin'));
+        for (const admin of adminUsers) {
+          await NotificationService.createNotification({
+            userId: admin.id,
+            type: 'contract',
+            title: 'Contract Created',
+            message: `Contract for "${booking.title}" has been sent to ${bookingTalent.talent.firstName} ${bookingTalent.talent.lastName} for signature.`,
+            read: false,
+            actionUrl: '/admin/bookings',
+            data: { contractId: contract.id, bookingId: booking.id }
+          });
+        }
+      } catch (notificationError) {
+        console.error("Failed to send admin contract notification:", notificationError);
         // Don't fail the request if notification fails
       }
       
@@ -1972,6 +1991,28 @@ Client Signature: _________________________ Date: _____________
       console.error("Error creating contract:", error);
       console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
       res.status(500).json({ message: "Failed to create contract", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Test notification creation endpoint
+  app.post('/api/notifications/test', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Create a test notification
+      const notification = await NotificationService.createNotification({
+        userId: userId,
+        type: 'test',
+        title: 'Test Notification',
+        message: 'This is a test notification to verify the system is working.',
+        read: false,
+        actionUrl: '/talent/dashboard'
+      });
+      
+      res.json({ success: true, notification });
+    } catch (error) {
+      console.error("Error creating test notification:", error);
+      res.status(500).json({ message: "Failed to create test notification" });
     }
   });
 
@@ -1986,7 +2027,7 @@ Client Signature: _________________________ Date: _____________
         unreadOnly: unreadOnly === 'true'
       });
       
-      res.json({ notifications });
+      res.json(notifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({ message: "Failed to fetch notifications" });
