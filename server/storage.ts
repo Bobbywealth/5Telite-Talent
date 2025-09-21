@@ -160,9 +160,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTalentProfile(userId: string, profile: Partial<InsertTalentProfile>): Promise<TalentProfile> {
+    // First get the existing profile
+    const existing = await this.getTalentProfile(userId);
+    if (!existing) {
+      throw new Error("Talent profile not found");
+    }
+
+    // Only update fields that are actually provided (not undefined)
+    const updateData: any = { updatedAt: new Date() };
+    
+    // Handle each field carefully to preserve existing data
+    Object.keys(profile).forEach(key => {
+      const value = (profile as any)[key];
+      if (value !== undefined) {
+        if (key === 'measurements' && typeof value === 'object') {
+          // Merge measurements object
+          updateData[key] = { ...existing.measurements, ...value };
+        } else if (key === 'rates' && typeof value === 'object') {
+          // Merge rates object  
+          updateData[key] = { ...existing.rates, ...value };
+        } else if (key === 'social' && typeof value === 'object') {
+          // Merge social object
+          updateData[key] = { ...existing.social, ...value };
+        } else if (key === 'guardian' && typeof value === 'object') {
+          // Merge guardian object
+          updateData[key] = { ...existing.guardian, ...value };
+        } else {
+          // For simple fields, just update if provided
+          updateData[key] = value;
+        }
+      }
+    });
+
     const [updated] = await db
       .update(talentProfiles)
-      .set({ ...profile, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(talentProfiles.userId, userId))
       .returning();
     return updated;
