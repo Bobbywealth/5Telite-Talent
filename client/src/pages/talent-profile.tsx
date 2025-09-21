@@ -18,7 +18,7 @@ export default function TalentProfile() {
   const { isAuthenticated, user } = useAuth();
 
   const { data: talent, isLoading, error } = useQuery({
-    queryKey: [`/api/talents/${id}`],
+    queryKey: [`/api/talents/public/${id}`],
     queryFn: getQueryFn(),
     retry: false,
   });
