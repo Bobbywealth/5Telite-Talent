@@ -119,12 +119,12 @@ export default function AuthPage() {
       setTimeout(() => {
         const redirectPaths: Record<string, string> = {
           admin: '/admin',
-          talent: '/dashboard',
+          talent: '/contracts', // Direct to contracts for testing
           client: '/client'
         };
         const redirectPath = redirectPaths[data?.role] || '/';
         setLocation(redirectPath);
-      }, 100);
+      }, 500); // Increased delay for auth state
     },
     onError: (error: any) => {
       toast({
