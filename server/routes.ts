@@ -18,7 +18,7 @@ import { emailService } from "./emailService";
 import { enhancedEmailService } from "./emailServiceEnhanced";
 import { NotificationService } from "./notificationService";
 import { db } from "./db";
-import { bookings, users, talentProfiles, bookingTalents, contracts, signatures, tasks } from "@shared/schema";
+import { bookings, users, talentProfiles, bookingTalents, contracts, signatures, tasks, notifications } from "@shared/schema";
 import { eq, sql, and, desc } from "drizzle-orm";
 import filesRouter from './routes/files';
 
@@ -2114,6 +2114,19 @@ Client Signature: _________________________ Date: _____________
     try {
       const userId = req.user.id;
       
+      // First, check if notifications table exists
+      try {
+        const testQuery = await db.select().from(notifications).limit(1);
+        console.log("Notifications table exists, sample data:", testQuery);
+      } catch (tableError) {
+        console.error("Notifications table error:", tableError);
+        return res.status(500).json({ 
+          message: "Notifications table not found", 
+          error: (tableError as Error).message,
+          suggestion: "Run database migrations to create the notifications table"
+        });
+      }
+      
       // Create a test notification
       const notification = await NotificationService.createNotification({
         userId: userId,
@@ -2127,7 +2140,10 @@ Client Signature: _________________________ Date: _____________
       res.json({ success: true, notification });
     } catch (error) {
       console.error("Error creating test notification:", error);
-      res.status(500).json({ message: "Failed to create test notification" });
+      res.status(500).json({ 
+        message: "Failed to create test notification", 
+        error: (error as Error).message 
+      });
     }
   });
 
