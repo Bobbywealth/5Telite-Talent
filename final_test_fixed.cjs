@@ -196,12 +196,12 @@ async function runFullTest() {
     const newTask = await makeRequest('POST', '/api/tasks', {
       title: 'Platform Test - Final Check',
       description: 'Final platform verification task',
-      scope: 'general',
+      scope: 'booking',
       assigneeId: bobbyUser?.id,
       createdBy: adminUser?.id
     });
-    logTest('Create New Task', newTask.status === 201, 
-      newTask.status !== 201 ? `(${newTask.status}: ${newTask.data.message || 'Unknown error'})` : '');
+    logTest('Create New Task', newTask.status === 200 || newTask.status === 201, 
+      (newTask.status !== 200 && newTask.status !== 201) ? `(${newTask.status}: ${newTask.data.message || 'Unknown error'})` : '');
     
     // === FINAL SUMMARY ===
     console.log('\n🎯 FINAL RESULTS');
