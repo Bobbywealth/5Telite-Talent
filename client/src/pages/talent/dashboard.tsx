@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import { Link } from "wouter";
 import TalentNavbar from "@/components/layout/talent-navbar";
 import Footer from "@/components/layout/footer";
@@ -74,13 +74,7 @@ export default function TalentDashboard() {
   // Fetch talent tasks
   const { data: tasksData, isLoading: tasksLoading } = useQuery({
     queryKey: ["/api/tasks"],
-    queryFn: async () => {
-      const response = await fetch("/api/tasks", {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch tasks");
-      return response.json();
-    },
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
   });

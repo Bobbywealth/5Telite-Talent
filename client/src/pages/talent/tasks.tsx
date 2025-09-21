@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { getQueryFn } from "@/lib/queryClient";
 import TalentNavbar from "@/components/layout/talent-navbar";
 import Footer from "@/components/layout/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +30,8 @@ export default function TalentTasks() {
   }, [isAuthenticated, isLoading, toast]);
 
   const { data: tasks, isLoading: tasksLoading, error } = useQuery({
-    queryKey: ["/api/tasks/me"],
+    queryKey: ["/api/tasks"],
+    queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'talent',
     retry: false,
   });

@@ -68,21 +68,11 @@ export default function AdminTasks() {
 
   // Fetch tasks with filters
   const { data: tasksData, isLoading: tasksLoading, error } = useQuery({
-    queryKey: ["/api/tasks", filters, sortBy, sortOrder],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (filters.status) params.set("status", filters.status);
-      if (filters.assignee) params.set("assigneeId", filters.assignee);
-      if (filters.scope) params.set("scope", filters.scope);
-      params.set("page", filters.page.toString());
-      params.set("limit", "100"); // Increased for better kanban view
-
-      const response = await fetch(`/api/tasks?${params}`, {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch tasks");
-      const data = await response.json();
-
+    queryKey: [`/api/tasks?status=${filters.status}&assigneeId=${filters.assignee}&page=${filters.page}&limit=100`],
+    queryFn: getQueryFn(),
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+    select: (data: any) => {
       // Client-side filtering and sorting for search and other features
       let filteredTasks = data.tasks || [];
 
@@ -137,8 +127,6 @@ export default function AdminTasks() {
         total: filteredTasks.length
       };
     },
-    enabled: isAuthenticated && user?.role === 'admin',
-    retry: false,
   });
 
   // Fetch bookings for task creation
