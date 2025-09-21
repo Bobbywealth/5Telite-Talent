@@ -36,7 +36,7 @@ class EmailServiceEnhanced {
     this.logoUrl = `${this.frontendUrl}/attached_assets/5t-logo.png`;
 
     // Create transporter
-    this.transporter = nodemailer.createTransporter(emailConfig);
+    this.transporter = nodemailer.createTransport(emailConfig);
 
     // Verify connection configuration
     this.verifyConnection();

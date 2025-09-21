@@ -15,6 +15,8 @@ class EmailService {
   private transporter: nodemailer.Transporter;
   private fromEmail: string;
   private adminEmail: string;
+  private frontendUrl: string;
+  private logoUrl: string;
 
   constructor() {
     // Email configuration from environment variables
@@ -30,6 +32,8 @@ class EmailService {
 
     this.fromEmail = process.env.FROM_EMAIL || process.env.SMTP_USER || '';
     this.adminEmail = process.env.ADMIN_EMAIL || 'admin@5telite.com';
+    this.frontendUrl = process.env.FRONTEND_URL || 'https://fivetelite-talent.onrender.com';
+    this.logoUrl = `${this.frontendUrl}/attached_assets/5t-logo.png`;
 
     // Create transporter
     this.transporter = nodemailer.createTransport(emailConfig);
@@ -45,6 +49,79 @@ class EmailService {
     } catch (error) {
       console.error('❌ Email service configuration error:', error);
     }
+  }
+
+  // 🎨 Create branded email template
+  private createEmailTemplate(title: string, content: string, ctaButton?: { text: string, url: string, color?: string }): string {
+    const primaryColor = '#1a1a1a'; // 5T Elite brand color
+    const accentColor = ctaButton?.color || '#ff6b35'; // Orange accent
+    
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${title}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+          body { margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; background-color: #f8f9fa; }
+          .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+          .header { background: linear-gradient(135deg, ${primaryColor} 0%, #333333 100%); padding: 40px 20px; text-align: center; }
+          .logo { max-width: 200px; height: auto; margin-bottom: 20px; }
+          .header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; }
+          .content { padding: 40px 30px; }
+          .content h2 { color: ${primaryColor}; font-size: 24px; font-weight: 600; margin: 0 0 20px 0; }
+          .content p { color: #555555; line-height: 1.6; margin: 0 0 15px 0; font-size: 16px; }
+          .card { background: #f8f9fa; padding: 25px; border-radius: 12px; margin: 20px 0; border-left: 4px solid ${accentColor}; }
+          .cta-button { display: inline-block; background: ${accentColor}; color: #ffffff !important; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; transition: all 0.3s ease; }
+          .cta-button:hover { background: #e55a2b; transform: translateY(-2px); }
+          .footer { background: #f8f9fa; padding: 30px 20px; text-align: center; border-top: 1px solid #e9ecef; }
+          .footer p { color: #888888; font-size: 14px; margin: 5px 0; }
+          .social-links { margin: 20px 0; }
+          .social-links a { display: inline-block; margin: 0 10px; color: ${primaryColor}; text-decoration: none; }
+          ul { padding-left: 20px; }
+          li { margin: 8px 0; color: #555555; }
+          .highlight { background: linear-gradient(120deg, #ff6b35 0%, #f7931e 100%); color: #ffffff; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <img src="${this.logoUrl}" alt="5T Elite Talent" class="logo" />
+            <h1>${title}</h1>
+          </div>
+          
+          <div class="content">
+            ${content}
+            
+            ${ctaButton ? `
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${ctaButton.url}" class="cta-button">${ctaButton.text}</a>
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="footer">
+            <p><strong>5T Elite Talent</strong></p>
+            <p>122 W 26th St, Suite 902, New York, NY 10001</p>
+            <p>📧 ${this.adminEmail} | 📞 (555) 123-4567</p>
+            
+            <div class="social-links">
+              <a href="#">Instagram</a> • 
+              <a href="#">LinkedIn</a> • 
+              <a href="#">Twitter</a>
+            </div>
+            
+            <p style="font-size: 12px; color: #aaa; margin-top: 20px;">
+              © 2025 5T Elite Talent, Inc. All rights reserved.<br>
+              You're receiving this email because you're part of our talent network.
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   }
 
   private async sendEmail(to: string, subject: string, html: string, text?: string) {
