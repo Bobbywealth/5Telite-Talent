@@ -143,13 +143,55 @@ export default function TalentDashboard() {
   };
 
   const calculateProfileCompletion = (profile: any) => {
-    if (!profile) return 0;
-    const fields = ['bio', 'categories', 'skills', 'basedIn', 'hourlyRate'];
-    const completed = fields.filter(field => {
-      const value = profile[field];
-      return value && (Array.isArray(value) ? value.length > 0 : value.toString().trim().length > 0);
-    }).length;
-    return Math.round((completed / fields.length) * 100);
+    if (!profile) return { percentage: 0, completed: [], missing: [], details: {} };
+    
+    const profileFields = [
+      { key: 'stageName', label: 'Stage Name', required: true },
+      { key: 'bio', label: 'Bio/Description', required: true },
+      { key: 'categories', label: 'Categories', required: true },
+      { key: 'skills', label: 'Skills', required: true },
+      { key: 'location', label: 'Location', required: true },
+      { key: 'unionStatus', label: 'Union Status', required: true },
+      { key: 'rates.hourly', label: 'Hourly Rate', required: true },
+      { key: 'rates.day', label: 'Day Rate', required: false },
+      { key: 'measurements.height', label: 'Height', required: true },
+      { key: 'measurements.hair', label: 'Hair Color', required: true },
+      { key: 'measurements.eyes', label: 'Eye Color', required: true },
+      { key: 'social.instagram', label: 'Instagram', required: false },
+      { key: 'profileImageUrl', label: 'Profile Photo', required: true }
+    ];
+    
+    const completed = [];
+    const missing = [];
+    
+    profileFields.forEach(field => {
+      const value = getNestedValue(profile, field.key);
+      const isCompleted = value && (Array.isArray(value) ? value.length > 0 : value.toString().trim().length > 0);
+      
+      if (isCompleted) {
+        completed.push(field);
+      } else if (field.required) {
+        missing.push(field);
+      }
+    });
+    
+    const requiredFields = profileFields.filter(f => f.required);
+    const percentage = Math.round((completed.filter(f => f.required).length / requiredFields.length) * 100);
+    
+    return {
+      percentage,
+      completed: completed.map(f => f.label),
+      missing: missing.map(f => f.label),
+      details: {
+        totalRequired: requiredFields.length,
+        completedRequired: completed.filter(f => f.required).length,
+        completedOptional: completed.filter(f => !f.required).length
+      }
+    };
+  };
+
+  const getNestedValue = (obj: any, path: string) => {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
   };
 
   const calculateEarnings = () => {
@@ -217,24 +259,37 @@ export default function TalentDashboard() {
             <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm font-medium text-blue-700 mb-1">Profile Completion</p>
                     <p className="text-3xl font-bold text-blue-900 mb-2">
-                      {calculateProfileCompletion(talentProfile)}%
+                      {calculateProfileCompletion(talentProfile).percentage}%
                     </p>
-                    <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
+                    <div className="w-full bg-blue-200 rounded-full h-2 mb-3">
                       <div 
                         className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500" 
-                        style={{width: `${calculateProfileCompletion(talentProfile)}%`}}
+                        style={{width: `${calculateProfileCompletion(talentProfile).percentage}%`}}
                       ></div>
                     </div>
+                    {(() => {
+                      const completion = calculateProfileCompletion(talentProfile);
+                      return (
+                        <div className="space-y-1">
+                          <div className="text-xs text-blue-700 font-medium">
+                            {completion.details.completedRequired}/{completion.details.totalRequired} required fields completed
+                          </div>
+                          {completion.missing.length > 0 && (
+                            <div className="text-xs text-slate-600">
+                              Missing: {completion.missing.slice(0, 3).join(', ')}
+                              {completion.missing.length > 3 && ` +${completion.missing.length - 3} more`}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
                     <User className="w-6 h-6 text-white" />
                   </div>
-                </div>
-                <div className="text-sm text-slate-600">
-                  Complete your profile to get more bookings
                 </div>
               </CardContent>
             </Card>
@@ -283,6 +338,69 @@ export default function TalentDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Profile Completion Details */}
+          {(() => {
+            const completion = calculateProfileCompletion(talentProfile);
+            if (completion.percentage < 100 && completion.missing.length > 0) {
+              return (
+                <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center text-amber-800">
+                      <User className="w-5 h-5 mr-2" />
+                      Complete Your Profile ({completion.percentage}%)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium text-amber-800 mb-2">Missing Required Fields:</h4>
+                        <div className="space-y-1">
+                          {completion.missing.map((field, index) => (
+                            <div key={index} className="flex items-center text-sm text-amber-700">
+                              <div className="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
+                              {field}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-green-800 mb-2">Completed Fields:</h4>
+                        <div className="space-y-1">
+                          {completion.completed.slice(0, 6).map((field, index) => (
+                            <div key={index} className="flex items-center text-sm text-green-700">
+                              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                              {field}
+                            </div>
+                          ))}
+                          {completion.completed.length > 6 && (
+                            <div className="text-sm text-green-600">
+                              +{completion.completed.length - 6} more completed
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-amber-200">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-amber-700">
+                          <strong>Why complete your profile?</strong> Clients prefer talents with complete profiles. 
+                          You're {100 - completion.percentage}% away from maximizing your booking potential!
+                        </div>
+                        <Link href="/talent/profile-edit">
+                          <Button className="bg-amber-500 hover:bg-amber-600 text-white">
+                            <UserPen className="w-4 h-4 mr-2" />
+                            Complete Profile
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            }
+            return null;
+          })()}
 
         </div>
 
