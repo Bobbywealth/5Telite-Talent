@@ -101,7 +101,7 @@ Client Signature: _________________________ Date: _____________
       });
     } catch (error) {
       console.error("Error creating demo contract:", error);
-      res.status(500).json({ message: "Failed to create demo contract", error: error.message });
+      res.status(500).json({ message: "Failed to create demo contract", error: (error as Error).message });
     }
   });
 
@@ -181,7 +181,7 @@ Client Signature: _________________________ Date: _____________
       const activeBookingsResult = await db
         .select({ count: sql<number>`count(*)` })
         .from(bookings)
-        .where(sql`status IN ('confirmed', 'in_progress')`);
+        .where(sql`status IN ('signed', 'invoiced', 'paid')`);
       stats.activeBookings = activeBookingsResult[0]?.count || 0;
 
       // Get pending talent approvals
@@ -805,7 +805,7 @@ Client Signature: _________________________ Date: _____________
       
       // 📧 Send email notification if booking status changed to confirmed
       try {
-        if (req.body.status === 'confirmed' && oldBooking?.status !== 'confirmed') {
+        if (req.body.status === 'signed' && oldBooking?.status !== 'signed') {
           const updatedBooking = await storage.getBooking(req.params.id);
           if (updatedBooking) {
             // Collect all recipients (client + talents)
@@ -1727,7 +1727,7 @@ Client Signature: _________________________ Date: _____________
       // Create a test booking
       const booking = await storage.createBooking({
         title: "Fashion Commercial Shoot - Fall Campaign",
-        description: "High-end fashion commercial for luxury brand fall campaign. Looking for versatile talent with commercial acting experience.",
+        notes: "High-end fashion commercial for luxury brand fall campaign. Looking for versatile talent with commercial acting experience.",
         startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next week
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Same day
         location: "NYC Studio - Manhattan",
@@ -1786,8 +1786,8 @@ Client Signature: _________________________ Date: _____________
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const booking = await storage.updateBooking(req.params.id, { status: "confirmed" });
-      return res.json({ message: "Booking status updated to confirmed", booking });
+      const booking = await storage.updateBooking(req.params.id, { status: "signed" });
+      return res.json({ message: "Booking status updated to signed", booking });
     } catch (error) {
       console.error("Error updating booking status:", error);
       return res.status(500).json({ message: "Failed to update booking status" });
@@ -2088,7 +2088,7 @@ Client Signature: _________________________ Date: _____________
         for (const admin of adminUsers) {
           await NotificationService.createNotification({
             userId: admin.id,
-            type: 'contract',
+            type: 'contract_created',
             title: 'Contract Created',
             message: `Contract for "${booking.title}" has been sent to ${bookingTalent.talent.firstName} ${bookingTalent.talent.lastName} for signature.`,
             read: false,
@@ -2117,7 +2117,7 @@ Client Signature: _________________________ Date: _____________
       // Create a test notification
       const notification = await NotificationService.createNotification({
         userId: userId,
-        type: 'test',
+        type: 'system_announcement',
         title: 'Test Notification',
         message: 'This is a test notification to verify the system is working.',
         read: false,
