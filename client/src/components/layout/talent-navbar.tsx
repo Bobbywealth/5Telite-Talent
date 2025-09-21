@@ -68,7 +68,7 @@ export default function TalentNavbar() {
                       >
                         <div className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
                           isActive(item.href)
-                            ? "text-white bg-primary" 
+                            ? "text-white bg-blue-600" 
                             : "text-slate-600 hover:bg-slate-100"
                         }`}>
                           <item.icon className="w-4 h-4 mr-3" />
@@ -98,8 +98,8 @@ export default function TalentNavbar() {
                 href={item.href}
                 className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive(item.href)
-                    ? "text-white bg-primary shadow-md" 
-                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                    ? "text-white bg-blue-600 shadow-md" 
+                    : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
                 }`}
                 data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
@@ -169,8 +169,8 @@ export default function TalentNavbar() {
               href={item.href}
               className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive(item.href)
-                  ? "text-white bg-primary shadow-md" 
-                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                  ? "text-white bg-blue-600 shadow-md" 
+                  : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
               }`}
               data-testid={`mobile-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
             >

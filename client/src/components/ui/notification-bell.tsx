@@ -18,9 +18,9 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
 
   // Fetch notifications
   const { data: notificationsData, isLoading } = useQuery({
-    queryKey: ["/api/notifications-new"],
+    queryKey: ["/api/notifications"],
     queryFn: async () => {
-      const response = await fetch("/api/notifications-new", {
+      const response = await fetch("/api/notifications", {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch notifications");

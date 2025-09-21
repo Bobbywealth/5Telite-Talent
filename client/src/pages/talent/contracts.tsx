@@ -13,6 +13,20 @@ import { FileText, Clock, CheckCircle, AlertCircle, PenTool } from "lucide-react
 import TalentNavbar from "@/components/layout/talent-navbar";
 import Footer from "@/components/layout/footer";
 
+// Add CSS to prevent any tooltips or overlays
+const contractPageStyles = `
+  .contract-page * {
+    pointer-events: auto !important;
+  }
+  .contract-page *:before,
+  .contract-page *:after {
+    content: none !important;
+  }
+  .contract-page [title] {
+    pointer-events: none !important;
+  }
+`;
+
 interface Contract {
   id: string;
   title: string;
@@ -167,8 +181,9 @@ export default function TalentContractsPage() {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: contractPageStyles }} />
       <TalentNavbar />
-      <div className="min-h-screen bg-slate-50 p-4">
+      <div className="min-h-screen bg-slate-50 p-4 contract-page">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">My Contracts</h1>
@@ -273,7 +288,11 @@ export default function TalentContractsPage() {
           setSelectedContract(null);
           setShowSignature(false);
         }}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" style={{ zIndex: 50 }}>
+          <DialogContent 
+            className="max-w-4xl max-h-[90vh] overflow-y-auto" 
+            style={{ zIndex: 50 }}
+            onPointerDownOutside={(e) => e.preventDefault()}
+          >
             <DialogHeader>
               <DialogTitle>{selectedContract?.title}</DialogTitle>
               <DialogDescription>
@@ -281,10 +300,12 @@ export default function TalentContractsPage() {
               </DialogDescription>
             </DialogHeader>
             {selectedContract && (
-              <ContractViewer 
-                contract={selectedContract}
-                currentUserId={user?.id || ""}
-              />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <ContractViewer 
+                  contract={selectedContract}
+                  currentUserId={user?.id || ""}
+                />
+              </div>
             )}
           </DialogContent>
         </Dialog>
