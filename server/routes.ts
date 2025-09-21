@@ -1893,6 +1893,8 @@ Client Signature: _________________________ Date: _____________
       const userId = req.user.id;
       const { bookingTalentId } = req.body;
       
+      console.log('Contract creation debug:', { bookingId, userId, bookingTalentId });
+      
       // Get booking details
       const booking = await db.query.bookings.findFirst({
         where: eq(bookings.id, bookingId),
@@ -1911,7 +1913,10 @@ Client Signature: _________________________ Date: _____________
         },
       });
       
+      console.log('Booking query result:', { booking, hasBookingTalents: !!booking?.bookingTalents[0] });
+      
       if (!booking || !booking.bookingTalents[0]) {
+        console.log('Booking or talent not found:', { booking: !!booking, bookingTalents: booking?.bookingTalents });
         return res.status(404).json({ message: "Booking or talent not found" });
       }
       
@@ -1922,6 +1927,8 @@ Client Signature: _________________________ Date: _____________
         talentProfile: bookingTalent.talent.talentProfile,
         client: booking.client,
       };
+      
+      console.log('Creating contract with data:', { contractData: !!contractData });
       
       const contract = await ContractService.createContract(
         bookingId,
@@ -1963,7 +1970,8 @@ Client Signature: _________________________ Date: _____________
       res.json(contract);
     } catch (error) {
       console.error("Error creating contract:", error);
-      res.status(500).json({ message: "Failed to create contract" });
+      console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
+      res.status(500).json({ message: "Failed to create contract", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 
