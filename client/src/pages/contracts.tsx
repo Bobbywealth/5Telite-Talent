@@ -139,7 +139,7 @@ export default function ContractsPage() {
 
   const createContractMutation = useMutation({
     mutationFn: async ({ bookingId, bookingTalentId }: { bookingId: string; bookingTalentId: string }) => {
-      return apiRequest(`/api/bookings/${bookingId}/contracts`, "POST", {
+      return apiRequest("POST", `/api/bookings/${bookingId}/contracts`, {
         bookingTalentId,
       });
     },
