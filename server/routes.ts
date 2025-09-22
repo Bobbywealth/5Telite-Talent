@@ -340,16 +340,21 @@ Client Signature: _________________________ Date: _____________
       const tempPassword = Math.random().toString(36).slice(-8);
       const hashedPassword = await hashPassword(tempPassword);
       
-      const newUser = await storage.createUser({
+      // For admin-created users, we want to respect the status parameter
+      // This allows admins to create pre-approved users if needed
+      const newUser = await db.insert(users).values({
         firstName,
         lastName,
         email,
         password: hashedPassword,
-        role,
-      });
+        role: role as any,
+        status: status as any, // Use the status from request (defaults to "active")
+      }).returning();
+      
+      const createdUser = newUser[0];
 
       // Remove password from response
-      const { password: _, ...userWithoutPassword } = newUser;
+      const { password: _, ...userWithoutPassword } = createdUser;
       
       // 📧 Send welcome email with login credentials for admin-created users
       if (role === "talent") {
