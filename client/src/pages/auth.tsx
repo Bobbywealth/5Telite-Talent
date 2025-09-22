@@ -141,7 +141,18 @@ export default function AuthPage() {
       return await apiRequest("POST", "/api/register", data);
     },
     onSuccess: async (data: any) => {
-      // Invalidate and refetch user data
+      // Check if account requires approval
+      if (data.requiresApproval) {
+        toast({
+          title: "Account Created!",
+          description: data.message || "Your account is pending admin approval. You'll receive an email once approved.",
+        });
+        
+        // Stay on auth page with message
+        return;
+      }
+
+      // For approved accounts, proceed with login
       await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       await queryClient.refetchQueries({ queryKey: ["/api/user"] });
       
@@ -157,8 +168,8 @@ export default function AuthPage() {
           talent: '/talent/dashboard',
           client: '/client'
         };
-        const redirectPath = redirectPaths[data?.role] || '/';
-        console.log('Registration redirect to:', redirectPath, 'for role:', data?.role);
+        const redirectPath = redirectPaths[data?.role || data?.user?.role] || '/';
+        console.log('Registration redirect to:', redirectPath, 'for role:', data?.role || data?.user?.role);
         window.location.href = redirectPath; // Force full page navigation
       }, 1000);
     },

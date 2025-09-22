@@ -40,7 +40,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   phone: varchar("phone"),
   profileImageUrl: varchar("profile_image_url"),
-  status: userStatusEnum("status").notNull().default("active"),
+  status: userStatusEnum("status").notNull().default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

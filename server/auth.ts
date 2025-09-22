@@ -76,6 +76,15 @@ export function setupAuth(app: Express) {
             return done(null, false, { message: "Invalid email or password" });
           }
 
+          // Check if user is approved
+          if (user.status === "pending") {
+            return done(null, false, { message: "Your account is pending admin approval. Please wait for approval before logging in." });
+          }
+
+          if (user.status === "suspended") {
+            return done(null, false, { message: "Your account has been suspended. Please contact support." });
+          }
+
           // Remove password from user object
           const { password: _, ...userWithoutPassword } = user;
           return done(null, userWithoutPassword);
@@ -126,7 +135,25 @@ export function setupAuth(app: Express) {
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
 
-      // 📧 Send welcome email for talent signups (Enhanced)
+      // Check if user needs admin approval
+      if (user.status === "pending") {
+        // Send confirmation email but don't log in
+        try {
+          if (role === "talent") {
+            await enhancedEmailService.sendTalentWelcomeEmail(userWithoutPassword);
+          }
+        } catch (emailError) {
+          console.error("Failed to send welcome email:", emailError);
+        }
+
+        return res.status(201).json({ 
+          message: "Registration successful! Your account is pending admin approval. You'll receive an email once approved.",
+          user: userWithoutPassword,
+          requiresApproval: true
+        });
+      }
+
+      // 📧 Send welcome email for approved users
       if (role === "talent") {
         try {
           await enhancedEmailService.sendTalentWelcomeEmail(userWithoutPassword);
@@ -136,7 +163,7 @@ export function setupAuth(app: Express) {
         }
       }
 
-      // Log user in
+      // Log user in only if approved
       req.login(userWithoutPassword, (err) => {
         if (err) return next(err);
         res.status(201).json(userWithoutPassword);

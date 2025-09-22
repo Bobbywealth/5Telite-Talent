@@ -32,6 +32,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount files router
   app.use('/api/files', filesRouter);
 
+  // Admin endpoint to approve/reject users
+  app.patch('/api/admin/users/:userId/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.params.userId;
+      const { status } = req.body;
+      const adminUser = await storage.getUser(req.user.id);
+
+      if (!adminUser || adminUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!['active', 'pending', 'suspended'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be 'active', 'pending', or 'suspended'" });
+      }
+
+      const updatedUser = await storage.updateUserStatus(userId, status);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Send notification email when approved
+      if (status === 'active') {
+        try {
+          // TODO: Add sendAccountApprovedEmail method to email service
+          // await enhancedEmailService.sendAccountApprovedEmail(updatedUser);
+          console.log(`User ${updatedUser.email} has been approved`);
+        } catch (emailError) {
+          console.error("Failed to send approval email:", emailError);
+        }
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.json({ message: `User ${status === 'active' ? 'approved' : status} successfully`, user: userWithoutPassword });
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      res.status(500).json({ message: "Failed to update user status" });
+    }
+  });
+
+  // Admin endpoint to get pending users
+  app.get('/api/admin/users/pending', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser || adminUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const pendingUsers = await storage.getPendingUsers();
+      res.json({ users: pendingUsers });
+    } catch (error) {
+      console.error("Error fetching pending users:", error);
+      res.status(500).json({ message: "Failed to fetch pending users" });
+    }
+  });
+
   // Seed demo data if needed
   app.post('/api/seed', async (req, res) => {
     try {
