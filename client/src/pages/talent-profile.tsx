@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,17 +12,67 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GcsImage } from "@/components/GcsImage";
+import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 
 export default function TalentProfile() {
   const { id } = useParams();
   const { isAuthenticated, user } = useAuth();
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const { data: talent, isLoading, error } = useQuery({
     queryKey: [`/api/talents/public/${id}`],
     queryFn: getQueryFn(),
     retry: false,
   });
+
+  // Gallery functions
+  const openGallery = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsGalleryOpen(true);
+  };
+
+  const closeGallery = () => {
+    setIsGalleryOpen(false);
+    setSelectedImageIndex(null);
+  };
+
+  const nextImage = () => {
+    if (talent?.mediaUrls && selectedImageIndex !== null) {
+      setSelectedImageIndex((selectedImageIndex + 1) % talent.mediaUrls.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (talent?.mediaUrls && selectedImageIndex !== null) {
+      setSelectedImageIndex(selectedImageIndex === 0 ? talent.mediaUrls.length - 1 : selectedImageIndex - 1);
+    }
+  };
+
+  // Keyboard navigation
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isGalleryOpen) return;
+    
+    switch (e.key) {
+      case 'Escape':
+        closeGallery();
+        break;
+      case 'ArrowLeft':
+        prevImage();
+        break;
+      case 'ArrowRight':
+        nextImage();
+        break;
+    }
+  };
+
+  // Add keyboard event listener
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isGalleryOpen, selectedImageIndex]);
 
   // Loading state component
   const LoadingState = () => (
@@ -175,16 +226,29 @@ export default function TalentProfile() {
             {/* Profile Picture */}
             <div className="flex-shrink-0">
               {talent.mediaUrls && talent.mediaUrls.length > 0 ? (
-                <GcsImage 
-                  objectName={talent.mediaUrls[0]}
-                  alt={talent.stageName || `${talent.user?.firstName} ${talent.user?.lastName}`}
-                  className="w-48 h-48 rounded-xl object-cover shadow-lg"
-                  fallback={
-                    <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
-                      <span className="text-4xl text-slate-400">{talent.user?.firstName?.[0]}{talent.user?.lastName?.[0]}</span>
+                <div 
+                  className="relative group cursor-pointer"
+                  onClick={() => openGallery(0)}
+                >
+                  <GcsImage 
+                    objectName={talent.mediaUrls[0]}
+                    alt={talent.stageName || `${talent.user?.firstName} ${talent.user?.lastName}`}
+                    className="w-48 h-48 rounded-xl object-cover shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+                    fallback={
+                      <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
+                        <span className="text-4xl text-slate-400">{talent.user?.firstName?.[0]}{talent.user?.lastName?.[0]}</span>
+                      </div>
+                    }
+                  />
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-xl transition-all duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                        <Maximize2 className="w-6 h-6 text-slate-700" />
+                      </div>
                     </div>
-                  }
-                />
+                  </div>
+                </div>
               ) : (
                 <div className="w-48 h-48 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-4xl text-slate-400">{talent.user?.firstName?.[0]}{talent.user?.lastName?.[0]}</span>
@@ -252,24 +316,46 @@ export default function TalentProfile() {
           {talent.mediaUrls && talent.mediaUrls.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Photos</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Maximize2 className="w-5 h-5" />
+                  Photos
+                  <Badge variant="secondary" className="ml-auto">
+                    {talent.mediaUrls.length} photo{talent.mediaUrls.length !== 1 ? 's' : ''}
+                  </Badge>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {talent.mediaUrls.map((objectName: string, index: number) => (
-                    <GcsImage 
+                    <div
                       key={objectName}
-                      objectName={objectName}
-                      alt={`${talent.firstName} ${talent.lastName} - Photo ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                      fallback={
-                        <div className="w-full h-32 bg-slate-200 rounded-lg flex items-center justify-center">
-                          <i className="fas fa-image text-slate-400"></i>
+                      className="relative group cursor-pointer"
+                      onClick={() => openGallery(index)}
+                    >
+                      <GcsImage 
+                        objectName={objectName}
+                        alt={`${talent.stageName || talent.user?.firstName} ${talent.user?.lastName} - Photo ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 group-hover:scale-105"
+                        fallback={
+                          <div className="w-full h-32 bg-slate-200 rounded-lg flex items-center justify-center">
+                            <Maximize2 className="w-6 h-6 text-slate-400" />
+                          </div>
+                        }
+                      />
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-all duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-2">
+                            <Maximize2 className="w-4 h-4 text-slate-700" />
+                          </div>
                         </div>
-                      }
-                    />
+                      </div>
+                    </div>
                   ))}
                 </div>
+                <p className="text-sm text-slate-500 mt-4 text-center">
+                  Click any photo to view in full size
+                </p>
               </CardContent>
             </Card>
           )}
@@ -334,6 +420,89 @@ export default function TalentProfile() {
           </Card>
         </div>
       </div>
+
+      {/* Photo Gallery Modal */}
+      <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
+        <DialogContent className="max-w-4xl w-full h-[90vh] p-0 overflow-hidden">
+          <DialogHeader className="absolute top-0 left-0 right-0 z-10 bg-black/80 backdrop-blur-sm p-4">
+            <div className="flex items-center justify-between text-white">
+              <DialogTitle className="text-lg font-semibold">
+                {talent.stageName || `${talent.user?.firstName} ${talent.user?.lastName}`} - Photo Gallery
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-white/80">
+                  {selectedImageIndex !== null ? selectedImageIndex + 1 : 0} of {talent?.mediaUrls?.length || 0}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeGallery}
+                  className="text-white hover:bg-white/20"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedImageIndex !== null && talent?.mediaUrls && (
+            <div className="relative w-full h-full bg-black flex items-center justify-center">
+              {/* Main Image */}
+              <div className="relative w-full h-full flex items-center justify-center p-4">
+                <GcsImage
+                  objectName={talent.mediaUrls[selectedImageIndex]}
+                  alt={`${talent.stageName || talent.user?.firstName} ${talent.user?.lastName} - Photo ${selectedImageIndex + 1}`}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  fallback={
+                    <div className="w-full h-full bg-slate-800 rounded-lg flex items-center justify-center">
+                      <Maximize2 className="w-16 h-16 text-slate-400" />
+                    </div>
+                  }
+                />
+              </div>
+
+              {/* Navigation Buttons */}
+              {talent.mediaUrls.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-3"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-3"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </Button>
+                </>
+              )}
+
+              {/* Image Counter Dots */}
+              {talent.mediaUrls.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                  {talent.mediaUrls.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === selectedImageIndex
+                          ? 'bg-white scale-125'
+                          : 'bg-white/50 hover:bg-white/75'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 
