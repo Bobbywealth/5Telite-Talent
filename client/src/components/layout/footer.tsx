@@ -1,6 +1,22 @@
 
 import { Link } from "wouter";
 import logoImage from "@assets/5t-logo.png";
+import { 
+  Star, 
+  Video, 
+  Users, 
+  Settings, 
+  UserPlus, 
+  User, 
+  Book, 
+  Headphones, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Facebook, 
+  Instagram, 
+  Linkedin 
+} from "lucide-react";
 
 export default function Footer() {
   return (
@@ -30,14 +46,14 @@ export default function Footer() {
               Professional talent agency connecting exceptional performers with leading brands and productions.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-white/70 hover:text-white bg-white/10 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center hover:bg-white/20 transition-all duration-300" data-testid="link-facebook">
-                <i className="fab fa-facebook text-xl"></i>
+              <a href="https://facebook.com/5ttalent" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white bg-white/10 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center hover:bg-white/20 transition-all duration-300" data-testid="link-facebook">
+                <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-white bg-white/10 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center hover:bg-white/20 transition-all duration-300" data-testid="link-instagram">
-                <i className="fab fa-instagram text-xl"></i>
+              <a href="https://instagram.com/5ttalent" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white bg-white/10 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center hover:bg-white/20 transition-all duration-300" data-testid="link-instagram">
+                <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-white bg-white/10 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center hover:bg-white/20 transition-all duration-300" data-testid="link-linkedin">
-                <i className="fab fa-linkedin text-xl"></i>
+              <a href="https://linkedin.com/company/5ttalent" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white bg-white/10 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center hover:bg-white/20 transition-all duration-300" data-testid="link-linkedin">
+                <Linkedin className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -46,10 +62,30 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Services</h3>
             <ul className="space-y-3 text-white/80">
-              <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center"><i className="fas fa-star mr-2 text-yellow-400"></i>Talent Management</a></li>
-              <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center"><i className="fas fa-video mr-2 text-blue-400"></i>Casting Services</a></li>
-              <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center"><i className="fas fa-users mr-2 text-green-400"></i>Event Staffing</a></li>
-              <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center"><i className="fas fa-cog mr-2 text-purple-400"></i>Production Support</a></li>
+              <li>
+                <Link href="/talent" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <Star className="w-4 h-4 mr-2 text-yellow-400" />
+                  Talent Management
+                </Link>
+              </li>
+              <li>
+                <Link href="/announcements" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <Video className="w-4 h-4 mr-2 text-blue-400" />
+                  Casting Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/book-request" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <Users className="w-4 h-4 mr-2 text-green-400" />
+                  Event Staffing
+                </Link>
+              </li>
+              <li>
+                <Link href="/book-request" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <Settings className="w-4 h-4 mr-2 text-purple-400" />
+                  Production Support
+                </Link>
+              </li>
             </ul>
           </div>
           
@@ -58,17 +94,29 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">For Talent</h3>
             <ul className="space-y-3 text-white/80">
               <li>
-                <a href="/register" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <i className="fas fa-plus-circle mr-2 text-green-400"></i>Join Our Roster
-                </a>
-              </li>
-              <li>
-                <Link href="/dashboard" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <i className="fas fa-user-circle mr-2 text-blue-400"></i>Talent Portal
+                <Link href="/register" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <UserPlus className="w-4 h-4 mr-2 text-green-400" />
+                  Join Our Roster
                 </Link>
               </li>
-              <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center"><i className="fas fa-book mr-2 text-yellow-400"></i>Resources</a></li>
-              <li><a href="#" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center"><i className="fas fa-headset mr-2 text-purple-400"></i>Support</a></li>
+              <li>
+                <Link href="/talent/dashboard" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <User className="w-4 h-4 mr-2 text-blue-400" />
+                  Talent Portal
+                </Link>
+              </li>
+              <li>
+                <Link href="/announcements" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <Book className="w-4 h-4 mr-2 text-yellow-400" />
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:support@5ttalent.com" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                  <Headphones className="w-4 h-4 mr-2 text-purple-400" />
+                  Support
+                </a>
+              </li>
             </ul>
           </div>
           
@@ -77,15 +125,15 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">Contact</h3>
             <ul className="space-y-4 text-white/80">
               <li className="flex items-start">
-                <i className="fas fa-map-marker-alt mt-1 mr-3 text-red-400"></i>
+                <MapPin className="w-4 h-4 mt-1 mr-3 text-red-400 flex-shrink-0" />
                 <span>122 W 26th St., Suite 902<br />New York, NY 10001</span>
               </li>
               <li className="flex items-center">
-                <i className="fas fa-phone mr-3 text-green-400"></i>
+                <Phone className="w-4 h-4 mr-3 text-green-400 flex-shrink-0" />
                 <a href="tel:+15551234TALENT" className="hover:text-white transition-colors">(555) 123-TALENT</a>
               </li>
               <li className="flex items-center">
-                <i className="fas fa-envelope mr-3 text-blue-400"></i>
+                <Mail className="w-4 h-4 mr-3 text-blue-400 flex-shrink-0" />
                 <a href="mailto:info@5ttalent.com" className="hover:text-white transition-colors">info@5ttalent.com</a>
               </li>
             </ul>
