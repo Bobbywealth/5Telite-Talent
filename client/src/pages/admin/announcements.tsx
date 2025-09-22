@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-// Use nested div structure instead of AdminLayout
+import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,7 @@ export default function AdminAnnouncements() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<(Announcement & { createdBy: any }) | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(null);
 
   const form = useForm<CreateAnnouncementForm>({
     resolver: zodResolver(createAnnouncementSchema),
@@ -180,8 +182,13 @@ export default function AdminAnnouncements() {
   };
 
   const handleDeleteClick = (id: string) => {
-    if (confirm("Are you sure you want to delete this announcement?")) {
-      deleteMutation.mutate(id);
+    setDeletingAnnouncementId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deletingAnnouncementId) {
+      deleteMutation.mutate(deletingAnnouncementId);
+      setDeletingAnnouncementId(null);
     }
   };
 
@@ -206,6 +213,7 @@ export default function AdminAnnouncements() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminNavbar />
       <div className="p-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
@@ -225,6 +233,65 @@ export default function AdminAnnouncements() {
             Create Announcement
           </Button>
         </div>
+
+        {/* Statistics Cards */}
+        {!isLoading && announcements.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Announcements</p>
+                    <p className="text-2xl font-bold text-gray-900">{announcements.length}</p>
+                  </div>
+                  <Megaphone className="w-8 h-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Published</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {announcements.filter((a: any) => a.published).length}
+                    </p>
+                  </div>
+                  <Eye className="w-8 h-8 text-green-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Open Calls</p>
+                    <p className="text-2xl font-bold text-purple-600">
+                      {announcements.filter((a: any) => a.category === 'open-call').length}
+                    </p>
+                  </div>
+                  <Calendar className="w-8 h-8 text-purple-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Events</p>
+                    <p className="text-2xl font-bold text-orange-600">
+                      {announcements.filter((a: any) => a.category === 'event').length}
+                    </p>
+                  </div>
+                  <MapPin className="w-8 h-8 text-orange-600" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Create/Edit Dialog */}
         <Dialog 
@@ -544,16 +611,20 @@ export default function AdminAnnouncements() {
                         variant="outline"
                         onClick={() => handleEditClick(announcement)}
                         data-testid={`button-edit-${announcement.id}`}
+                        className="hover:bg-blue-50 hover:border-blue-200"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleDeleteClick(announcement.id)}
                         data-testid={`button-delete-${announcement.id}`}
+                        className="hover:bg-red-50 hover:border-red-200 hover:text-red-600"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
                       </Button>
                     </div>
                   </div>
@@ -588,6 +659,28 @@ export default function AdminAnnouncements() {
             ))}
           </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!deletingAnnouncementId} onOpenChange={() => setDeletingAnnouncementId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this announcement? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmDelete}
+                className="bg-red-600 hover:bg-red-700"
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
