@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ContractViewer } from "@/components/contracts/ContractViewer";
 import { useToast } from "@/hooks/use-toast";
@@ -205,6 +206,89 @@ export default function ContractsPage() {
     });
   };
 
+  const renderContractList = (contractsList: Contract[], tabType: string) => {
+    if (!Array.isArray(contractsList) || contractsList.length === 0) {
+      return (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <FileText className="h-12 w-12 text-slate-400 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
+              {tabType === "active" ? "No Active Contracts" : 
+               tabType === "completed" ? "No Completed Contracts" : 
+               "No Contracts Yet"}
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 text-center mb-4">
+              {tabType === "active" ? "Active contracts awaiting signatures will appear here." :
+               tabType === "completed" ? "Completed contracts will appear here once signed." :
+               "Contracts will appear here once they are created for bookings."}
+            </p>
+            {user?.role === "admin" && !showCreateDialog && tabType === "all" && (
+              <Button 
+                onClick={() => setShowCreateDialog(true)}
+                data-testid="button-create-first-contract"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Contract
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <div className="grid gap-4">
+        {contractsList.map((contract: Contract) => (
+          <Card key={contract.id} className="cursor-pointer hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    {getStatusIcon(contract.status)}
+                    <h3 className="font-semibold text-lg">{contract.title}</h3>
+                    <Badge className={getStatusColor(contract.status)}>
+                      {contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
+                    </Badge>
+                  </div>
+                  
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Booking: {contract.booking.title} ({contract.booking.code})
+                  </p>
+                  
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Talent: {contract.bookingTalent.talent.firstName} {contract.bookingTalent.talent.lastName}
+                  </p>
+
+                  {contract.dueDate && contract.status !== "signed" && (
+                    <p className="text-sm text-orange-600 dark:text-orange-400">
+                      Due: {new Date(contract.dueDate).toLocaleDateString()}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                    <span>Created: {new Date(contract.createdAt).toLocaleDateString()}</span>
+                    <span>
+                      Signatures: {contract.signatures.filter(s => s.status === "signed").length}/{contract.signatures.length}
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedContract(contract)}
+                  data-testid={`button-view-contract-${contract.id}`}
+                >
+                  View Details
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
@@ -304,78 +388,25 @@ export default function ContractsPage() {
         )}
       </div>
 
-      <div className="grid gap-6">
-        {(!Array.isArray(contracts) || contracts.length === 0) ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <FileText className="h-12 w-12 text-slate-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Contracts Yet</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-center mb-4">
-                Contracts will appear here once they are created for bookings.
-              </p>
-              {user?.role === "admin" && !showCreateDialog && (
-                <Button 
-                  onClick={() => setShowCreateDialog(true)}
-                  data-testid="button-create-first-contract"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Your First Contract
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {Array.isArray(contracts) ? contracts.map((contract: Contract) => (
-              <Card key={contract.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        {getStatusIcon(contract.status)}
-                        <h3 className="font-semibold text-lg">{contract.title}</h3>
-                        <Badge className={getStatusColor(contract.status)}>
-                          {contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Booking: {contract.booking.title} ({contract.booking.code})
-                      </p>
-                      
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        Talent: {contract.bookingTalent.talent.firstName} {contract.bookingTalent.talent.lastName}
-                      </p>
+      <Tabs defaultValue="active" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="active">Active Contracts</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="all">All Contracts</TabsTrigger>
+        </TabsList>
 
-                      {contract.dueDate && contract.status !== "signed" && (
-                        <p className="text-sm text-orange-600 dark:text-orange-400">
-                          Due: {new Date(contract.dueDate).toLocaleDateString()}
-                        </p>
-                      )}
+        <TabsContent value="active" className="space-y-4">
+          {renderContractList(contracts.filter((c: Contract) => c.status === 'draft' || c.status === 'sent'), "active")}
+        </TabsContent>
 
-                      <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                        <span>Created: {new Date(contract.createdAt).toLocaleDateString()}</span>
-                        <span>
-                          Signatures: {contract.signatures.filter(s => s.status === "signed").length}/{contract.signatures.length}
-                        </span>
-                      </div>
-                    </div>
+        <TabsContent value="completed" className="space-y-4">
+          {renderContractList(contracts.filter((c: Contract) => c.status === 'signed'), "completed")}
+        </TabsContent>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedContract(contract)}
-                      data-testid={`button-view-contract-${contract.id}`}
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )) : null}
-          </div>
-        )}
-      </div>
+        <TabsContent value="all" className="space-y-4">
+          {renderContractList(contracts, "all")}
+        </TabsContent>
+      </Tabs>
 
       {/* Contract Detail Dialog */}
       <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
