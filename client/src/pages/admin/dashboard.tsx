@@ -375,36 +375,36 @@ export default function AdminDashboard() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+              <Card className="bg-white border-purple-200 hover:shadow-lg transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge className="bg-purple-100 text-purple-800">Open Calls</Badge>
+                    <Badge className="bg-purple-100 text-purple-800 border border-purple-200">Open Calls</Badge>
                     <Calendar className="w-4 h-4 text-purple-600" />
                   </div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Casting Calls</h3>
-                  <p className="text-sm text-slate-600">Manage open casting calls and auditions</p>
+                  <h3 className="font-semibold text-gray-900 mb-1">Casting Calls</h3>
+                  <p className="text-sm text-gray-700">Manage open casting calls and auditions</p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+              <Card className="bg-white border-blue-200 hover:shadow-lg transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge className="bg-blue-100 text-blue-800">Events</Badge>
+                    <Badge className="bg-blue-100 text-blue-800 border border-blue-200">Events</Badge>
                     <Star className="w-4 h-4 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Industry Events</h3>
-                  <p className="text-sm text-slate-600">Networking galas, workshops, and showcases</p>
+                  <h3 className="font-semibold text-gray-900 mb-1">Industry Events</h3>
+                  <p className="text-sm text-gray-700">Networking galas, workshops, and showcases</p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <Card className="bg-white border-green-200 hover:shadow-lg transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Badge className="bg-green-100 text-green-800">Featured</Badge>
+                    <Badge className="bg-green-100 text-green-800 border border-green-200">Featured</Badge>
                     <CheckCircle className="w-4 h-4 text-green-600" />
                   </div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Highlighted Posts</h3>
-                  <p className="text-sm text-slate-600">Premium opportunities and special events</p>
+                  <h3 className="font-semibold text-gray-900 mb-1">Highlighted Posts</h3>
+                  <p className="text-sm text-gray-700">Premium opportunities and special events</p>
                 </CardContent>
               </Card>
             </div>
