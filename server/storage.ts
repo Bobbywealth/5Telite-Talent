@@ -129,6 +129,7 @@ export class DatabaseStorage implements IStorage {
         firstName: userData.firstName,
         lastName: userData.lastName,
         role: userData.role as any,
+        status: "pending", // Explicitly set status to pending for new users
       })
       .returning();
     return user;

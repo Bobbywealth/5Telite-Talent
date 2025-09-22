@@ -1,17 +1,26 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from "@assets/5t-logo.png";
-import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3, Shield } from "lucide-react";
 
 const sidebarItems = [
   {
     title: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Approvals",
+    href: "/admin/approvals",
+    icon: Shield,
+    showBadge: true,
   },
   {
     title: "Talent Management",
@@ -68,6 +77,15 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSidebarProps = {}) {
   const { user } = useAuth();
   const [location] = useLocation();
+  
+  // Fetch pending users count
+  const { data: pendingUsersResponse } = useQuery({
+    queryKey: ["/api/admin/users/pending"],
+    queryFn: getQueryFn(),
+    refetchInterval: 60000, // Refresh every minute
+  });
+  
+  const pendingCount = pendingUsersResponse?.users?.length || 0;
 
   const isActive = (href: string) => {
     if (href === "/admin") return location === "/admin";
@@ -105,7 +123,12 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
                   onClick={onMobileToggle}
                 >
                   <IconComponent className="w-4 h-4 mr-3" />
-                  {item.title}
+                  <span className="flex-1">{item.title}</span>
+                  {item.showBadge && pendingCount > 0 && (
+                    <Badge variant={isActive(item.href) ? "secondary" : "destructive"} className="ml-auto">
+                      {pendingCount}
+                    </Badge>
+                  )}
                 </div>
               </Link>
             );
