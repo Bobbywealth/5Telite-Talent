@@ -164,26 +164,6 @@ export default function AdminNavbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <div className="md:hidden border-t border-slate-200">
-        <div className="px-4 py-3 space-y-1">
-          {navigationItems.map((item) => (
-            <Link 
-              key={item.href}
-              href={item.href}
-              className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive(item.href)
-                  ? "text-white bg-primary shadow-md" 
-                  : "text-slate-600 hover:text-primary hover:bg-slate-50"
-              }`}
-              data-testid={`mobile-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-            >
-              <i className={`${item.icon} mr-3 w-4`}></i>
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
     </nav>
   );
 }

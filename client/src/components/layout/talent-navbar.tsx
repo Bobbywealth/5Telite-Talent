@@ -160,26 +160,6 @@ export default function TalentNavbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <div className="md:hidden border-t border-slate-200">
-        <div className="px-4 py-3 space-y-1">
-          {navigationItems.map((item) => (
-            <Link 
-              key={item.href}
-              href={item.href}
-              className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive(item.href)
-                  ? "text-white bg-blue-600 shadow-md" 
-                  : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
-              }`}
-              data-testid={`mobile-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-            >
-              <item.icon className="w-4 h-4 mr-3" />
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
     </nav>
   );
 }
