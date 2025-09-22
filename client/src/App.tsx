@@ -29,7 +29,7 @@ import AdminTasks from "@/pages/admin/tasks";
 import AdminAnnouncements from "@/pages/admin/announcements";
 import AdminTraining from "@/pages/admin/training";
 import AdminReports from "@/pages/admin/reports";
-import AdminApprovals from "@/pages/admin/approvals";
+import AdminApprovals from "@/pages/admin/approvals-test";
 import AdminSettings from "@/pages/admin/settings";
 
 // Talent Pages
