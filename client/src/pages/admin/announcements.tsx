@@ -217,20 +217,31 @@ export default function AdminAnnouncements() {
             <p className="text-gray-600 mt-2">Manage casting calls, auditions, and events</p>
           </div>
 
-          <Dialog open={isCreateDialogOpen || !!editingAnnouncement} onOpenChange={(open) => {
+          <Button 
+            onClick={() => setIsCreateDialogOpen(true)} 
+            data-testid="button-create-announcement"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Announcement
+          </Button>
+        </div>
+
+        {/* Create/Edit Dialog */}
+        <Dialog 
+          open={isCreateDialogOpen || !!editingAnnouncement} 
+          onOpenChange={(open) => {
             if (!open) {
               setIsCreateDialogOpen(false);
               setEditingAnnouncement(null);
               form.reset();
             }
-          }}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setIsCreateDialogOpen(true)} data-testid="button-create-announcement">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Announcement
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          }}
+        >
+          <DialogContent 
+            className="max-w-2xl max-h-[90vh] overflow-y-auto" 
+            onPointerDownOutside={(e) => e.preventDefault()}
+            onInteractOutside={(e) => e.preventDefault()}
+          >
               <DialogHeader>
                 <DialogTitle>
                   {editingAnnouncement ? "Edit Announcement" : "Create New Announcement"}
@@ -453,9 +464,8 @@ export default function AdminAnnouncements() {
                   </div>
                 </form>
               </Form>
-            </DialogContent>
-          </Dialog>
-        </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Filters */}
         <div className="flex gap-4 mb-6">
