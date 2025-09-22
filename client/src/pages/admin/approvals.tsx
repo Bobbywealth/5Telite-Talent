@@ -29,11 +29,13 @@ export default function AdminApprovals() {
   const [actionType, setActionType] = useState<"approve" | "reject" | null>(null);
 
   // Fetch pending users
-  const { data: pendingUsers = [], isLoading } = useQuery({
+  const { data: pendingUsersResponse, isLoading } = useQuery({
     queryKey: ["/api/admin/users/pending"],
     queryFn: getQueryFn(),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+  
+  const pendingUsers = pendingUsersResponse?.users || [];
 
   // Mutation for updating user status
   const updateStatusMutation = useMutation({
