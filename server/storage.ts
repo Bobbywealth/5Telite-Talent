@@ -160,11 +160,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPendingUsers(): Promise<User[]> {
+    console.log("DEBUG: Querying for pending users...");
+    
+    // First, let's see all users and their statuses
+    const allUsers = await db.select().from(users).orderBy(users.createdAt);
+    console.log("DEBUG: All users in database:", allUsers.map(u => ({ 
+      id: u.id, 
+      email: u.email, 
+      firstName: u.firstName, 
+      lastName: u.lastName, 
+      status: u.status, 
+      createdAt: u.createdAt 
+    })));
+    
     const pendingUsers = await db
       .select()
       .from(users)
       .where(eq(users.status, "pending"))
       .orderBy(users.createdAt);
+    
+    console.log("DEBUG: Pending users found:", pendingUsers.length);
+    console.log("DEBUG: Pending users details:", pendingUsers.map(u => ({ 
+      id: u.id, 
+      email: u.email, 
+      firstName: u.firstName, 
+      lastName: u.lastName, 
+      status: u.status 
+    })));
     
     // Remove passwords from all users
     return pendingUsers.map(user => {

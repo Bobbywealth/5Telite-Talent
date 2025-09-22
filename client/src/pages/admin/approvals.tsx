@@ -36,6 +36,11 @@ export default function AdminApprovals() {
   });
   
   const pendingUsers = pendingUsersResponse?.users || [];
+  
+  // Debug logging
+  console.log("DEBUG Frontend - Raw API response:", pendingUsersResponse);
+  console.log("DEBUG Frontend - Extracted pending users:", pendingUsers);
+  console.log("DEBUG Frontend - Pending users count:", pendingUsers.length);
 
   // Mutation for updating user status
   const updateStatusMutation = useMutation({
