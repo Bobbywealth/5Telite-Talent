@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useQuery } from '@tanstack/react-query';
+import { Calendar as CalendarIcon, Clock, User, MapPin, FileText, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '@/styles/calendar.css';
 
@@ -30,6 +33,8 @@ export default function AdminCalendar({ className = '' }: AdminCalendarProps) {
   const [currentView, setCurrentView] = useState<View>(Views.MONTH);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedTypes, setSelectedTypes] = useState('all');
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   // Fetch all bookings for calendar
   const { data: allBookingsData, isLoading: bookingsLoading } = useQuery({
@@ -171,8 +176,8 @@ export default function AdminCalendar({ className = '' }: AdminCalendarProps) {
   );
 
   const handleSelectEvent = (event: CalendarEvent) => {
-    // Could open a modal with event details here
-    console.log('Selected event:', event);
+    setSelectedEvent(event);
+    setShowEventModal(true);
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -313,6 +318,187 @@ export default function AdminCalendar({ className = '' }: AdminCalendarProps) {
           </div>
         </div>
       </CardContent>
+
+      {/* Event Details Modal */}
+      <Dialog open={showEventModal} onOpenChange={setShowEventModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedEvent?.type === 'booking' ? (
+                <CalendarIcon className="h-5 w-5 text-blue-600" />
+              ) : (
+                <FileText className="h-5 w-5 text-purple-600" />
+              )}
+              {selectedEvent?.type === 'booking' ? 'Booking Details' : 'Task Details'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedEvent && (
+            <div className="space-y-6">
+              {/* Title and Status */}
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                    {selectedEvent.title.replace(/^[📅⚡]\s*/, '')}
+                  </h3>
+                  <Badge 
+                    variant={getStatusBadgeVariant(selectedEvent.status)}
+                    className="flex items-center gap-1 w-fit"
+                  >
+                    {selectedEvent.status === 'completed' || selectedEvent.status === 'confirmed' ? (
+                      <CheckCircle className="h-3 w-3" />
+                    ) : selectedEvent.status === 'pending' || selectedEvent.status === 'in_progress' ? (
+                      <AlertCircle className="h-3 w-3" />
+                    ) : (
+                      <XCircle className="h-3 w-3" />
+                    )}
+                    {selectedEvent.status.charAt(0).toUpperCase() + selectedEvent.status.slice(1).replace('_', ' ')}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Event Details Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Date/Time Information */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-4 w-4 text-slate-500" />
+                    <div>
+                      <Label className="text-sm font-medium">
+                        {selectedEvent.type === 'booking' ? 'Event Period' : 'Due Date'}
+                      </Label>
+                      <p className="text-sm text-slate-600">
+                        {selectedEvent.type === 'booking' ? (
+                          <>
+                            {moment(selectedEvent.start).format('MMM DD, YYYY')} - {moment(selectedEvent.end).format('MMM DD, YYYY')}
+                            <br />
+                            <span className="text-xs text-slate-500">
+                              Duration: {moment(selectedEvent.end).diff(moment(selectedEvent.start), 'days') + 1} day(s)
+                            </span>
+                          </>
+                        ) : (
+                          moment(selectedEvent.start).format('MMM DD, YYYY [at] h:mm A')
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Additional booking info */}
+                  {selectedEvent.type === 'booking' && selectedEvent.resource && (
+                    <>
+                      {selectedEvent.resource.location && (
+                        <div className="flex items-center gap-3">
+                          <MapPin className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <Label className="text-sm font-medium">Location</Label>
+                            <p className="text-sm text-slate-600">{selectedEvent.resource.location}</p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {selectedEvent.resource.code && (
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <Label className="text-sm font-medium">Booking Code</Label>
+                            <p className="text-sm text-slate-600 font-mono">{selectedEvent.resource.code}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedEvent.resource.rate && (
+                        <div className="flex items-center gap-3">
+                          <div className="h-4 w-4 text-slate-500 flex items-center justify-center text-xs font-bold">$</div>
+                          <div>
+                            <Label className="text-sm font-medium">Rate</Label>
+                            <p className="text-sm text-slate-600">${selectedEvent.resource.rate.toLocaleString()}</p>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Description/Notes */}
+                <div className="space-y-4">
+                  {selectedEvent.resource?.description && (
+                    <div>
+                      <Label className="text-sm font-medium">Description</Label>
+                      <p className="text-sm text-slate-600 mt-1 p-3 bg-slate-50 rounded-lg">
+                        {selectedEvent.resource.description}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedEvent.resource?.notes && (
+                    <div>
+                      <Label className="text-sm font-medium">Notes</Label>
+                      <p className="text-sm text-slate-600 mt-1 p-3 bg-slate-50 rounded-lg">
+                        {selectedEvent.resource.notes}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Task-specific info */}
+                  {selectedEvent.type === 'task' && selectedEvent.resource && (
+                    <>
+                      {selectedEvent.resource.assignee && (
+                        <div className="flex items-center gap-3">
+                          <User className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <Label className="text-sm font-medium">Assigned To</Label>
+                            <p className="text-sm text-slate-600">
+                              {selectedEvent.resource.assignee.firstName} {selectedEvent.resource.assignee.lastName}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedEvent.resource.priority && (
+                        <div className="flex items-center gap-3">
+                          <AlertCircle className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <Label className="text-sm font-medium">Priority</Label>
+                            <Badge 
+                              className={`w-fit ${
+                                selectedEvent.resource.priority === 'urgent' ? 'bg-red-100 text-red-800' :
+                                selectedEvent.resource.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                                selectedEvent.resource.priority === 'medium' ? 'bg-blue-100 text-blue-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {selectedEvent.resource.priority.charAt(0).toUpperCase() + selectedEvent.resource.priority.slice(1)}
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowEventModal(false)}>
+                  Close
+                </Button>
+                <Button 
+                  onClick={() => {
+                    // Navigate to specific page based on type
+                    if (selectedEvent.type === 'booking') {
+                      window.location.href = `/admin/bookings`;
+                    } else {
+                      window.location.href = `/admin/tasks`;
+                    }
+                  }}
+                >
+                  View Full Details
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
