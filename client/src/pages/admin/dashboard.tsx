@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationBell } from "@/components/ui/notification-bell";
-import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock } from "lucide-react";
+import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock, BookOpen, Megaphone } from "lucide-react";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -198,6 +198,18 @@ export default function AdminDashboard() {
                     Task Manager
                   </Button>
                 </Link>
+                <Link href="/admin/announcements">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <Megaphone className="w-4 h-4 mr-2" />
+                    Manage Announcements
+                  </Button>
+                </Link>
+                <Link href="/admin/training">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Training Guide
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -350,6 +362,53 @@ export default function AdminDashboard() {
 
           {/* Calendar Section */}
           <AdminCalendar className="mb-8" />
+
+          {/* Quick Announcements Overview */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-900">Active Announcements</h2>
+              <Link href="/admin/announcements">
+                <Button variant="outline" size="sm">
+                  <Megaphone className="w-4 h-4 mr-2" />
+                  Manage All
+                </Button>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-purple-100 text-purple-800">Open Calls</Badge>
+                    <Calendar className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-slate-900 mb-1">Casting Calls</h3>
+                  <p className="text-sm text-slate-600">Manage open casting calls and auditions</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-blue-100 text-blue-800">Events</Badge>
+                    <Star className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h3 className="font-semibold text-slate-900 mb-1">Industry Events</h3>
+                  <p className="text-sm text-slate-600">Networking galas, workshops, and showcases</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-green-100 text-green-800">Featured</Badge>
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold text-slate-900 mb-1">Highlighted Posts</h3>
+                  <p className="text-sm text-slate-600">Premium opportunities and special events</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
           {/* Pending Approvals Section */}
           <div className="mb-8">
