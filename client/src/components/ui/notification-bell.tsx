@@ -114,7 +114,11 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+      <DropdownMenuContent 
+        align="end" 
+        className="w-80 max-h-96 overflow-y-auto bg-white border border-slate-200 shadow-lg z-50"
+        sideOffset={8}
+      >
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notifications</span>
           {unreadCount > 0 && (

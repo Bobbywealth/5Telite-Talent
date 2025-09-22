@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import logoImage from "@assets/5t-logo.png";
+import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Search, Menu, ChevronDown, Settings, BarChart3 } from "lucide-react";
 
 export default function AdminNavbar() {
   const { user } = useAuth();
@@ -27,25 +28,25 @@ export default function AdminNavbar() {
   };
 
   const navigationItems = [
-    { href: "/admin", label: "Dashboard", icon: "fas fa-tachometer-alt" },
-    { href: "/admin/talents", label: "Manage Talents", icon: "fas fa-users" },
-    { href: "/admin/bookings", label: "Manage Bookings", icon: "fas fa-calendar" },
-    { href: "/admin/tasks", label: "Task Management", icon: "fas fa-tasks" },
-    { href: "/admin/contracts", label: "Contracts", icon: "fas fa-file-contract" },
-    { href: "/talent", label: "View Directory", icon: "fas fa-search" },
+    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/talents", label: "Manage Talents", icon: Users },
+    { href: "/admin/bookings", label: "Manage Bookings", icon: Calendar },
+    { href: "/admin/tasks", label: "Task Management", icon: ClipboardList },
+    { href: "/admin/contracts", label: "Contracts", icon: FileText },
+    { href: "/talent", label: "View Directory", icon: Search },
   ];
 
   return (
-    <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-slate-200/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-20">
           {/* Left: Mobile Menu Button + Logo */}
           <div className="flex items-center space-x-2">
             {/* Mobile Menu Button */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="lg:hidden p-2" data-testid="button-mobile-menu">
-                  <i className="fas fa-bars text-lg"></i>
+                  <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0">
@@ -69,7 +70,7 @@ export default function AdminNavbar() {
                             ? "text-slate-900 bg-slate-100" 
                             : "text-slate-900 hover:bg-slate-100"
                         }`}>
-                          <i className={`${item.icon} mr-3 w-4`}></i>
+                          <item.icon className="w-4 h-4 mr-3" />
                           {item.label}
                         </div>
                       </Link>
@@ -83,7 +84,7 @@ export default function AdminNavbar() {
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
-                className="h-16 md:h-20 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-12 md:h-14 w-auto hover:scale-105 transition-transform duration-200"
                 onError={(e) => {
                   console.error('Logo failed to load');
                   e.currentTarget.style.display = 'none';
@@ -107,7 +108,7 @@ export default function AdminNavbar() {
                 }`}
                 data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
-                <i className={`${item.icon} mr-2 w-4`}></i>
+                <item.icon className="w-4 h-4 mr-2" />
                 {item.label}
               </Link>
             ))}
@@ -136,25 +137,27 @@ export default function AdminNavbar() {
                       Administrator
                     </div>
                   </div>
-                  <i className="fas fa-chevron-down text-slate-400 text-xs"></i>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild>
                   <Link href="/admin/settings" className="flex items-center cursor-pointer">
-                    <i className="fas fa-cog mr-2 w-4"></i>
+                    <Settings className="w-4 h-4 mr-2" />
                     Admin Settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/admin/reports" className="flex items-center cursor-pointer">
-                    <i className="fas fa-chart-bar mr-2 w-4"></i>
+                    <BarChart3 className="w-4 h-4 mr-2" />
                     Reports
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <a href="/api/logout" className="flex items-center cursor-pointer">
-                    <i className="fas fa-sign-out-alt mr-2 w-4"></i>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                     Sign Out
                   </a>
                 </DropdownMenuItem>

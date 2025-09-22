@@ -150,24 +150,24 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <AdminNavbar />
 
-      <div className="flex flex-col xl:flex-row min-h-screen">
+      <div className="flex flex-col min-h-screen">
         {/* Main Content Area */}
-        <main className="flex-1 p-6 bg-gradient-to-br from-slate-50 to-slate-100 overflow-y-auto">
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-8">
           {/* Hero Section */}
-          <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-8 mb-8 overflow-hidden shadow-2xl">
+          <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-6 md:p-8 overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h1 className="text-4xl font-bold text-white mb-2">Welcome back, {user?.firstName}!</h1>
-                  <p className="text-indigo-100 text-lg">Manage talents, bookings, and platform operations</p>
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div className="mb-4 md:mb-0">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Welcome back, {user?.firstName}!</h1>
+                  <p className="text-indigo-100 text-base md:text-lg">Manage talents, bookings, and platform operations</p>
                 </div>
-                <div className="hidden md:flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
                     <span className="text-white text-sm font-medium">Admin Account</span>
                   </div>
