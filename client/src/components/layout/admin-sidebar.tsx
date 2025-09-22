@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from "@assets/5t-logo.png";
-import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText, Megaphone, BookOpen } from "lucide-react";
+import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3 } from "lucide-react";
 
 const sidebarItems = [
   {
@@ -52,6 +52,11 @@ const sidebarItems = [
     title: "Training Guide",
     href: "/admin/training",
     icon: BookOpen,
+  },
+  {
+    title: "Reports & Analytics",
+    href: "/admin/reports",
+    icon: BarChart3,
   },
 ];
 
