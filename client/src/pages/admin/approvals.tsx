@@ -288,5 +288,3 @@ export default function AdminApprovals() {
     </div>
   );
 }
-
-export default AdminApprovals;
