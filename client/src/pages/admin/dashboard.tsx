@@ -61,6 +61,14 @@ export default function AdminDashboard() {
     retry: false,
   });
 
+  // Fetch contracts data
+  const { data: contractsData, isLoading: contractsLoading } = useQuery({
+    queryKey: ["/api/contracts"],
+    queryFn: getQueryFn(),
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
   // Quick talent approval mutation
   const quickApproveTalentMutation = useMutation({
     mutationFn: async ({ talentId, status }: { talentId: string; status: "approved" | "rejected" }) => {
@@ -126,6 +134,19 @@ export default function AdminDashboard() {
       default:
         return 'outline';
     }
+  };
+
+  // Calculate total contract amounts
+  const calculateContractTotal = () => {
+    if (!contractsData || !Array.isArray(contractsData)) return 0;
+    
+    return contractsData.reduce((total, contract) => {
+      // Only count signed contracts
+      if (contract.status === 'signed' && contract.booking) {
+        return total + (contract.booking.rate || 0);
+      }
+      return total;
+    }, 0);
   };
 
   return (
@@ -253,12 +274,12 @@ export default function AdminDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-emerald-700 mb-1">Monthly Revenue</p>
-                    <p className="text-3xl font-bold text-emerald-900 mb-2" data-testid="text-revenue">
-                      $45,620
+                    <p className="text-sm font-medium text-emerald-700 mb-1">Total Contracts</p>
+                    <p className="text-3xl font-bold text-emerald-900 mb-2" data-testid="text-contracts">
+                      ${calculateContractTotal().toLocaleString()}
                     </p>
                     <div className="w-full bg-emerald-200 rounded-full h-2 mb-3">
-                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: '85%'}}></div>
+                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: `${contractsData?.length ? Math.min((contractsData.filter((c: any) => c.status === 'signed').length / contractsData.length) * 100, 100) : 0}%`}}></div>
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
@@ -268,11 +289,11 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    <span className="text-green-600 font-semibold">+23%</span>
-                    <span className="text-slate-600 ml-1">vs last month</span>
+                    <span className="text-green-600 font-semibold">{contractsData?.filter((c: any) => c.status === 'signed').length || 0}</span>
+                    <span className="text-slate-600 ml-1">signed contracts</span>
                   </div>
                   <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
-                    Excellent
+                    Active
                   </Badge>
                 </div>
               </CardContent>

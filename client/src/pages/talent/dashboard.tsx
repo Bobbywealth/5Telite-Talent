@@ -78,6 +78,13 @@ export default function TalentDashboard() {
     retry: false,
   });
 
+  const { data: contractsData, isLoading: contractsLoading } = useQuery({
+    queryKey: ["/api/contracts"],
+    queryFn: getQueryFn(),
+    enabled: isAuthenticated && user?.role === 'talent',
+    retry: false,
+  });
+
   // Fetch booking requests for this talent
   const { data: bookingRequestsData, isLoading: bookingRequestsLoading } = useQuery({
     queryKey: ["/api/booking-requests"],
@@ -220,6 +227,18 @@ export default function TalentDashboard() {
       .reduce((total: number, booking: any) => total + (booking.totalAmount || 0), 0);
   };
 
+  const calculateContractTotal = () => {
+    if (!contractsData || !Array.isArray(contractsData)) return 0;
+    
+    return contractsData.reduce((total, contract) => {
+      // Only count signed contracts where this talent is involved
+      if (contract.status === 'signed' && contract.booking) {
+        return total + (contract.booking.rate || 0);
+      }
+      return total;
+    }, 0);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <TalentNavbar />
@@ -317,12 +336,12 @@ export default function TalentDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-emerald-700 mb-1">Total Earnings</p>
+                    <p className="text-sm font-medium text-emerald-700 mb-1">Total Contracts</p>
                     <p className="text-3xl font-bold text-emerald-900 mb-2">
-                      ${calculateEarnings().toLocaleString()}
+                      ${calculateContractTotal().toLocaleString()}
                     </p>
                     <div className="w-full bg-emerald-200 rounded-full h-2 mb-2">
-                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: '70%'}}></div>
+                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: `${contractsData?.length ? Math.min((contractsData.filter((c: any) => c.status === 'signed').length / contractsData.length) * 100, 100) : 0}%`}}></div>
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
@@ -330,7 +349,7 @@ export default function TalentDashboard() {
                   </div>
                 </div>
                 <div className="text-sm text-slate-600">
-                  From completed bookings
+                  {contractsData?.filter((c: any) => c.status === 'signed').length || 0} signed contracts
                 </div>
               </CardContent>
             </Card>
