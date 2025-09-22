@@ -80,10 +80,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const pendingUsers = await storage.getPendingUsers();
+      console.log("DEBUG: Pending users query result:", pendingUsers);
       res.json({ users: pendingUsers });
     } catch (error) {
       console.error("Error fetching pending users:", error);
       res.status(500).json({ message: "Failed to fetch pending users" });
+    }
+  });
+
+  // Debug endpoint to check all users in database
+  app.get('/api/admin/debug/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser || adminUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const allUsers = await db.select().from(users).orderBy(users.createdAt);
+      const sanitizedUsers = allUsers.map(user => {
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      console.log("DEBUG: All users in database:", sanitizedUsers);
+      res.json({ users: sanitizedUsers, count: sanitizedUsers.length });
+    } catch (error) {
+      console.error("Error fetching all users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 

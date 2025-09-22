@@ -132,6 +132,8 @@ export function setupAuth(app: Express) {
         role,
       });
 
+      console.log("DEBUG: Created user with status:", user.status, "for email:", email);
+
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
 
