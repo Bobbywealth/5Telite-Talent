@@ -31,6 +31,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Plus, MoreHorizontal, Trash2, Edit, CheckCircle, Clock, AlertCircle, LayoutGrid, List, Filter, Search } from "lucide-react";
 
 export default function AdminTasks() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -420,7 +421,8 @@ export default function AdminTasks() {
               <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                 <DialogTrigger asChild>
                   <Button data-testid="button-create-task">
-                    <i className="fas fa-plus mr-2"></i>Create Task
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Task
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -576,10 +578,12 @@ export default function AdminTasks() {
                   <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'kanban' | 'list')}>
                     <TabsList>
                       <TabsTrigger value="kanban" data-testid="tab-kanban-view">
-                        <i className="fas fa-columns mr-2"></i>Kanban
+                        <LayoutGrid className="h-4 w-4 mr-2" />
+                        Kanban
                       </TabsTrigger>
                       <TabsTrigger value="list" data-testid="tab-list-view">
-                        <i className="fas fa-list mr-2"></i>List
+                        <List className="h-4 w-4 mr-2" />
+                        List
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -804,7 +808,7 @@ export default function AdminTasks() {
                         ))
                       ) : (
                         <div className="text-center py-8 text-slate-500">
-                          <i className="fas fa-tasks text-2xl mb-2"></i>
+                          <CheckCircle className="h-8 w-8 mx-auto mb-2 text-slate-400" />
                           <p className="text-sm">No tasks</p>
                         </div>
                       )}
@@ -838,7 +842,7 @@ export default function AdminTasks() {
                         onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
                         data-testid="button-sort-order"
                       >
-                        <i className={`fas fa-sort-${sortOrder === 'asc' ? 'up' : 'down'} mr-2`}></i>
+                        <Filter className="h-4 w-4 mr-2" />
                         {sortOrder.toUpperCase()}
                       </Button>
                     </div>
@@ -945,12 +949,12 @@ export default function AdminTasks() {
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="outline" size="sm" data-testid={`button-task-actions-${task.id}`}>
-                                    <i className="fas fa-ellipsis-h"></i>
+                                    <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
                                   <DropdownMenuItem onClick={() => openTaskDetails(task)}>
-                                    <i className="fas fa-eye mr-2"></i>View Details
+                                    <Search className="h-4 w-4 mr-2" />View Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     onClick={() => updateTaskMutation.mutate({ 
@@ -958,7 +962,7 @@ export default function AdminTasks() {
                                       updates: { status: 'todo' } 
                                     })}
                                   >
-                                    <i className="fas fa-clock mr-2"></i>To Do
+                                    <Clock className="h-4 w-4 mr-2" />To Do
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     onClick={() => updateTaskMutation.mutate({ 
@@ -966,7 +970,7 @@ export default function AdminTasks() {
                                       updates: { status: 'in_progress' } 
                                     })}
                                   >
-                                    <i className="fas fa-play mr-2"></i>In Progress
+                                    <AlertCircle className="h-4 w-4 mr-2" />In Progress
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     onClick={() => updateTaskMutation.mutate({ 
@@ -974,7 +978,7 @@ export default function AdminTasks() {
                                       updates: { status: 'done' } 
                                     })}
                                   >
-                                    <i className="fas fa-check mr-2"></i>Done
+                                    <CheckCircle className="h-4 w-4 mr-2" />Done
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     onClick={() => {
@@ -984,7 +988,7 @@ export default function AdminTasks() {
                                     }}
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                   >
-                                    <i className="fas fa-trash mr-2"></i>Delete Task
+                                    <Trash2 className="h-4 w-4 mr-2" />Delete Task
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -997,7 +1001,7 @@ export default function AdminTasks() {
 
                   {!tasksLoading && (!tasksData?.tasks || tasksData.tasks.length === 0) && (
                     <div className="text-center py-12">
-                      <i className="fas fa-tasks text-4xl text-slate-300 mb-4"></i>
+                      <CheckCircle className="h-12 w-12 mx-auto text-slate-300 mb-4" />
                       <h3 className="text-lg font-medium text-slate-900 mb-2">No tasks found</h3>
                       <p className="text-slate-500">Create your first task to get started</p>
                     </div>
@@ -1183,7 +1187,7 @@ export default function AdminTasks() {
                           rel="noopener noreferrer"
                           className="flex items-center space-x-2 p-2 border rounded hover:bg-slate-50"
                         >
-                          <i className="fas fa-paperclip text-slate-400"></i>
+                          <Plus className="h-4 w-4 text-slate-400" />
                           <span className="text-sm text-blue-600 hover:text-blue-800">
                             Attachment {index + 1}
                           </span>
@@ -1213,7 +1217,7 @@ export default function AdminTasks() {
                       }}
                       data-testid="button-edit-task"
                     >
-                      <i className="fas fa-edit mr-2"></i>Edit Task
+                      <Edit className="h-4 w-4 mr-2" />Edit Task
                     </Button>
                   </div>
                 </div>
