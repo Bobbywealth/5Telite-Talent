@@ -52,7 +52,6 @@ export default function AdminTasks() {
     talentId: "",
     assigneeId: "",
     dueAt: "",
-    priority: "medium" as "low" | "medium" | "high" | "urgent",
   });
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
@@ -159,7 +158,6 @@ export default function AdminTasks() {
         talentId: taskData.talentId || null,
         assigneeId: taskData.assigneeId || null,
         dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : null,
-        priority: taskData.priority || "medium",
       };
       
       console.log("Sending task data:", cleanedData);
@@ -172,12 +170,11 @@ export default function AdminTasks() {
       setNewTask({
         title: "",
         description: "",
-        scope: "booking" as "booking" | "talent" | "general",
+        scope: "general" as "booking" | "talent" | "general",
         bookingId: "",
         talentId: "",
         assigneeId: "",
         dueAt: "",
-        priority: "medium" as "low" | "medium" | "high" | "urgent",
       });
     },
     onError: (error) => {
@@ -421,22 +418,14 @@ export default function AdminTasks() {
               <h1 className="text-2xl font-bold text-slate-900">Task Management</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => {
-                  console.log("Create Task button clicked");
-                  setShowCreateDialog(true);
-                }}
-                data-testid="button-create-task"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Task
-              </Button>
-            </div>
-          </header>
-
-          {/* Create Task Dialog */}
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogTrigger asChild>
+                  <Button data-testid="button-create-task">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Task
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Task</DialogTitle>
             <DialogDescription>
@@ -503,21 +492,6 @@ export default function AdminTasks() {
                       </div>
                     </div>
 
-                    <div>
-                      <Label htmlFor="priority">Priority</Label>
-                      <Select value={newTask.priority} onValueChange={(value: "low" | "medium" | "high" | "urgent") => setNewTask(prev => ({ ...prev, priority: value }))}>
-                        <SelectTrigger data-testid="select-task-priority">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="urgent">Urgent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
                     {/* Assignee - Who will complete this task */}
                     <div>
                       <Label htmlFor="assigneeId">Assign To *</Label>
@@ -582,25 +556,16 @@ export default function AdminTasks() {
                       <Button type="submit" disabled={createTaskMutation.isPending} data-testid="button-submit-task">
                         {createTaskMutation.isPending ? "Creating..." : "Create Task"}
                       </Button>
-                      <Button type="button" variant="outline" onClick={() => {
-                        setShowCreateDialog(false);
-                        setNewTask({
-                          title: "",
-                          description: "",
-                          scope: "booking",
-                          bookingId: "",
-                          talentId: "",
-                          assigneeId: "",
-                          dueAt: "",
-                          priority: "medium",
-                        });
-                      }}>
+                      <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>
                         Cancel
                       </Button>
                     </div>
                   </form>
-            </DialogContent>
-          </Dialog>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </header>
 
         <main className="p-6">
           {/* Enhanced Filters and Controls */}
