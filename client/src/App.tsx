@@ -101,7 +101,7 @@ function Router() {
               <Route path="/admin/booking-requests" component={AdminBookingRequests} />
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
-              <Route path="/admin/tasks" component={AdminTasksTest} />
+              <Route path="/admin/tasks" component={AdminTasks} />
               <Route path="/admin/announcements" component={AdminAnnouncements} />
               <Route path="/admin/contracts" component={Contracts} />
               <Route path="/admin/talent" component={TalentDirectory} />

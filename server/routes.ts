@@ -2432,6 +2432,72 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Admin endpoint to create sample tasks
+  app.post('/api/admin/create-sample-tasks', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Create sample tasks
+      const sampleTasks = [
+        {
+          title: "Platform Verification Task",
+          description: "Verify that the new task management system is working properly",
+          status: "todo" as const,
+          scope: "general" as const,
+          priority: "high" as const,
+          createdBy: userId,
+        },
+        {
+          title: "Update Talent Profiles",
+          description: "Review and update talent profile information for accuracy",
+          status: "in_progress" as const,
+          scope: "talent" as const,
+          priority: "medium" as const,
+          createdBy: userId,
+        },
+        {
+          title: "Booking Follow-up",
+          description: "Follow up with clients on pending booking requests",
+          status: "todo" as const,
+          scope: "booking" as const,
+          priority: "high" as const,
+          createdBy: userId,
+        },
+        {
+          title: "System Maintenance",
+          description: "Perform routine system maintenance and updates",
+          status: "done" as const,
+          scope: "general" as const,
+          priority: "low" as const,
+          createdBy: userId,
+        }
+      ];
+
+      const createdTasks = [];
+      for (const taskData of sampleTasks) {
+        const task = await storage.createTask(taskData);
+        createdTasks.push(task);
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Sample tasks created successfully", 
+        tasks: createdTasks 
+      });
+    } catch (error) {
+      console.error("Error creating sample tasks:", error);
+      res.status(500).json({ 
+        message: "Failed to create sample tasks", 
+        error: (error as Error).message 
+      });
+    }
+  });
+
   // Create notifications table endpoint
   app.post('/api/admin/create-notifications-table', isAuthenticated, async (req: any, res) => {
     try {
