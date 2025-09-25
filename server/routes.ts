@@ -2429,8 +2429,12 @@ Client Signature: _________________________ Date: _____________
   // Public endpoint to create sample tasks (for setup)
   app.post('/api/setup/create-sample-tasks', async (req: any, res) => {
     try {
-      // Use a default user ID for sample tasks
-      const userId = "admin-user";
+      // Get the first admin user from the database
+      const users = await db.select().from(users).where(eq(users.role, 'admin')).limit(1);
+      if (users.length === 0) {
+        return res.status(400).json({ message: "No admin user found" });
+      }
+      const userId = users[0].id;
 
       // Create sample tasks
       const sampleTasks = [
