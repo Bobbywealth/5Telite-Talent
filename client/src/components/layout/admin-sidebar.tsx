@@ -90,8 +90,6 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
   // Debug logging
   console.log("DEBUG Sidebar - Pending users response:", pendingUsersResponse);
   console.log("DEBUG Sidebar - Pending count:", pendingCount);
-  console.log("DEBUG Sidebar - Sidebar items:", sidebarItems);
-  console.log("DEBUG Sidebar - User role:", user?.role);
 
   const isActive = (href: string) => {
     if (href === "/admin") return location === "/admin";
