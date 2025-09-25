@@ -30,9 +30,15 @@ export function useAuth() {
           signal: AbortSignal.timeout(30000), // 30 second timeout
         });
 
+        console.log("DEBUG useAuth - API response status:", response.status);
+        console.log("DEBUG useAuth - API response ok:", response.ok);
+
         let result = null;
         if (response.ok) {
           result = await response.json();
+          console.log("DEBUG useAuth - User data received:", result);
+        } else {
+          console.log("DEBUG useAuth - API request failed:", response.status, response.statusText);
         }
 
         authResult = {
@@ -58,10 +64,17 @@ export function useAuth() {
     refetchIntervalInBackground: false,
   });
 
+  const finalUser = user ?? authResult?.user ?? null;
+  const isAuthenticated = !!finalUser;
+  
+  console.log("DEBUG useAuth - Final user:", finalUser);
+  console.log("DEBUG useAuth - Is authenticated:", isAuthenticated);
+  console.log("DEBUG useAuth - User role:", finalUser?.role);
+
   return {
-    user: user ?? authResult?.user ?? null,
+    user: finalUser,
     isLoading: isLoading && !authResult,
-    isAuthenticated: !!(user ?? authResult?.user),
+    isAuthenticated,
     error,
   };
 }
