@@ -23,7 +23,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -428,15 +427,34 @@ export default function AdminTasks() {
                 <Plus className="h-4 w-4 mr-2" />
                 Create Task
               </Button>
-              
-              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create New Task</DialogTitle>
-            <DialogDescription>
-              Create a task and assign it to any talent. Choose scope: General (standalone task), Booking Related (tied to specific booking), or Talent Specific (about a particular talent).
-            </DialogDescription>
-          </DialogHeader>
+            </div>
+          </div>
+        </header>
+
+        {/* Create Task Dialog */}
+        {showCreateDialog && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => setShowCreateDialog(false)}
+          >
+            <div 
+              className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold">Create New Task</h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowCreateDialog(false)}
+                  >
+                    ✕
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-600 mb-6">
+                  Create a task and assign it to any talent. Choose scope: General (standalone task), Booking Related (tied to specific booking), or Talent Specific (about a particular talent).
+                </p>
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     if (!newTask.title.trim()) {
@@ -581,11 +599,10 @@ export default function AdminTasks() {
                       </Button>
                     </div>
                   </form>
-                </DialogContent>
-              </Dialog>
+              </div>
             </div>
           </div>
-        </header>
+        )}
 
         <main className="p-6">
           {/* Enhanced Filters and Controls */}
