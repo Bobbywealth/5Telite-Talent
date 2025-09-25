@@ -255,32 +255,98 @@ export default function AdminApprovals() {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={!!selectedUser && !!actionType} onOpenChange={cancelAction}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
+        <AlertDialogContent className="max-w-md mx-auto">
+          <AlertDialogHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+              {actionType === "approve" ? (
+                <CheckCircle className="h-6 w-6 text-blue-600" />
+              ) : (
+                <XCircle className="h-6 w-6 text-red-600" />
+              )}
+            </div>
+            <AlertDialogTitle className="text-xl font-semibold">
               {actionType === "approve" ? "Approve User" : "Reject User"}
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-base text-slate-600 mt-4">
               {actionType === "approve" ? (
-                <>
-                  Are you sure you want to approve <strong>{selectedUser?.firstName} {selectedUser?.lastName}</strong> ({selectedUser?.email})?
-                  They will be able to log in and access the platform immediately.
-                </>
+                <div className="space-y-3">
+                  <p>
+                    Are you sure you want to approve this user?
+                  </p>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <User className="w-4 h-4 text-green-600" />
+                      <span className="font-medium text-green-900">
+                        {selectedUser?.firstName} {selectedUser?.lastName}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Mail className="w-4 h-4 text-green-600" />
+                      <span className="text-green-700">{selectedUser?.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-green-600" />
+                      <span className="text-green-700 capitalize">{selectedUser?.role}</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3">
+                    ✅ They will be able to log in and access the platform immediately.
+                  </p>
+                </div>
               ) : (
-                <>
-                  Are you sure you want to reject <strong>{selectedUser?.firstName} {selectedUser?.lastName}</strong> ({selectedUser?.email})?
-                  They will not be able to access the platform.
-                </>
+                <div className="space-y-3">
+                  <p>
+                    Are you sure you want to reject this user?
+                  </p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <User className="w-4 h-4 text-red-600" />
+                      <span className="font-medium text-red-900">
+                        {selectedUser?.firstName} {selectedUser?.lastName}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Mail className="w-4 h-4 text-red-600" />
+                      <span className="text-red-700">{selectedUser?.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-red-600" />
+                      <span className="text-red-700 capitalize">{selectedUser?.role}</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">
+                    ❌ They will not be able to access the platform.
+                  </p>
+                </div>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelAction}>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-3 mt-6">
+            <AlertDialogCancel 
+              onClick={cancelAction}
+              className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700"
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmAction}
-              className={actionType === "reject" ? "bg-red-600 hover:bg-red-700" : ""}
+              className={`w-full sm:w-auto ${
+                actionType === "reject" 
+                  ? "bg-red-600 hover:bg-red-700 text-white" 
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }`}
             >
-              {actionType === "approve" ? "Approve" : "Reject"}
+              {actionType === "approve" ? (
+                <>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Approve User
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-4 h-4 mr-2" />
+                  Reject User
+                </>
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
