@@ -28,6 +28,7 @@ import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminBookingRequests from "@/pages/admin/booking-requests";
 import AdminTasks from "@/pages/admin/tasks";
+import AdminTasksTest from "@/pages/admin/tasks-test";
 import AdminAnnouncements from "@/pages/admin/announcements";
 import AdminTraining from "@/pages/admin/training";
 import AdminReports from "@/pages/admin/reports";
@@ -100,7 +101,7 @@ function Router() {
               <Route path="/admin/booking-requests" component={AdminBookingRequests} />
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
-              <Route path="/admin/tasks" component={AdminTasks} />
+              <Route path="/admin/tasks" component={AdminTasksTest} />
               <Route path="/admin/announcements" component={AdminAnnouncements} />
               <Route path="/admin/contracts" component={Contracts} />
               <Route path="/admin/talent" component={TalentDirectory} />
