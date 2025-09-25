@@ -204,21 +204,21 @@ export default function AdminDashboardSimple() {
               </CardContent>
             </Card>
 
-            {/* Total Contracts */}
+            {/* Monthly Revenue */}
             <Card className="bg-gradient-to-br from-emerald-50 to-teal-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-emerald-700 mb-1">Total Contracts</p>
+                    <p className="text-sm font-medium text-emerald-700 mb-1">Monthly Revenue</p>
                     {statsLoading ? (
-                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-8 w-20" />
                     ) : (
                       <p className="text-3xl font-bold text-emerald-900 mb-2">
-                        {statsData?.totalContracts || 0}
+                        ${statsData?.monthlyRevenue || 0}
                       </p>
                     )}
                     <div className="w-full bg-emerald-200 rounded-full h-2 mb-3">
-                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: '45%'}}></div>
+                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: '85%'}}></div>
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
@@ -228,340 +228,84 @@ export default function AdminDashboardSimple() {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    <span className="text-green-600 font-semibold">+15%</span>
+                    <span className="text-green-600 font-semibold">+23%</span>
                     <span className="text-slate-600 ml-1">vs last month</span>
                   </div>
                   <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
-                    Signed
+                    Excellent
                   </Badge>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Pending Tasks */}
-            <Card className="bg-gradient-to-br from-orange-50 to-red-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            {/* Pending Approvals */}
+            <Card className="bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-orange-700 mb-1">Pending Tasks</p>
-                    {statsLoading ? (
+                    <p className="text-sm font-medium text-slate-700 mb-1">Pending Approvals</p>
+                    {pendingUsersLoading ? (
                       <Skeleton className="h-8 w-16" />
                     ) : (
-                      <p className="text-3xl font-bold text-orange-900 mb-2">
-                        {statsData?.pendingTasks || 0}
+                      <p className="text-3xl font-bold text-slate-900 mb-2">
+                        {pendingUsersData?.users?.length || 0}
                       </p>
                     )}
-                    <div className="w-full bg-orange-200 rounded-full h-2 mb-3">
-                      <div className="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full transition-all duration-500" style={{width: '30%'}}></div>
+                    <div className="flex items-center text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      <span className="text-green-600 font-semibold">All caught up</span>
+                      <span className="text-slate-600 ml-1">no pending</span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-3 shadow-lg">
-                    <ClipboardList className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-                    <span className="text-red-600 font-semibold">-5%</span>
-                    <span className="text-slate-600 ml-1">vs last month</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
-                    Pending
-                  </Badge>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Pending Approvals Section */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Pending Approvals</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Pending Talent Approvals */}
-              <Card>
-                <CardHeader className="border-b border-slate-200">
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Talent Approvals</span>
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                      {pendingUsersLoading ? "..." : (pendingUsersData?.users?.length || 0)}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  {pendingUsersLoading ? (
-                    <div className="space-y-4">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                          <div className="flex-1">
-                            <Skeleton className="h-4 w-32 mb-2" />
-                            <Skeleton className="h-3 w-24" />
-                          </div>
-                          <Skeleton className="h-8 w-16" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : pendingUsersData?.users?.length > 0 ? (
-                    <div className="space-y-4">
-                      {pendingUsersData.users.slice(0, 4).map((user: any) => (
-                        <div key={user.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                          <div className="flex-1">
-                            <p className="font-medium text-slate-900">
-                              {user.firstName} {user.lastName}
-                            </p>
-                            <p className="text-sm text-slate-600">{user.email}</p>
-                            <p className="text-xs text-slate-500">Role: {user.role}</p>
-                          </div>
-                          <div className="flex space-x-2 ml-4">
-                            <Link href="/admin/approvals">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                              >
-                                Review
-                              </Button>
-                            </Link>
-                          </div>
-                        </div>
-                      ))}
-                      {pendingUsersData.users.length > 4 && (
-                        <div className="text-center pt-2">
-                          <Button variant="outline" size="sm">
-                            View All ({pendingUsersData.users.length - 4} more)
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <CheckCircle className="w-12 h-12 text-green-500 mb-2" />
-                      <p className="text-slate-500">No pending talent approvals</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
 
-          {/* Calendar Section */}
-          <AdminCalendar className="mb-8" />
-
-          {/* Quick Announcements Overview */}
+          {/* Calendar Overview */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900">Quick Announcements Overview</h2>
-              <Link href="/admin/announcements">
-                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
-                  <Megaphone className="w-4 h-4 mr-2" />
-                  Manage All
-                </Button>
-              </Link>
+              <h2 className="text-2xl font-bold text-slate-900">Calendar Overview</h2>
+              <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                8 events
+              </Badge>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-gradient-to-br from-yellow-50 to-amber-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl p-3 shadow-lg">
-                      <Star className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-200 text-yellow-700">
-                      Active
-                    </Badge>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-slate-600">Confirmed/Completed</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-yellow-900 mb-2">Open Calls</h3>
-                  <div className="text-3xl font-bold text-yellow-900 mb-2">
-                    {announcementsLoading ? <Skeleton className="h-8 w-16" /> : 
-                      (announcementsData?.filter((a: any) => a.type === 'casting_call')?.length || 0)}
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span className="text-sm text-slate-600">Pending/In Progress</span>
                   </div>
-                  <p className="text-sm text-yellow-700">Active casting calls</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-blue-50 to-cyan-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-3 shadow-lg">
-                      <Calendar className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                      Upcoming
-                    </Badge>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="text-sm text-slate-600">Todo/Cancelled</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-blue-900 mb-2">Events</h3>
-                  <div className="text-3xl font-bold text-blue-900 mb-2">
-                    {announcementsLoading ? <Skeleton className="h-8 w-16" /> : 
-                      (announcementsData?.filter((a: any) => a.type === 'event')?.length || 0)}
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm text-slate-600">Other</span>
                   </div>
-                  <p className="text-sm text-blue-700">Upcoming events</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-3 shadow-lg">
-                      <Megaphone className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                      Featured
-                    </Badge>
-                  </div>
-                  <h3 className="text-lg font-semibold text-green-900 mb-2">Featured Posts</h3>
-                  <div className="text-3xl font-bold text-green-900 mb-2">
-                    {announcementsLoading ? <Skeleton className="h-8 w-16" /> : 
-                      (announcementsData?.filter((a: any) => a.type === 'featured')?.length || 0)}
-                  </div>
-                  <p className="text-sm text-green-700">Featured announcements</p>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm">Today</Button>
+                  <Button variant="outline" size="sm">Back</Button>
+                  <Button variant="outline" size="sm">Next</Button>
+                </div>
+              </div>
+              <div className="text-center py-8">
+                <Calendar className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-500">Calendar component will be integrated here</p>
+              </div>
             </div>
-          </div>
-
-          {/* Recent Activity Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Bookings */}
-            <Card>
-              <CardHeader className="border-b border-slate-200">
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Bookings</span>
-                  <Link href="/admin/bookings">
-                    <Button variant="outline" size="sm">View All</Button>
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {bookingsLoading ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : bookingsData?.length > 0 ? (
-                  <div className="space-y-3">
-                    {bookingsData.slice(0, 5).map((booking: any) => (
-                      <div key={booking.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {booking.title}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {booking.clientName} • {booking.status}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-500 text-center py-4">No recent bookings</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Recent Talents */}
-            <Card>
-              <CardHeader className="border-b border-slate-200">
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Talents</span>
-                  <Link href="/admin/talents">
-                    <Button variant="outline" size="sm">View All</Button>
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {talentsLoading ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : talentsData?.length > 0 ? (
-                  <div className="space-y-3">
-                    {talentsData.slice(0, 5).map((talent: any) => (
-                      <div key={talent.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <Users className="w-4 h-4 text-green-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {talent.user?.firstName} {talent.user?.lastName}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {talent.talentProfile?.categories?.[0] || 'Talent'}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-500 text-center py-4">No recent talents</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Recent Tasks */}
-            <Card>
-              <CardHeader className="border-b border-slate-200">
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Tasks</span>
-                  <Link href="/admin/tasks">
-                    <Button variant="outline" size="sm">View All</Button>
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {tasksLoading ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : tasksData?.length > 0 ? (
-                  <div className="space-y-3">
-                    {tasksData.slice(0, 5).map((task: any) => (
-                      <div key={task.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                          <ClipboardList className="w-4 h-4 text-orange-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {task.title}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {task.priority} • {task.status}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-500 text-center py-4">No recent tasks</p>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </main>
       </div>
     </div>
   );
 }
+
