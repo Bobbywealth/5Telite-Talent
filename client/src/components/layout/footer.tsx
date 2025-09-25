@@ -64,25 +64,25 @@ export default function Footer() {
             <ul className="space-y-3 text-white/80">
               <li>
                 <Link href="/talent" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <Star className="w-4 h-4 mr-2 text-yellow-400" />
+                  <Star className="w-4 h-4 mr-2 text-black" />
                   Talent Management
                 </Link>
               </li>
               <li>
                 <Link href="/announcements" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <Video className="w-4 h-4 mr-2 text-blue-400" />
+                  <Video className="w-4 h-4 mr-2 text-black" />
                   Casting Services
                 </Link>
               </li>
               <li>
                 <Link href="/book-request" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <Users className="w-4 h-4 mr-2 text-green-400" />
+                  <Users className="w-4 h-4 mr-2 text-black" />
                   Event Staffing
                 </Link>
               </li>
               <li>
                 <Link href="/book-request" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <Settings className="w-4 h-4 mr-2 text-purple-400" />
+                  <Settings className="w-4 h-4 mr-2 text-black" />
                   Production Support
                 </Link>
               </li>
@@ -95,25 +95,25 @@ export default function Footer() {
             <ul className="space-y-3 text-white/80">
               <li>
                 <Link href="/register" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <UserPlus className="w-4 h-4 mr-2 text-green-400" />
+                  <UserPlus className="w-4 h-4 mr-2 text-black" />
                   Join Our Roster
                 </Link>
               </li>
               <li>
                 <Link href="/talent/dashboard" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <User className="w-4 h-4 mr-2 text-blue-400" />
+                  <User className="w-4 h-4 mr-2 text-black" />
                   Talent Portal
                 </Link>
               </li>
               <li>
                 <Link href="/announcements" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <Book className="w-4 h-4 mr-2 text-yellow-400" />
+                  <Book className="w-4 h-4 mr-2 text-black" />
                   Resources
                 </Link>
               </li>
               <li>
                 <a href="mailto:support@5ttalent.com" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
-                  <Headphones className="w-4 h-4 mr-2 text-purple-400" />
+                  <Headphones className="w-4 h-4 mr-2 text-black" />
                   Support
                 </a>
               </li>
@@ -125,15 +125,15 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">Contact</h3>
             <ul className="space-y-4 text-white/80">
               <li className="flex items-start">
-                <MapPin className="w-4 h-4 mt-1 mr-3 text-red-400 flex-shrink-0" />
+                <MapPin className="w-4 h-4 mt-1 mr-3 text-black flex-shrink-0" />
                 <span>122 W 26th St., Suite 902<br />New York, NY 10001</span>
               </li>
               <li className="flex items-center">
-                <Phone className="w-4 h-4 mr-3 text-green-400 flex-shrink-0" />
+                <Phone className="w-4 h-4 mr-3 text-black flex-shrink-0" />
                 <a href="tel:+15551234TALENT" className="hover:text-white transition-colors">(555) 123-TALENT</a>
               </li>
               <li className="flex items-center">
-                <Mail className="w-4 h-4 mr-3 text-blue-400 flex-shrink-0" />
+                <Mail className="w-4 h-4 mr-3 text-black flex-shrink-0" />
                 <a href="mailto:info@5ttalent.com" className="hover:text-white transition-colors">info@5ttalent.com</a>
               </li>
             </ul>
