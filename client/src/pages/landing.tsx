@@ -513,6 +513,9 @@ export default function Landing() {
                       data-testid="input-client-phone"
                     />
                   </div>
+                  <div>
+                    {/* Empty div to maintain grid layout */}
+                  </div>
                 </div>
 
                 <Button 
