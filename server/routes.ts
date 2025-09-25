@@ -2399,6 +2399,40 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Admin endpoint to add task priority field
+  app.post('/api/admin/add-task-priority', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Create task_priority enum if it doesn't exist
+      await db.execute(sql`
+        DO $$ BEGIN
+          CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high');
+        EXCEPTION
+          WHEN duplicate_object THEN null;
+        END $$;
+      `);
+
+      // Add priority column to tasks table if it doesn't exist
+      await db.execute(sql`
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority task_priority DEFAULT 'medium';
+      `);
+
+      res.json({ success: true, message: "Task priority field added successfully" });
+    } catch (error) {
+      console.error("Error adding task priority field:", error);
+      res.status(500).json({ 
+        message: "Failed to add task priority field", 
+        error: (error as Error).message 
+      });
+    }
+  });
+
   // Create notifications table endpoint
   app.post('/api/admin/create-notifications-table', isAuthenticated, async (req: any, res) => {
     try {

@@ -118,6 +118,7 @@ export const bookingTalents = pgTable("booking_talents", {
 
 export const taskStatusEnum = pgEnum("task_status", ["todo", "in_progress", "blocked", "done"]);
 export const taskScopeEnum = pgEnum("task_scope", ["booking", "talent", "general"]);
+export const taskPriorityEnum = pgEnum("task_priority", ["low", "medium", "high"]);
 
 export const contractStatusEnum = pgEnum("contract_status", ["draft", "sent", "signed", "expired", "cancelled"]);
 export const signatureStatusEnum = pgEnum("signature_status", ["pending", "signed", "expired"]);
@@ -133,6 +134,7 @@ export const tasks = pgTable("tasks", {
   title: varchar("title").notNull(),
   description: text("description"),
   status: taskStatusEnum("status").notNull().default("todo"),
+  priority: taskPriorityEnum("priority").notNull().default("medium"),
   dueAt: timestamp("due_at"),
   assigneeId: varchar("assignee_id").references(() => users.id),
   attachmentUrls: text("attachment_urls").array().default(sql`'{}'::text[]`),
