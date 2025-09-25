@@ -45,9 +45,9 @@ export default function AdminDashboard() {
     retry: false,
   });
 
-  // Fetch pending talents for approval
-  const { data: pendingTalentsData, isLoading: pendingTalentsLoading } = useQuery({
-    queryKey: ["/api/talents?approvalStatus=pending&limit=10"],
+  // Fetch pending users for approval (same endpoint as approvals page)
+  const { data: pendingUsersData, isLoading: pendingUsersLoading } = useQuery({
+    queryKey: ["/api/admin/users/pending"],
     queryFn: getQueryFn(),
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
@@ -420,12 +420,12 @@ export default function AdminDashboard() {
                   <CardTitle className="flex items-center justify-between">
                     <span>Talent Approvals</span>
                     <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                      {pendingTalentsLoading ? "..." : (pendingTalentsData?.talents?.length || 0)}
+                      {pendingUsersLoading ? "..." : (pendingUsersData?.users?.length || 0)}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  {pendingTalentsLoading ? (
+                  {pendingUsersLoading ? (
                     <div className="space-y-4">
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
@@ -440,61 +440,34 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
-                  ) : pendingTalentsData?.talents?.length > 0 ? (
+                  ) : pendingUsersData?.users?.length > 0 ? (
                     <div className="space-y-4">
-                      {pendingTalentsData.talents.slice(0, 4).map((talent: any) => (
-                        <div key={talent.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      {pendingUsersData.users.slice(0, 4).map((user: any) => (
+                        <div key={user.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                           <div className="flex-1">
                             <p className="font-medium text-slate-900">
-                              {talent.user.firstName} {talent.user.lastName}
+                              {user.firstName} {user.lastName}
                             </p>
-                            <p className="text-sm text-slate-600">{talent.user.email}</p>
-                            {talent.categories?.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {talent.categories.slice(0, 2).map((category: string, index: number) => (
-                                  <Badge key={index} variant="outline" className="text-xs">
-                                    {category}
-                                  </Badge>
-                                ))}
-                                {talent.categories.length > 2 && (
-                                  <Badge variant="outline" className="text-xs">
-                                    +{talent.categories.length - 2}
-                                  </Badge>
-                                )}
-                              </div>
-                            )}
+                            <p className="text-sm text-slate-600">{user.email}</p>
+                            <p className="text-xs text-slate-500">Role: {user.role}</p>
                           </div>
                           <div className="flex space-x-2 ml-4">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => quickApproveTalentMutation.mutate({ 
-                                talentId: talent.userId, 
-                                status: 'rejected' 
-                              })}
-                              disabled={quickApproveTalentMutation.isPending}
-                              data-testid={`button-quick-reject-${talent.id}`}
-                            >
-                              <X className="w-4 h-4 mr-1" />Reject
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={() => quickApproveTalentMutation.mutate({ 
-                                talentId: talent.userId, 
-                                status: 'approved' 
-                              })}
-                              disabled={quickApproveTalentMutation.isPending}
-                              data-testid={`button-quick-approve-${talent.id}`}
-                            >
-                              <Check className="w-4 h-4 mr-1" />Approve
-                            </Button>
+                            <Link href="/admin/approvals">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              >
+                                Review
+                              </Button>
+                            </Link>
                           </div>
                         </div>
                       ))}
-                      {pendingTalentsData.talents.length > 4 && (
+                      {pendingUsersData.users.length > 4 && (
                         <div className="text-center pt-2">
                           <Button variant="outline" size="sm">
-                            View All ({pendingTalentsData.talents.length - 4} more)
+                            View All ({pendingUsersData.users.length - 4} more)
                           </Button>
                         </div>
                       )}
