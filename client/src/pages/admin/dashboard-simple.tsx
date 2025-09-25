@@ -77,89 +77,197 @@ export default function AdminDashboardSimple() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <AdminSidebar 
-        isOpen={isMobileSidebarOpen} 
-        onClose={() => setIsMobileSidebarOpen(false)} 
-      />
-      
-      <div className="lg:pl-64">
-        <AdminNavbar onMenuClick={() => setIsMobileSidebarOpen(true)} />
-        
+      <AdminNavbar />
+
+      <div className="flex flex-col min-h-screen">
+        {/* Main Content Area */}
         <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-8">
           {/* Hero Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Welcome back, {user?.firstName}!
-            </h1>
-            <p className="text-base md:text-lg text-slate-600 mb-6">
-              Here's what's happening with your talent platform today.
-            </p>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <Link href="/admin/announcements">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Megaphone className="w-4 h-4 mr-2" />
-                  Manage Announcements
-                </Button>
-              </Link>
-              <Link href="/admin/training">
-                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Training Guide
-                </Button>
-              </Link>
+          <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-6 md:p-8 overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div className="mb-4 md:mb-0">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Welcome back, {user?.firstName}!</h1>
+                  <p className="text-indigo-100 text-base md:text-lg">Manage talents, bookings, and platform operations</p>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                    <span className="text-white text-sm font-medium">Admin Account</span>
+                  </div>
+                  <div className="bg-green-500/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                    <span className="text-green-100 text-sm font-medium flex items-center">
+                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                      Active
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/admin/talents">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <Users className="w-4 h-4 mr-2" />
+                    Manage Talents
+                  </Button>
+                </Link>
+                <Link href="/admin/bookings">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    View Bookings
+                  </Button>
+                </Link>
+                <Link href="/admin/announcements">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <Megaphone className="w-4 h-4 mr-2" />
+                    Manage Announcements
+                  </Button>
+                </Link>
+                <Link href="/admin/training">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Training Guide
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Total Talents */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Talents</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {statsLoading ? <Skeleton className="h-8 w-16" /> : (statsData?.totalTalents || 0)}
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-blue-700 mb-1">Total Talents</p>
+                    {statsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-blue-900 mb-2">
+                        {statsData?.totalTalents || 0}
+                      </p>
+                    )}
+                    <div className="w-full bg-blue-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500" style={{width: '75%'}}></div>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-3 shadow-lg">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-green-600 font-semibold">+12%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                    Active
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
             {/* Active Bookings */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Bookings</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {statsLoading ? <Skeleton className="h-8 w-16" /> : (statsData?.activeBookings || 0)}
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-purple-700 mb-1">Active Bookings</p>
+                    {statsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-purple-900 mb-2">
+                        {statsData?.activeBookings || 0}
+                      </p>
+                    )}
+                    <div className="w-full bg-purple-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full transition-all duration-500" style={{width: '60%'}}></div>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-3 shadow-lg">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-green-600 font-semibold">+8%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-purple-50 border-purple-200 text-purple-700">
+                    Growing
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
             {/* Total Contracts */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Contracts</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {statsLoading ? <Skeleton className="h-8 w-16" /> : (statsData?.totalContracts || 0)}
+            <Card className="bg-gradient-to-br from-emerald-50 to-teal-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-emerald-700 mb-1">Total Contracts</p>
+                    {statsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-emerald-900 mb-2">
+                        {statsData?.totalContracts || 0}
+                      </p>
+                    )}
+                    <div className="w-full bg-emerald-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500" style={{width: '45%'}}></div>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-lg">
+                    <CheckCircle className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    <span className="text-green-600 font-semibold">+15%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                    Signed
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
             {/* Pending Tasks */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Tasks</CardTitle>
-                <ClipboardList className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {statsLoading ? <Skeleton className="h-8 w-16" /> : (statsData?.pendingTasks || 0)}
+            <Card className="bg-gradient-to-br from-orange-50 to-red-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-orange-700 mb-1">Pending Tasks</p>
+                    {statsLoading ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      <p className="text-3xl font-bold text-orange-900 mb-2">
+                        {statsData?.pendingTasks || 0}
+                      </p>
+                    )}
+                    <div className="w-full bg-orange-200 rounded-full h-2 mb-3">
+                      <div className="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full transition-all duration-500" style={{width: '30%'}}></div>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-3 shadow-lg">
+                    <ClipboardList className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                    <span className="text-red-600 font-semibold">-5%</span>
+                    <span className="text-slate-600 ml-1">vs last month</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
+                    Pending
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -240,53 +348,70 @@ export default function AdminDashboardSimple() {
 
           {/* Quick Announcements Overview */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Quick Announcements Overview</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">Quick Announcements Overview</h2>
+              <Link href="/admin/announcements">
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+                  <Megaphone className="w-4 h-4 mr-2" />
+                  Manage All
+                </Button>
+              </Link>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center text-lg">
-                    <Star className="w-5 h-5 mr-2 text-yellow-500" />
-                    Open Calls
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-slate-900">
+              <Card className="bg-gradient-to-br from-yellow-50 to-amber-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl p-3 shadow-lg">
+                      <Star className="w-6 h-6 text-white" />
+                    </div>
+                    <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-200 text-yellow-700">
+                      Active
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-semibold text-yellow-900 mb-2">Open Calls</h3>
+                  <div className="text-3xl font-bold text-yellow-900 mb-2">
                     {announcementsLoading ? <Skeleton className="h-8 w-16" /> : 
                       (announcementsData?.filter((a: any) => a.type === 'casting_call')?.length || 0)}
                   </div>
-                  <p className="text-sm text-slate-600 mt-1">Active casting calls</p>
+                  <p className="text-sm text-yellow-700">Active casting calls</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center text-lg">
-                    <Calendar className="w-5 h-5 mr-2 text-blue-500" />
-                    Events
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-slate-900">
+              <Card className="bg-gradient-to-br from-blue-50 to-cyan-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-3 shadow-lg">
+                      <Calendar className="w-6 h-6 text-white" />
+                    </div>
+                    <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                      Upcoming
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2">Events</h3>
+                  <div className="text-3xl font-bold text-blue-900 mb-2">
                     {announcementsLoading ? <Skeleton className="h-8 w-16" /> : 
                       (announcementsData?.filter((a: any) => a.type === 'event')?.length || 0)}
                   </div>
-                  <p className="text-sm text-slate-600 mt-1">Upcoming events</p>
+                  <p className="text-sm text-blue-700">Upcoming events</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center text-lg">
-                    <Megaphone className="w-5 h-5 mr-2 text-green-500" />
-                    Featured Posts
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-slate-900">
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-3 shadow-lg">
+                      <Megaphone className="w-6 h-6 text-white" />
+                    </div>
+                    <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
+                      Featured
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-semibold text-green-900 mb-2">Featured Posts</h3>
+                  <div className="text-3xl font-bold text-green-900 mb-2">
                     {announcementsLoading ? <Skeleton className="h-8 w-16" /> : 
                       (announcementsData?.filter((a: any) => a.type === 'featured')?.length || 0)}
                   </div>
-                  <p className="text-sm text-slate-600 mt-1">Featured announcements</p>
+                  <p className="text-sm text-green-700">Featured announcements</p>
                 </CardContent>
               </Card>
             </div>

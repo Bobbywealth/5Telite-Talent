@@ -96,7 +96,7 @@ function Router() {
           {/* Admin routes */}
           {user?.role === 'admin' && (
             <>
-              <Route path="/admin" component={AdminDashboard} />
+              <Route path="/admin" component={AdminDashboardSimple} />
               <Route path="/admin/booking-requests" component={AdminBookingRequests} />
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
