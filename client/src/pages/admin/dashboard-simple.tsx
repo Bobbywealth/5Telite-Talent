@@ -335,145 +335,144 @@ export default function AdminDashboardSimple() {
           {/* Calendar Section */}
           <AdminCalendar className="mb-8" />
 
-          {/* Recent Activity Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Quick Announcements Overview */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-900">Active Announcements</h2>
+              <Link href="/admin/announcements">
+                <Button variant="outline" size="sm">
+                  <Megaphone className="w-4 h-4 mr-2" />
+                  Manage All
+                </Button>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card className="bg-white border-purple-200 hover:shadow-lg transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-purple-100 text-purple-800 border border-purple-200">Open Calls</Badge>
+                    <Calendar className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Casting Calls</h3>
+                  <p className="text-sm text-gray-700">Manage open casting calls and auditions</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white border-blue-200 hover:shadow-lg transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-blue-100 text-blue-800 border border-blue-200">Events</Badge>
+                    <Star className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Industry Events</h3>
+                  <p className="text-sm text-gray-700">Networking galas, workshops, and showcases</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white border-green-200 hover:shadow-lg transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-green-100 text-green-800 border border-green-200">Featured</Badge>
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Highlighted Posts</h3>
+                  <p className="text-sm text-gray-700">Premium opportunities and special events</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Recent Activity and Tasks */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Bookings */}
             <Card>
               <CardHeader className="border-b border-slate-200">
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Bookings</span>
-                  <Link href="/admin/bookings">
-                    <Button variant="outline" size="sm">View All</Button>
-                  </Link>
-                </CardTitle>
+                <CardTitle>Recent Bookings</CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 {bookingsLoading ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
+                      <div key={i} className="p-4 bg-slate-50 rounded-lg">
+                        <Skeleton className="h-4 w-3/4 mb-2" />
+                        <Skeleton className="h-3 w-1/2 mb-1" />
+                        <Skeleton className="h-3 w-1/4" />
                       </div>
                     ))}
                   </div>
-                ) : bookingsData?.length > 0 ? (
-                  <div className="space-y-3">
-                    {bookingsData.slice(0, 5).map((booking: any) => (
-                      <div key={booking.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {booking.title}
-                          </p>
+                ) : bookingsData?.bookings?.length > 0 ? (
+                  <div className="space-y-4">
+                    {bookingsData.bookings.slice(0, 3).map((booking: any) => (
+                      <div key={booking.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-slate-900">{booking.title}</p>
+                          <p className="text-sm text-slate-600">{booking.client?.firstName} {booking.client?.lastName}</p>
                           <p className="text-xs text-slate-500">
-                            {booking.clientName} • {booking.status}
+                            {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
                           </p>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant="outline">
+                            {booking.status}
+                          </Badge>
+                          {booking.rate && (
+                            <p className="text-sm font-medium text-slate-900 mt-1">${booking.rate}</p>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500 text-center py-4">No recent bookings</p>
+                  <p className="text-slate-500 text-center py-8">No recent bookings</p>
                 )}
               </CardContent>
             </Card>
 
-            {/* Recent Talents */}
+            {/* Pending Tasks */}
             <Card>
               <CardHeader className="border-b border-slate-200">
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Talents</span>
-                  <Link href="/admin/talents">
-                    <Button variant="outline" size="sm">View All</Button>
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {talentsLoading ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : talentsData?.length > 0 ? (
-                  <div className="space-y-3">
-                    {talentsData.slice(0, 5).map((talent: any) => (
-                      <div key={talent.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <Users className="w-4 h-4 text-green-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {talent.user?.firstName} {talent.user?.lastName}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {talent.talentProfile?.categories?.[0] || 'Talent'}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-500 text-center py-4">No recent talents</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Recent Tasks */}
-            <Card>
-              <CardHeader className="border-b border-slate-200">
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Tasks</span>
-                  <Link href="/admin/tasks">
-                    <Button variant="outline" size="sm">View All</Button>
-                  </Link>
-                </CardTitle>
+                <CardTitle>Pending Tasks</CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 {tasksLoading ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <Skeleton className="h-10 w-10 rounded-full" />
+                      <div key={i} className="flex items-start space-x-3">
+                        <Skeleton className="w-2 h-2 rounded-full mt-2" />
                         <div className="flex-1">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-16" />
+                          <Skeleton className="h-4 w-3/4 mb-1" />
+                          <Skeleton className="h-3 w-1/2 mb-1" />
+                          <Skeleton className="h-3 w-1/4" />
                         </div>
                       </div>
                     ))}
                   </div>
-                ) : tasksData?.length > 0 ? (
-                  <div className="space-y-3">
-                    {tasksData.slice(0, 5).map((task: any) => (
-                      <div key={task.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                          <ClipboardList className="w-4 h-4 text-orange-600" />
+                ) : tasksData?.tasks?.filter((task: any) => task.status === 'todo').length > 0 ? (
+                  <div className="space-y-4">
+                    {tasksData.tasks
+                      .filter((task: any) => task.status === 'todo')
+                      .slice(0, 4)
+                      .map((task: any) => (
+                        <div key={task.id} className="flex items-start space-x-3">
+                          <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                          <div className="flex-1">
+                            <p className="font-medium text-slate-900">{task.title}</p>
+                            {task.assignee && (
+                              <p className="text-sm text-slate-600">
+                                Assigned to: {task.assignee.firstName} {task.assignee.lastName}
+                              </p>
+                            )}
+                            {task.dueAt && (
+                              <p className="text-xs text-slate-500">
+                                Due: {new Date(task.dueAt).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {task.title}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {task.priority} • {task.status}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500 text-center py-4">No recent tasks</p>
+                  <p className="text-slate-500 text-center py-8">No pending tasks</p>
                 )}
               </CardContent>
             </Card>
