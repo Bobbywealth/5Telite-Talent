@@ -17,7 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 export default function BookRequest() {
   const { toast } = useToast();
   const { isAuthenticated, user } = useAuth();
-  const [showClientSignup, setShowClientSignup] = useState(false);
   
   // Get talent info from URL parameters (NEW WORKFLOW)
   const urlParams = new URLSearchParams(window.location.search);
@@ -63,46 +62,14 @@ export default function BookRequest() {
     }
   }, [selectedTalent]);
   
-  // Check if user needs to create client account
-  useEffect(() => {
-    if (isAuthenticated && user && user.role !== 'client') {
-      setShowClientSignup(true);
-    }
-  }, [isAuthenticated, user]);
-
-  // Convert user to client mutation
-  const convertToClientMutation = useMutation({
-    mutationFn: async () => {
-      return apiRequest("POST", "/api/auth/switch-role", { role: "client" });
-    },
-    onSuccess: () => {
-      setShowClientSignup(false);
-      toast({
-        title: "Account converted to client!",
-        description: "You can now proceed with your booking request.",
-      });
-      // Refresh the page to update user role
-      window.location.reload();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error converting account",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
   
   const bookingMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      return apiRequest("POST", "/api/bookings", {
+      return apiRequest("POST", "/api/bookings/public", {
         ...data,
-        rate: data.budget ? parseFloat(data.budget) : undefined,
-        // NEW WORKFLOW: Include requested talent information for admin review
+        // Include requested talent information for admin review
         talentId: talentId,
         talentName: talentName,
-        clientId: user?.id,
-        createdBy: user?.id,
       });
     },
     onSuccess: () => {
@@ -112,10 +79,21 @@ export default function BookRequest() {
           ? `Your request to book ${talentName} has been sent to our admin team for review. We'll handle the talent outreach and get back to you soon!`
           : "We'll review your request and get back to you within 24 hours.",
       });
-      // Redirect to client dashboard
-      if (user?.role === 'client') {
-        window.location.href = "/client";
-      }
+      // Reset form
+      setFormData({
+        title: "",
+        category: "",
+        startDate: "",
+        endDate: "",
+        location: "",
+        description: "",
+        deliverables: "",
+        clientName: "",
+        clientEmail: "",
+        clientPhone: "",
+        budget: "",
+        talentId: talentId || "",
+      });
     },
     onError: (error) => {
       toast({
@@ -129,36 +107,10 @@ export default function BookRequest() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if user is authenticated and is a client
-    if (!isAuthenticated) {
-      toast({
-        title: "Please sign in first",
-        description: "You need to sign in to submit a booking request.",
-        variant: "destructive",
-      });
-      // Store form data before redirect
-      localStorage.setItem('booking_form_data', JSON.stringify(formData));
-      window.location.href = "/api/login";
-      return;
-    }
-    
-    if (user?.role !== 'client') {
-      setShowClientSignup(true);
-      return;
-    }
-    
+    // Submit directly without authentication
     bookingMutation.mutate(formData);
   };
   
-  const handleConvertToClient = () => {
-    convertToClientMutation.mutate();
-  };
-  
-  const handleSignupAsClient = () => {
-    // Store the current form data to localStorage so we can restore it after login
-    localStorage.setItem('booking_form_data', JSON.stringify(formData));
-    window.location.href = "/api/logout";
-  };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -480,59 +432,6 @@ export default function BookRequest() {
       </section>
 
       <Footer />
-      
-      {/* Client Signup Modal */}
-      {showClientSignup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold mb-4">Setup Client Account</h3>
-            <p className="text-slate-600 mb-6">
-              To book talent, you need a client account. You can either:
-            </p>
-            
-            <div className="space-y-4">
-              {user ? (
-                <>
-                  <Button 
-                    onClick={handleConvertToClient}
-                    disabled={convertToClientMutation.isPending}
-                    className="w-full"
-                  >
-                    {convertToClientMutation.isPending ? "Converting..." : "Convert Current Account to Client"}
-                  </Button>
-                  
-                  <div className="text-center text-sm text-slate-500">
-                    or
-                  </div>
-                  
-                  <Button 
-                    variant="outline" 
-                    onClick={handleSignupAsClient}
-                    className="w-full"
-                  >
-                    Sign Up as New Client
-                  </Button>
-                </>
-              ) : (
-                <Button 
-                  onClick={handleSignupAsClient}
-                  className="w-full"
-                >
-                  Sign Up as Client
-                </Button>
-              )}
-              
-              <Button 
-                variant="ghost" 
-                onClick={() => setShowClientSignup(false)}
-                className="w-full"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

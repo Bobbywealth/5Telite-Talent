@@ -24,6 +24,7 @@ export default function Landing() {
     description: "",
     clientName: "",
     clientEmail: "",
+    clientPhone: "",
   });
 
   // Fetch featured talents
@@ -38,7 +39,7 @@ export default function Landing() {
 
   const bookingMutation = useMutation({
     mutationFn: async (data: typeof bookingForm) => {
-      return apiRequest("POST", "/api/bookings", data);
+      return apiRequest("POST", "/api/bookings/public", data);
     },
     onSuccess: () => {
       toast({
@@ -54,6 +55,7 @@ export default function Landing() {
         description: "",
         clientName: "",
         clientEmail: "",
+        clientPhone: "",
       });
     },
     onError: (error) => {
@@ -495,6 +497,20 @@ export default function Landing() {
                       onChange={(e) => setBookingForm(prev => ({ ...prev, clientEmail: e.target.value }))}
                       required
                       data-testid="input-client-email"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="clientPhone">Phone Number</Label>
+                    <Input
+                      id="clientPhone"
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={bookingForm.clientPhone}
+                      onChange={(e) => setBookingForm(prev => ({ ...prev, clientPhone: e.target.value }))}
+                      data-testid="input-client-phone"
                     />
                   </div>
                 </div>

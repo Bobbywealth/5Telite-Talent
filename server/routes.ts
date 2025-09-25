@@ -841,6 +841,86 @@ Client Signature: _________________________ Date: _____________
   });
 
   // Booking routes
+  // Public booking endpoint (no auth required) - creates booking record and sends email to admin
+  app.post('/api/bookings/public', async (req, res) => {
+    try {
+      const { 
+        title, 
+        category, 
+        startDate, 
+        endDate, 
+        location, 
+        description, 
+        clientName, 
+        clientEmail, 
+        clientPhone,
+        talentId,
+        talentName,
+        budget
+      } = req.body;
+
+      // Validate required fields
+      if (!title || !clientName || !clientEmail) {
+        return res.status(400).json({ 
+          message: "Title, client name, and email are required" 
+        });
+      }
+
+      // Create booking record in database for admin dashboard
+      const bookingData = {
+        title,
+        category: category || null,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
+        location: location || null,
+        description: description || null,
+        clientName,
+        clientEmail,
+        clientPhone: clientPhone || null,
+        status: 'inquiry' as const,
+        // Store talent info if provided
+        requestedTalentId: talentId || null,
+        requestedTalentName: talentName || null,
+        budget: budget ? parseFloat(budget) : null,
+        // No clientId since this is a public submission
+        clientId: null,
+        createdBy: null,
+      };
+
+      const booking = await storage.createBooking(bookingData);
+
+      // Send email notification to admin
+      try {
+        await enhancedEmailService.sendBookingRequestNotification({
+          bookingDetails: {
+            title,
+            category,
+            startDate,
+            endDate,
+            location,
+            description,
+            clientName,
+            clientEmail,
+            clientPhone,
+            bookingId: booking.id // Include booking ID for admin reference
+          }
+        });
+      } catch (emailError) {
+        console.error("Failed to send booking notification email:", emailError);
+        // Don't fail the request if email fails
+      }
+
+      res.json({ 
+        message: "Booking request submitted successfully! We'll get back to you within 24 hours.",
+        success: true,
+        bookingId: booking.id
+      });
+    } catch (error) {
+      console.error("Error processing public booking request:", error);
+      res.status(500).json({ message: "Failed to submit booking request" });
+    }
+  });
+
   app.post('/api/bookings', isAuthenticated, async (req: any, res) => {
     try {
       let bookingData;

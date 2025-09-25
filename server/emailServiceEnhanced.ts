@@ -421,6 +421,107 @@ class EmailServiceEnhanced {
     const html = this.createEmailTemplate("Contract Ready for Signature", content, ctaButton);
     await this.sendEmail(talent.email, subject, html);
   }
+
+  async sendBookingRequestNotification({ bookingDetails }: { 
+    bookingDetails: {
+      title: string;
+      category?: string;
+      startDate?: string;
+      endDate?: string;
+      location?: string;
+      description?: string;
+      clientName: string;
+      clientEmail: string;
+      clientPhone?: string;
+      bookingId?: string;
+    }
+  }) {
+    const subject = `🎬 New Booking Request: ${bookingDetails.title}`;
+    
+    const content = `
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">📋 Booking Request Details</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          ${bookingDetails.bookingId ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; width: 30%;">Booking ID:</td>
+            <td style="padding: 8px 0; font-family: monospace; background: #f5f5f5; padding: 4px 8px; border-radius: 4px;">${bookingDetails.bookingId}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; width: 30%;">Project Title:</td>
+            <td style="padding: 8px 0;">${bookingDetails.title}</td>
+          </tr>
+          ${bookingDetails.category ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Category:</td>
+            <td style="padding: 8px 0;">${bookingDetails.category}</td>
+          </tr>
+          ` : ''}
+          ${bookingDetails.startDate ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Start Date:</td>
+            <td style="padding: 8px 0;">${bookingDetails.startDate}</td>
+          </tr>
+          ` : ''}
+          ${bookingDetails.endDate ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">End Date:</td>
+            <td style="padding: 8px 0;">${bookingDetails.endDate}</td>
+          </tr>
+          ` : ''}
+          ${bookingDetails.location ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Location:</td>
+            <td style="padding: 8px 0;">${bookingDetails.location}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Client Name:</td>
+            <td style="padding: 8px 0;">${bookingDetails.clientName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Client Email:</td>
+            <td style="padding: 8px 0;"><a href="mailto:${bookingDetails.clientEmail}">${bookingDetails.clientEmail}</a></td>
+          </tr>
+          ${bookingDetails.clientPhone ? `
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold;">Client Phone:</td>
+            <td style="padding: 8px 0;"><a href="tel:${bookingDetails.clientPhone}">${bookingDetails.clientPhone}</a></td>
+          </tr>
+          ` : ''}
+        </table>
+      </div>
+      
+      ${bookingDetails.description ? `
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">📝 Project Description</h3>
+        <p style="white-space: pre-wrap;">${bookingDetails.description}</p>
+      </div>
+      ` : ''}
+      
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">⚡ Action Required</h3>
+        <p>Please review this booking request and take appropriate action:</p>
+        <ul>
+          <li>Contact the client to discuss project details</li>
+          <li>Identify suitable talents for the project</li>
+          <li>Review the booking in the admin dashboard${bookingDetails.bookingId ? ` (ID: ${bookingDetails.bookingId})` : ''}</li>
+          <li>Send talent requests as needed</li>
+          <li>Update booking status as you progress</li>
+        </ul>
+      </div>
+    `;
+
+    const ctaButton = {
+      text: 'View Admin Dashboard',
+      url: `${this.frontendUrl}/admin/bookings`,
+      color: "#007bff"
+    };
+
+    const html = this.createEmailTemplate("New Booking Request", content, ctaButton);
+    await this.sendEmail(this.adminEmail, subject, html);
+  }
 }
 
 export const enhancedEmailService = new EmailServiceEnhanced();
