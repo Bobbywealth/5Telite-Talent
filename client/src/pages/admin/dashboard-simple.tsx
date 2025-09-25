@@ -265,6 +265,150 @@ export default function AdminDashboardSimple() {
 
           {/* Calendar Section */}
           <AdminCalendar className="mb-8" />
+
+          {/* Recent Activity Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Recent Bookings */}
+            <Card>
+              <CardHeader className="border-b border-slate-200">
+                <CardTitle className="flex items-center justify-between">
+                  <span>Recent Bookings</span>
+                  <Link href="/admin/bookings">
+                    <Button variant="outline" size="sm">View All</Button>
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {bookingsLoading ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1">
+                          <Skeleton className="h-4 w-24 mb-1" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : bookingsData?.length > 0 ? (
+                  <div className="space-y-3">
+                    {bookingsData.slice(0, 5).map((booking: any) => (
+                      <div key={booking.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 truncate">
+                            {booking.title}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {booking.clientName} • {booking.status}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">No recent bookings</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Talents */}
+            <Card>
+              <CardHeader className="border-b border-slate-200">
+                <CardTitle className="flex items-center justify-between">
+                  <span>Recent Talents</span>
+                  <Link href="/admin/talents">
+                    <Button variant="outline" size="sm">View All</Button>
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {talentsLoading ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1">
+                          <Skeleton className="h-4 w-24 mb-1" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : talentsData?.length > 0 ? (
+                  <div className="space-y-3">
+                    {talentsData.slice(0, 5).map((talent: any) => (
+                      <div key={talent.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <Users className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 truncate">
+                            {talent.user?.firstName} {talent.user?.lastName}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {talent.talentProfile?.categories?.[0] || 'Talent'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">No recent talents</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Tasks */}
+            <Card>
+              <CardHeader className="border-b border-slate-200">
+                <CardTitle className="flex items-center justify-between">
+                  <span>Recent Tasks</span>
+                  <Link href="/admin/tasks">
+                    <Button variant="outline" size="sm">View All</Button>
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {tasksLoading ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1">
+                          <Skeleton className="h-4 w-24 mb-1" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : tasksData?.length > 0 ? (
+                  <div className="space-y-3">
+                    {tasksData.slice(0, 5).map((task: any) => (
+                      <div key={task.id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded-lg">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <ClipboardList className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900 truncate">
+                            {task.title}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {task.priority} • {task.status}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">No recent tasks</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </main>
       </div>
     </div>
