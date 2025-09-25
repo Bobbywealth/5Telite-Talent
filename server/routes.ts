@@ -870,8 +870,8 @@ Client Signature: _________________________ Date: _____________
       const bookingData = {
         title,
         category: category || null,
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: startDate ? new Date(startDate) : new Date(),
+        endDate: endDate ? new Date(endDate) : new Date(),
         location: location || null,
         description: description || null,
         clientName,
@@ -883,8 +883,8 @@ Client Signature: _________________________ Date: _____________
         requestedTalentName: talentName || null,
         budget: budget ? parseFloat(budget) : null,
         // No clientId since this is a public submission
-        clientId: null,
-        createdBy: null,
+        clientId: "public",
+        createdBy: "public",
       };
 
       const booking = await storage.createBooking(bookingData);
@@ -1935,7 +1935,7 @@ Client Signature: _________________________ Date: _____________
         skills: ["Acting", "Voice Acting", "Presenting", "Comedy"],
         bio: "Versatile talent with experience in commercial acting, corporate presentations, and voice work. Professional, reliable, and great with client direction.",
         location: "New York, NY",
-        unionStatus: "SAG-AFTRA",
+        unionStatus: "SAG-AFTRA" as const,
         measurements: {
           height: "5'11\"",
           weight: "175 lbs",
@@ -1996,7 +1996,6 @@ Client Signature: _________________________ Date: _____________
         startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next week
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Same day
         location: "NYC Studio - Manhattan",
-        budget: 1200,
         clientId: user.id, // Admin creating as client
         createdBy: user.id,
         status: "inquiry"
@@ -2546,7 +2545,7 @@ Client Signature: _________________________ Date: _____________
         categories: ["Commercial", "Fashion"],
         skills: ["Acting", "Modeling"],
         location: "New York, NY",
-        unionStatus: "Non-Union",
+        unionStatus: "Non-Union" as const,
         measurements: {
           height: "6'0\"",
           hair: "Brown",
@@ -2556,7 +2555,7 @@ Client Signature: _________________________ Date: _____________
           hourly: 150,
           day: 800
         },
-        approvalStatus: 'approved' // Auto-approved for testing
+        approvalStatus: 'approved' as const // Auto-approved for testing
       };
 
       const profile = await storage.createTalentProfile(basicProfile);
