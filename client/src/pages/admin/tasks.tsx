@@ -52,6 +52,7 @@ export default function AdminTasks() {
     talentId: "",
     assigneeId: "",
     dueAt: "",
+    priority: "medium" as "low" | "medium" | "high",
   });
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showTaskDialog, setShowTaskDialog] = useState(false);
@@ -158,6 +159,7 @@ export default function AdminTasks() {
         talentId: taskData.talentId || null,
         assigneeId: taskData.assigneeId || null,
         dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : null,
+        priority: taskData.priority || "medium",
       };
       
       console.log("Sending task data:", cleanedData);
@@ -175,6 +177,7 @@ export default function AdminTasks() {
         talentId: "",
         assigneeId: "",
         dueAt: "",
+        priority: "medium" as "low" | "medium" | "high",
       });
     },
     onError: (error) => {
@@ -418,13 +421,15 @@ export default function AdminTasks() {
               <h1 className="text-2xl font-bold text-slate-900">Task Management</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                onClick={() => setShowCreateDialog(true)}
+                data-testid="button-create-task"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Task
+              </Button>
+              
               <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                <DialogTrigger asChild>
-                  <Button data-testid="button-create-task">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Task
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Task</DialogTitle>
@@ -490,6 +495,21 @@ export default function AdminTasks() {
                           data-testid="input-task-due-date"
                         />
                       </div>
+                    </div>
+
+                    {/* Priority */}
+                    <div>
+                      <Label htmlFor="priority">Priority</Label>
+                      <Select value={newTask.priority} onValueChange={(value) => setNewTask(prev => ({ ...prev, priority: value as "low" | "medium" | "high" }))}>
+                        <SelectTrigger data-testid="select-task-priority">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low Priority</SelectItem>
+                          <SelectItem value="medium">Medium Priority</SelectItem>
+                          <SelectItem value="high">High Priority</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {/* Assignee - Who will complete this task */}
