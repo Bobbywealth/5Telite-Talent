@@ -30,6 +30,7 @@ import AdminAnnouncements from "@/pages/admin/announcements";
 import AdminTraining from "@/pages/admin/training";
 import AdminReports from "@/pages/admin/reports";
 import AdminApprovals from "@/pages/admin/approvals";
+import AdminApprovalsTest from "@/pages/admin/approvals-test";
 import AdminSettings from "@/pages/admin/settings";
 
 // Talent Pages
@@ -105,7 +106,7 @@ function Router() {
               <Route path="/admin/settings" component={AdminSettings} />
               <Route path="/admin/training" component={AdminTraining} />
               <Route path="/admin/reports" component={AdminReports} />
-              <Route path="/admin/approvals" component={AdminApprovals} />
+              <Route path="/admin/approvals" component={AdminApprovalsTest} />
             </>
           )}
 
