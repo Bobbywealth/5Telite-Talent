@@ -23,6 +23,7 @@ import NotFound from "@/pages/not-found";
 // Admin Pages
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminDashboardTest from "@/pages/admin/dashboard-test";
+import AdminDashboardSimple from "@/pages/admin/dashboard-simple";
 import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminBookingRequests from "@/pages/admin/booking-requests";
@@ -95,7 +96,7 @@ function Router() {
           {/* Admin routes */}
           {user?.role === 'admin' && (
             <>
-              <Route path="/admin" component={AdminDashboardTest} />
+              <Route path="/admin" component={AdminDashboardSimple} />
               <Route path="/admin/booking-requests" component={AdminBookingRequests} />
               <Route path="/admin/talents" component={AdminTalents} />
               <Route path="/admin/bookings" component={AdminBookings} />
