@@ -263,46 +263,8 @@ export default function AdminDashboardSimple() {
           </div>
 
 
-          {/* Calendar Overview */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900">Calendar Overview</h2>
-              <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                8 events
-              </Badge>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Confirmed/Completed</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Pending/In Progress</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Todo/Cancelled</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Other</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm">Today</Button>
-                  <Button variant="outline" size="sm">Back</Button>
-                  <Button variant="outline" size="sm">Next</Button>
-                </div>
-              </div>
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-500">Calendar component will be integrated here</p>
-              </div>
-            </div>
-          </div>
+          {/* Calendar Section */}
+          <AdminCalendar className="mb-8" />
         </main>
       </div>
     </div>
