@@ -109,8 +109,6 @@ function Router() {
             </>
           )}
           
-          {/* Temporary: Make approvals accessible without role check for testing */}
-          <Route path="/admin/approvals" component={AdminApprovals} />
 
           {/* Public routes */}
           <Route path="/talent" component={TalentDirectory} />
