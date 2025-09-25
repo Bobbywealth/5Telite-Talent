@@ -85,7 +85,7 @@ export default function AdminTasks() {
     scope: "general" as Task['scope'],
     priority: "medium" as Task['priority'],
     dueAt: "",
-    assigneeId: "",
+    assigneeId: "unassigned",
     bookingId: "",
     talentId: "",
   });
@@ -124,7 +124,7 @@ export default function AdminTasks() {
         scope: taskData.scope,
         priority: taskData.priority,
         dueAt: taskData.dueAt ? new Date(taskData.dueAt).toISOString() : null,
-        assigneeId: taskData.assigneeId || null,
+        assigneeId: taskData.assigneeId === "unassigned" ? null : taskData.assigneeId || null,
         bookingId: taskData.scope === 'booking' ? taskData.bookingId || null : null,
         talentId: taskData.scope === 'talent' ? taskData.talentId || null : null,
       };
@@ -209,7 +209,7 @@ export default function AdminTasks() {
       scope: "general",
       priority: "medium",
       dueAt: "",
-      assigneeId: "",
+      assigneeId: "unassigned",
       bookingId: "",
       talentId: "",
     });
@@ -239,7 +239,7 @@ export default function AdminTasks() {
       scope: task.scope,
       priority: task.priority || "medium",
       dueAt: task.dueAt ? new Date(task.dueAt).toISOString().split('T')[0] : "",
-      assigneeId: task.assigneeId || "",
+      assigneeId: task.assigneeId || "unassigned",
       bookingId: task.bookingId || "",
       talentId: task.talentId || "",
     });
@@ -278,8 +278,8 @@ export default function AdminTasks() {
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = !statusFilter || task.status === statusFilter;
-    const matchesScope = !scopeFilter || task.scope === scopeFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || task.status === statusFilter;
+    const matchesScope = !scopeFilter || scopeFilter === "all" || task.scope === scopeFilter;
     
     return matchesSearch && matchesStatus && matchesScope;
   });
@@ -365,7 +365,7 @@ export default function AdminTasks() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="todo">To Do</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="blocked">Blocked</SelectItem>
@@ -377,7 +377,7 @@ export default function AdminTasks() {
                     <SelectValue placeholder="All Scopes" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Scopes</SelectItem>
+                    <SelectItem value="all">All Scopes</SelectItem>
                     <SelectItem value="general">General</SelectItem>
                     <SelectItem value="booking">Booking</SelectItem>
                     <SelectItem value="talent">Talent</SelectItem>
@@ -387,8 +387,8 @@ export default function AdminTasks() {
                   variant="outline"
                   onClick={() => {
                     setSearchTerm("");
-                    setStatusFilter("");
-                    setScopeFilter("");
+                    setStatusFilter("all");
+                    setScopeFilter("all");
                   }}
                 >
                   Clear Filters
@@ -642,7 +642,7 @@ export default function AdminTasks() {
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
                           {talent.user.firstName} {talent.user.lastName}
@@ -821,7 +821,7 @@ export default function AdminTasks() {
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
                           {talent.user.firstName} {talent.user.lastName}
