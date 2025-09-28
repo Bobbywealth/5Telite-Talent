@@ -22,16 +22,16 @@ export default function Footer() {
   return (
     <footer className="relative bg-gradient-hero-enhanced overflow-hidden">
       {/* Brand floating elements */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none">
         <div className="floating-shape shape-1"></div>
         <div className="floating-shape shape-3"></div>
         <div className="floating-shape shape-5"></div>
       </div>
       
       {/* Subtle overlay pattern */}
-      <div className="absolute inset-0 bg-black bg-opacity-20 brand-dot-pattern"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-20 brand-dot-pattern pointer-events-none"></div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
@@ -94,25 +94,25 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">For Talent</h3>
             <ul className="space-y-3 text-white/80">
               <li>
-                <a href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer">
+                <a href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer relative z-20 block">
                   <UserPlus className="w-4 h-4 mr-2 text-black" />
                   Join Our Roster
                 </a>
               </li>
               <li>
-                <a href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer">
+                <a href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer relative z-20 block">
                   <User className="w-4 h-4 mr-2 text-black" />
                   Talent Portal
                 </a>
               </li>
               <li>
-                <a href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer">
+                <a href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer relative z-20 block">
                   <Book className="w-4 h-4 mr-2 text-black" />
                   Resources
                 </a>
               </li>
               <li>
-                <a href="/support" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer">
+                <a href="/support" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center cursor-pointer relative z-20 block">
                   <Headphones className="w-4 h-4 mr-2 text-black" />
                   Support
                 </a>
