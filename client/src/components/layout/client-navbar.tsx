@@ -65,8 +65,8 @@ export default function ClientNavbar() {
                 href={item.href}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive(item.href)
-                    ? "bg-primary text-white"
-                    : "text-slate-700 hover:text-primary hover:bg-slate-50"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-700 hover:text-blue-600 hover:bg-slate-50"
                 }`}
                 data-testid={`nav-${item.label.toLowerCase().replace(" ", "-")}`}
               >
@@ -169,8 +169,8 @@ export default function ClientNavbar() {
                   href={item.href}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
                     isActive(item.href)
-                      ? "bg-primary text-white"
-                      : "text-slate-700 hover:text-primary hover:bg-slate-50"
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-700 hover:text-blue-600 hover:bg-slate-50"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   data-testid={`mobile-nav-${item.label.toLowerCase().replace(" ", "-")}`}
