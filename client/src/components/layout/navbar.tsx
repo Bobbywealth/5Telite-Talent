@@ -88,7 +88,7 @@ export default function Navbar() {
               href="/talent"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/talent") 
-                  ? "text-white bg-blue-600 shadow-md" 
+                  ? "text-white bg-blue-600 shadow-md !important" 
                   : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
               }`}
               data-testid="link-find-talent"
