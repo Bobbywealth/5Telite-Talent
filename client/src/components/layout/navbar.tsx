@@ -99,8 +99,8 @@ export default function Navbar() {
               href="/announcements"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/announcements") 
-                  ? "text-white bg-primary shadow-md" 
-                  : "text-slate-800 hover:text-primary hover:bg-slate-50 font-semibold"
+                  ? "text-white bg-blue-600 shadow-md" 
+                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
               }`}
               data-testid="link-announcements"
             >
@@ -110,8 +110,8 @@ export default function Navbar() {
               href="/book"
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/book") 
-                  ? "text-white bg-primary shadow-md" 
-                  : "text-slate-800 hover:text-primary hover:bg-slate-50 font-semibold"
+                  ? "text-white bg-blue-600 shadow-md" 
+                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
               }`}
               data-testid="link-book"
             >
