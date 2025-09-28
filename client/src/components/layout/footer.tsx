@@ -94,28 +94,28 @@ export default function Footer() {
             <h3 className="text-xl font-bold text-white mb-6 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">For Talent</h3>
             <ul className="space-y-3 text-white/80">
               <li>
-                <Link href="/register" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <Link href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <UserPlus className="w-4 h-4 mr-2 text-black" />
                   Join Our Roster
                 </Link>
               </li>
               <li>
-                <Link href="/talent/dashboard" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <Link href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <User className="w-4 h-4 mr-2 text-black" />
                   Talent Portal
                 </Link>
               </li>
               <li>
-                <Link href="/announcements" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <Link href="/auth" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <Book className="w-4 h-4 mr-2 text-black" />
                   Resources
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@5ttalent.com" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <Link href="/support" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <Headphones className="w-4 h-4 mr-2 text-black" />
                   Support
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

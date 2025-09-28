@@ -34,6 +34,7 @@ import AdminTraining from "@/pages/admin/training";
 import AdminReports from "@/pages/admin/reports";
 import AdminApprovals from "@/pages/admin/approvals";
 import AdminSettings from "@/pages/admin/settings";
+import Support from "@/pages/support";
 
 // Talent Pages
 import TalentDashboard from "@/pages/talent/dashboard";
@@ -119,6 +120,7 @@ function Router() {
           <Route path="/announcements" component={Announcements} />
           <Route path="/book" component={BookRequest} />
           <Route path="/register" component={Register} />
+          <Route path="/support" component={Support} />
 
           {/* Client routes */}
           {user?.role === 'client' && (
