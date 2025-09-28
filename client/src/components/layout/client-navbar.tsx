@@ -78,74 +78,88 @@ export default function ClientNavbar() {
 
           {/* Right side - Profile & Notifications */}
           <div className="flex items-center space-x-4">
-            {/* User Info Badge */}
-            <div className="hidden lg:flex items-center space-x-2">
-              <Badge variant="outline" className="text-xs">
-                <User className="w-4 h-4 mr-1" />
-                Client Account
-              </Badge>
-              <Badge 
-                variant={user?.status === 'active' ? 'default' : 'secondary'} 
-                className="text-xs"
-              >
-                <div className="w-2 h-2 bg-current rounded-full mr-1"></div>
-                {user?.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Active'}
-              </Badge>
-            </div>
+            {/* User Info Badge - Only show when logged in */}
+            {user && (
+              <div className="hidden lg:flex items-center space-x-2">
+                <Badge variant="outline" className="text-xs">
+                  <User className="w-4 h-4 mr-1" />
+                  Client Account
+                </Badge>
+                <Badge 
+                  variant={user?.status === 'active' ? 'default' : 'secondary'} 
+                  className="text-xs"
+                >
+                  <div className="w-2 h-2 bg-current rounded-full mr-1"></div>
+                  {user?.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Active'}
+                </Badge>
+              </div>
+            )}
 
-            {/* Notifications */}
-            <NotificationBell />
+            {/* Notifications - Only show when logged in */}
+            {user && <NotificationBell />}
 
-            {/* Profile Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="button-user-menu-client">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.profileImageUrl || undefined} alt="Profile" />
-                    <AvatarFallback className="bg-primary text-white text-sm">
-                      {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium text-sm">
-                      {user?.firstName} {user?.lastName}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {user?.email}
-                    </p>
+            {/* Profile Dropdown - Only show when logged in */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="button-user-menu-client">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user?.profileImageUrl || undefined} alt="Profile" />
+                      <AvatarFallback className="bg-primary text-white text-sm">
+                        {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium text-sm">
+                        {user?.firstName} {user?.lastName}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {user?.email}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="w-full cursor-pointer">
-                    <User className="w-4 h-4 mr-2" />
-                    My Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/client/bookings" className="w-full cursor-pointer">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    My Bookings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="w-full cursor-pointer">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <a href="/api/logout" className="w-full flex items-center">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </a>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="w-full cursor-pointer">
+                      <User className="w-4 h-4 mr-2" />
+                      My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/client/bookings" className="w-full cursor-pointer">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      My Bookings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings" className="w-full cursor-pointer">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <a href="/api/logout" className="w-full flex items-center">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              /* Sign In Button - Show when not logged in */
+              <Button 
+                onClick={() => window.location.href = "/auth"}
+                variant="outline"
+                data-testid="button-sign-in"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            )}
 
             {/* Mobile Menu Toggle */}
             <Button
