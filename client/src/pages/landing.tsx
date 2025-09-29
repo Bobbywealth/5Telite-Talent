@@ -12,6 +12,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Send, Loader2 } from "lucide-react";
 
 export default function Landing() {
   const { toast } = useToast();
@@ -520,17 +521,19 @@ export default function Landing() {
 
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200" 
                   disabled={bookingMutation.isPending}
                   data-testid="button-submit-booking"
                 >
                   {bookingMutation.isPending ? (
                     <>
-                      <i className="fas fa-spinner fa-spin mr-2"></i>Submitting...
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Submitting...
                     </>
                   ) : (
                     <>
-                      <i className="fas fa-paper-plane mr-2"></i>Submit Booking Request
+                      <Send className="w-4 h-4 mr-2" />
+                      Submit Booking Request
                     </>
                   )}
                 </Button>
