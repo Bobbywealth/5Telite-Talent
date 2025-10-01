@@ -262,15 +262,14 @@ export default function AdminDashboardSimple() {
             </Card>
           </div>
 
-          {/* Pending Approvals Section */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Pending Approvals</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Pending Talent Approvals */}
-              <Card>
+          {/* Calendar and Pending Approvals Section - Side by Side */}
+          <div className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Pending Talent Approvals - Left Side */}
+            <div className="lg:col-span-1">
+              <Card className="h-full">
                 <CardHeader className="border-b border-slate-200">
                   <CardTitle className="flex items-center justify-between">
-                    <span>Talent Approvals</span>
+                    <span>Pending Approvals</span>
                     <Badge variant="secondary" className="bg-orange-100 text-orange-800">
                       {pendingUsersLoading ? "..." : (pendingUsersData?.users?.length || 0)}
                     </Badge>
@@ -291,21 +290,21 @@ export default function AdminDashboardSimple() {
                     </div>
                   ) : pendingUsersData?.users?.length > 0 ? (
                     <div className="space-y-4">
-                      {pendingUsersData.users.slice(0, 4).map((user: any) => (
+                      {pendingUsersData.users.slice(0, 5).map((user: any) => (
                         <div key={user.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                           <div className="flex-1">
-                            <p className="font-medium text-slate-900">
+                            <p className="font-medium text-slate-900 text-sm">
                               {user.firstName} {user.lastName}
                             </p>
-                            <p className="text-sm text-slate-600">{user.email}</p>
+                            <p className="text-xs text-slate-600">{user.email}</p>
                             <p className="text-xs text-slate-500">Role: {user.role}</p>
                           </div>
-                          <div className="flex space-x-2 ml-4">
+                          <div className="flex space-x-2 ml-2">
                             <Link href="/admin/approvals">
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50 text-xs px-2 py-1"
                               >
                                 Review
                               </Button>
@@ -313,27 +312,31 @@ export default function AdminDashboardSimple() {
                           </div>
                         </div>
                       ))}
-                      {pendingUsersData.users.length > 4 && (
+                      {pendingUsersData.users.length > 5 && (
                         <div className="text-center pt-2">
-                          <Button variant="outline" size="sm">
-                            View All ({pendingUsersData.users.length - 4} more)
-                          </Button>
+                          <Link href="/admin/approvals">
+                            <Button variant="outline" size="sm" className="text-xs">
+                              View All ({pendingUsersData.users.length - 5} more)
+                            </Button>
+                          </Link>
                         </div>
                       )}
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <CheckCircle className="w-12 h-12 text-green-500 mb-2" />
-                      <p className="text-slate-500">No pending talent approvals</p>
+                      <CheckCircle className="w-12 h-12 text-green-500 mb-2 mx-auto" />
+                      <p className="text-slate-500 text-sm">No pending approvals</p>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </div>
-          </div>
 
-          {/* Calendar Section */}
-          <AdminCalendar className="mb-8" />
+            {/* Calendar - Right Side */}
+            <div className="lg:col-span-2">
+              <AdminCalendar />
+            </div>
+          </div>
 
           {/* Quick Announcements Overview */}
           <div className="mb-8">
