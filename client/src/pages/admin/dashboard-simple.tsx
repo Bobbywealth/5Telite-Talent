@@ -204,17 +204,17 @@ export default function AdminDashboardSimple() {
               </CardContent>
             </Card>
 
-            {/* Monthly Revenue */}
+            {/* Active Contracts */}
             <Card className="bg-gradient-to-br from-emerald-50 to-teal-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-emerald-700 mb-1">Monthly Revenue</p>
+                    <p className="text-sm font-medium text-emerald-700 mb-1">Active Contracts</p>
                     {statsLoading ? (
                       <Skeleton className="h-8 w-20" />
                     ) : (
                       <p className="text-3xl font-bold text-emerald-900 mb-2">
-                        ${statsData?.monthlyRevenue || 0}
+                        {statsData?.totalContracts || 0}
                       </p>
                     )}
                     <div className="w-full bg-emerald-200 rounded-full h-2 mb-3">
