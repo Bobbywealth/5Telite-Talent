@@ -89,10 +89,13 @@ export const bookings = pgTable("bookings", {
   code: varchar("code").notNull().unique(),
   clientId: varchar("client_id").references(() => users.id).notNull(),
   title: varchar("title").notNull(),
+  category: varchar("category"),
+  description: text("description"),
   location: varchar("location"),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   rate: decimal("rate", { precision: 10, scale: 2 }),
+  budget: decimal("budget", { precision: 10, scale: 2 }),
   usage: jsonb("usage"), // territory, term, media
   deliverables: text("deliverables"),
   notes: text("notes"),
@@ -100,6 +103,10 @@ export const bookings = pgTable("bookings", {
   // Store which talent the client wants to book (for admin review)
   requestedTalentId: varchar("requested_talent_id").references(() => users.id),
   requestedTalentName: varchar("requested_talent_name"), // Store name for reference
+  // For public bookings (when clientId = "public")
+  clientName: varchar("client_name"),
+  clientEmail: varchar("client_email"),
+  clientPhone: varchar("client_phone"),
   createdBy: varchar("created_by").references(() => users.id).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

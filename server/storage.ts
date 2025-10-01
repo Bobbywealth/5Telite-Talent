@@ -413,7 +413,7 @@ export class DatabaseStorage implements IStorage {
     let query = db
       .select()
       .from(bookings)
-      .innerJoin(users, eq(bookings.clientId, users.id));
+      .leftJoin(users, eq(bookings.clientId, users.id)); // Changed to leftJoin to handle public bookings
 
     if (joinTalents) {
       query = query.innerJoin(bookingTalents, eq(bookings.id, bookingTalents.bookingId));
@@ -442,9 +442,21 @@ export class DatabaseStorage implements IStorage {
           .innerJoin(users, eq(bookingTalents.talentId, users.id))
           .where(eq(bookingTalents.bookingId, row.bookings.id));
 
+        // For public bookings, create a fake client object from booking data
+        const client = row.users || {
+          id: "public",
+          email: row.bookings.clientEmail || "unknown@example.com",
+          firstName: row.bookings.clientName?.split(' ')[0] || "Public",
+          lastName: row.bookings.clientName?.split(' ').slice(1).join(' ') || "Client",
+          role: "client",
+          status: "active",
+          createdAt: row.bookings.createdAt,
+          updatedAt: row.bookings.updatedAt,
+        };
+
         return {
           ...row.bookings,
-          client: row.users,
+          client: client as User,
           createdBy: createdBy,
           bookingTalents: bookingTalentsResult.map(btRow => ({ ...btRow.booking_talents, talent: btRow.users })),
         } as any;
