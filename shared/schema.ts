@@ -422,3 +422,19 @@ export const insertNotificationSchema = createInsertSchema(notifications);
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
+// Settings table - stores user-specific and platform settings
+export const settings = pgTable("settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id), // null for platform-wide settings
+  settingType: varchar("setting_type").notNull(), // 'platform', 'user', 'admin'
+  settings: jsonb("settings").notNull(), // JSON object containing all settings
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Settings schema for validation
+export const insertSettingsSchema = createInsertSchema(settings);
+
+export type Settings = typeof settings.$inferSelect;
+export type InsertSettings = z.infer<typeof insertSettingsSchema>;

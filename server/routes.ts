@@ -793,13 +793,14 @@ Client Signature: _________________________ Date: _____________
         paymentTerms: z.string().min(1, "Payment terms are required"),
       });
 
-      const settings = settingsSchema.parse(req.body);
+      const validatedSettings = settingsSchema.parse(req.body);
       
-      // For now, just return the validated settings
-      // In the future, you could save these to a database settings table
+      // Save to database
+      const savedSettings = await storage.upsertSettings(null, 'platform', validatedSettings);
+
       res.json({ 
         message: "Settings updated successfully",
-        settings 
+        settings: savedSettings.settings 
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -820,8 +821,10 @@ Client Signature: _________________________ Date: _____________
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      // Return default settings for now
-      // In the future, retrieve from database
+      // Get settings from database
+      const savedSettings = await storage.getSettings(undefined, 'platform');
+      
+      // Default settings if none exist
       const defaultSettings = {
         siteName: "5T Talent Platform",
         siteDescription: "Professional talent booking platform",
@@ -833,7 +836,7 @@ Client Signature: _________________________ Date: _____________
         paymentTerms: "Payment due within 30 days of booking confirmation.",
       };
 
-      res.json(defaultSettings);
+      res.json(savedSettings?.settings || defaultSettings);
     } catch (error) {
       console.error("Error fetching admin settings:", error);
       res.status(500).json({ message: "Failed to fetch settings" });

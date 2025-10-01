@@ -5,6 +5,7 @@ import {
   bookingTalents,
   tasks,
   announcements,
+  settings,
   type User,
   type UpsertUser,
   type TalentProfile,
@@ -17,6 +18,7 @@ import {
   type InsertBookingTalent,
   type Announcement,
   type InsertAnnouncement,
+  type Settings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, ilike, sql, desc, asc } from "drizzle-orm";
@@ -90,6 +92,10 @@ export interface IStorage {
   getAnnouncement(id: string): Promise<(Announcement & { createdBy: User }) | undefined>;
   updateAnnouncement(id: string, announcement: Partial<InsertAnnouncement>): Promise<Announcement>;
   deleteAnnouncement(id: string): Promise<void>;
+
+  // Settings operations
+  getSettings(userId?: string, settingType?: string): Promise<Settings | undefined>;
+  upsertSettings(userId: string | null, settingType: string, settingsData: any): Promise<Settings>;
 
   // Demo data seeding
   seedDemoData(): Promise<void>;
@@ -803,6 +809,59 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAnnouncement(id: string): Promise<void> {
     await db.delete(announcements).where(eq(announcements.id, id));
+  }
+
+  // Settings methods
+  async getSettings(userId?: string, settingType?: string): Promise<Settings | undefined> {
+    const conditions = [];
+    
+    if (userId) {
+      conditions.push(eq(settings.userId, userId));
+    } else {
+      conditions.push(sql`${settings.userId} IS NULL`);
+    }
+    
+    if (settingType) {
+      conditions.push(eq(settings.settingType, settingType));
+    }
+
+    const [result] = await db
+      .select()
+      .from(settings)
+      .where(and(...conditions))
+      .orderBy(desc(settings.updatedAt))
+      .limit(1);
+
+    return result;
+  }
+
+  async upsertSettings(userId: string | null, settingType: string, settingsData: any): Promise<Settings> {
+    // Try to find existing settings
+    const existing = await this.getSettings(userId || undefined, settingType);
+
+    if (existing) {
+      // Update existing settings
+      const [updated] = await db
+        .update(settings)
+        .set({
+          settings: settingsData,
+          updatedAt: new Date(),
+        })
+        .where(eq(settings.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Create new settings
+      const [created] = await db
+        .insert(settings)
+        .values({
+          userId: userId,
+          settingType,
+          settings: settingsData,
+        })
+        .returning();
+      return created;
+    }
   }
 
   async seedDemoData(): Promise<void> {
