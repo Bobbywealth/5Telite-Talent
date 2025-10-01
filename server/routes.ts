@@ -910,6 +910,31 @@ Client Signature: _________________________ Date: _____________
         // Don't fail the request if email fails
       }
 
+      // Create in-app notifications for all admin users
+      try {
+        const adminUsers = await storage.getAdminUsers();
+        if (adminUsers && adminUsers.length > 0) {
+          const notificationData = adminUsers.map(admin => ({
+            userId: admin.id,
+            type: 'booking_request' as const,
+            title: '🎬 New Booking Request',
+            message: `${clientName} submitted a booking request for "${title}"`,
+            data: {
+              bookingId: booking.id,
+              clientName,
+              clientEmail,
+              projectTitle: title,
+            },
+            actionUrl: `/admin/booking-requests`,
+            read: false,
+          }));
+          await NotificationService.createNotifications(notificationData);
+        }
+      } catch (notificationError) {
+        console.error("Failed to create in-app notifications:", notificationError);
+        // Don't fail the request if notification creation fails
+      }
+
       res.json({ 
         message: "Booking request submitted successfully! We'll get back to you within 24 hours.",
         success: true,

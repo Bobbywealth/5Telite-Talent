@@ -30,6 +30,7 @@ export interface IStorage {
   updateUserRole(id: string, role: string): Promise<User>;
   updateUserStatus(id: string, status: string): Promise<User>;
   getPendingUsers(): Promise<User[]>;
+  getAdminUsers(): Promise<User[]>;
 
   // Talent operations
   getTalentProfile(userId: string): Promise<TalentProfile | undefined>;
@@ -190,6 +191,20 @@ export class DatabaseStorage implements IStorage {
     
     // Remove passwords from all users
     return pendingUsers.map(user => {
+      const { password: _, ...userWithoutPassword } = user;
+      return userWithoutPassword as User;
+    });
+  }
+
+  async getAdminUsers(): Promise<User[]> {
+    const adminUsers = await db
+      .select()
+      .from(users)
+      .where(eq(users.role, "admin"))
+      .orderBy(users.createdAt);
+    
+    // Remove passwords from all users
+    return adminUsers.map(user => {
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword as User;
     });
