@@ -16,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Megaphone, Plus, Calendar, MapPin, Mail, Edit, Trash2, Eye } from "lucide-react";
+import { Megaphone, Plus, Calendar, MapPin, Mail, Edit, Trash2, Eye, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { Announcement, InsertAnnouncement } from "@shared/schema";
 
@@ -309,10 +309,22 @@ export default function AdminAnnouncements() {
             onPointerDownOutside={(e) => e.preventDefault()}
             onInteractOutside={(e) => e.preventDefault()}
           >
-              <DialogHeader>
+              <DialogHeader className="relative">
                 <DialogTitle>
                   {editingAnnouncement ? "Edit Announcement" : "Create New Announcement"}
                 </DialogTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-6 w-6 p-0"
+                  onClick={() => {
+                    setIsCreateDialogOpen(false);
+                    setEditingAnnouncement(null);
+                    form.reset();
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </DialogHeader>
               
               <Form {...form}>
@@ -320,43 +332,41 @@ export default function AdminAnnouncements() {
                   onSubmit={form.handleSubmit(editingAnnouncement ? handleEditSubmit : handleCreateSubmit)}
                   className="space-y-6"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Title</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Enter announcement title" data-testid="input-title" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Enter announcement title" data-testid="input-title" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-category">
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="open-call">Open Call</SelectItem>
-                              <SelectItem value="event">Event</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-category" className="w-full">
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="open-call">Open Call</SelectItem>
+                            <SelectItem value="event">Event</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}

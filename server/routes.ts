@@ -278,7 +278,14 @@ Client Signature: _________________________ Date: _____________
 
       // Get stats for admin dashboard
       const [totalTalents, totalBookings, totalContracts, totalTasks] = await Promise.all([
-        db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.role, 'talent')),
+        // Count only approved talents with profiles
+        db.select({ count: sql<number>`count(*)` })
+          .from(talentProfiles)
+          .innerJoin(users, eq(talentProfiles.userId, users.id))
+          .where(and(
+            eq(users.role, 'talent'),
+            eq(talentProfiles.approvalStatus, 'approved')
+          )),
         db.select({ count: sql<number>`count(*)` }).from(bookings),
         db.select({ count: sql<number>`count(*)` }).from(contracts),
         db.select({ count: sql<number>`count(*)` }).from(tasks)
