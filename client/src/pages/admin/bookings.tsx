@@ -93,11 +93,7 @@ export default function AdminBookings() {
       params.set("page", filters.page.toString());
       params.set("limit", "20");
 
-      const response = await fetch(`/api/bookings?${params}`, {
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch bookings");
-      return response.json();
+      return apiRequest("GET", `/api/bookings?${params}`);
     },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
