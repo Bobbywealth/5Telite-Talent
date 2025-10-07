@@ -433,6 +433,29 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Update user information
+  app.patch('/api/users/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const currentUser = await storage.getUser(userId);
+
+      if (!currentUser || currentUser.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const targetUserId = req.params.id;
+      const updates = req.body;
+
+      // Update user in database
+      const updatedUser = await storage.updateUser(targetUserId, updates);
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
   // User role management (placeholder - not implemented in storage yet)
   app.patch('/api/users/:id/role', isAuthenticated, async (req: any, res) => {
     try {

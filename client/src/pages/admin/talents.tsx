@@ -41,6 +41,8 @@ export default function AdminTalents() {
     page: 1,
   });
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingTalent, setEditingTalent] = useState<any>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [newTalentData, setNewTalentData] = useState({
     firstName: "",
     lastName: "",
@@ -504,6 +506,19 @@ export default function AdminTalents() {
                         </TableCell>
                         <TableCell className="py-4">
                           <div className="flex items-center gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              data-testid={`button-edit-${talent.id}`} 
+                              className="text-xs"
+                              onClick={() => {
+                                setEditingTalent(talent);
+                                setShowEditForm(true);
+                              }}
+                            >
+                              <i className="fas fa-edit mr-1"></i>
+                              Edit
+                            </Button>
                             <Dialog>
                               <DialogTrigger asChild>
                                 <Button variant="outline" size="sm" data-testid={`button-view-${talent.id}`} className="text-xs">
@@ -853,6 +868,266 @@ export default function AdminTalents() {
               disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email || newTalentData.categories.length === 0}
             >
               {addTalentMutation.isPending ? "Creating..." : "Add Talent"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Talent Dialog */}
+      <Dialog open={showEditForm} onOpenChange={setShowEditForm}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Talent Profile</DialogTitle>
+            <DialogDescription>
+              Update talent profile information and settings.
+            </DialogDescription>
+          </DialogHeader>
+          {editingTalent && (
+            <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Basic Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">First Name</label>
+                    <Input
+                      value={editingTalent.user.firstName || ""}
+                      onChange={(e) => setEditingTalent({
+                        ...editingTalent,
+                        user: { ...editingTalent.user, firstName: e.target.value }
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Last Name</label>
+                    <Input
+                      value={editingTalent.user.lastName || ""}
+                      onChange={(e) => setEditingTalent({
+                        ...editingTalent,
+                        user: { ...editingTalent.user, lastName: e.target.value }
+                      })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <Input
+                      value={editingTalent.user.email || ""}
+                      onChange={(e) => setEditingTalent({
+                        ...editingTalent,
+                        user: { ...editingTalent.user, email: e.target.value }
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Phone</label>
+                    <Input
+                      value={editingTalent.user.phone || ""}
+                      onChange={(e) => setEditingTalent({
+                        ...editingTalent,
+                        user: { ...editingTalent.user, phone: e.target.value }
+                      })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Stage Name</label>
+                  <Input
+                    value={editingTalent.stageName || ""}
+                    onChange={(e) => setEditingTalent({
+                      ...editingTalent,
+                      stageName: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Bio</label>
+                  <Textarea
+                    value={editingTalent.bio || ""}
+                    onChange={(e) => setEditingTalent({
+                      ...editingTalent,
+                      bio: e.target.value
+                    })}
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Professional Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Professional Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Location</label>
+                    <Input
+                      value={editingTalent.location || ""}
+                      onChange={(e) => setEditingTalent({
+                        ...editingTalent,
+                        location: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Experience</label>
+                    <Select
+                      value={editingTalent.experience || ""}
+                      onValueChange={(value) => setEditingTalent({
+                        ...editingTalent,
+                        experience: value
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select experience level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0-1">0-1 years</SelectItem>
+                        <SelectItem value="2-5">2-5 years</SelectItem>
+                        <SelectItem value="6-10">6-10 years</SelectItem>
+                        <SelectItem value="10+">10+ years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Union Status</label>
+                  <Select
+                    value={editingTalent.unionStatus || ""}
+                    onValueChange={(value) => setEditingTalent({
+                      ...editingTalent,
+                      unionStatus: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select union status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SAG-AFTRA">SAG-AFTRA</SelectItem>
+                      <SelectItem value="Non-Union">Non-Union</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Categories */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Categories & Skills</h3>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Categories</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {editingTalent.categories?.map((category: string) => (
+                      <Badge key={category} variant="secondary" className="flex items-center gap-1">
+                        {category}
+                        <button
+                          type="button"
+                          onClick={() => setEditingTalent({
+                            ...editingTalent,
+                            categories: editingTalent.categories.filter((c: string) => c !== category)
+                          })}
+                          className="ml-1 text-xs hover:text-red-600"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Add category"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const input = e.target as HTMLInputElement;
+                          const category = input.value.trim();
+                          if (category && !editingTalent.categories?.includes(category)) {
+                            setEditingTalent({
+                              ...editingTalent,
+                              categories: [...(editingTalent.categories || []), category]
+                            });
+                            input.value = '';
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Skills</label>
+                  <Textarea
+                    value={editingTalent.skills || ""}
+                    onChange={(e) => setEditingTalent({
+                      ...editingTalent,
+                      skills: e.target.value
+                    })}
+                    rows={2}
+                    placeholder="List your skills separated by commas"
+                  />
+                </div>
+              </div>
+
+              {/* Approval Status */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Status</h3>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Approval Status</label>
+                  <Select
+                    value={editingTalent.approvalStatus || ""}
+                    onValueChange={(value) => setEditingTalent({
+                      ...editingTalent,
+                      approvalStatus: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select approval status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowEditForm(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  // Update user information
+                  await apiRequest("PATCH", `/api/users/${editingTalent.user.id}`, {
+                    firstName: editingTalent.user.firstName,
+                    lastName: editingTalent.user.lastName,
+                    email: editingTalent.user.email,
+                    phone: editingTalent.user.phone,
+                  });
+
+                  // Update talent profile
+                  await apiRequest("PATCH", `/api/talents/${editingTalent.id}`, {
+                    stageName: editingTalent.stageName,
+                    bio: editingTalent.bio,
+                    location: editingTalent.location,
+                    experience: editingTalent.experience,
+                    unionStatus: editingTalent.unionStatus,
+                    categories: editingTalent.categories,
+                    skills: editingTalent.skills,
+                    approvalStatus: editingTalent.approvalStatus,
+                  });
+
+                  toast({ title: "Talent profile updated successfully" });
+                  queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
+                  setShowEditForm(false);
+                  setEditingTalent(null);
+                } catch (error) {
+                  toast({ title: "Failed to update talent profile", variant: "destructive" });
+                }
+              }}
+            >
+              Update Talent
             </Button>
           </div>
         </DialogContent>
