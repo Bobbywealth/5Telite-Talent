@@ -6,6 +6,7 @@ import {
   tasks,
   announcements,
   settings,
+  loginActivity,
   type User,
   type UpsertUser,
   type TalentProfile,
@@ -19,6 +20,8 @@ import {
   type Announcement,
   type InsertAnnouncement,
   type Settings,
+  type LoginActivity,
+  type InsertLoginActivity,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, ilike, sql, desc, asc } from "drizzle-orm";
@@ -96,6 +99,10 @@ export interface IStorage {
   // Settings operations
   getSettings(userId?: string, settingType?: string): Promise<Settings | undefined>;
   upsertSettings(userId: string | null, settingType: string, settingsData: any): Promise<Settings>;
+
+  // Login activity operations
+  recordLoginActivity(userId: string, userRole: string, ipAddress?: string, userAgent?: string): Promise<LoginActivity>;
+  getRecentLoginActivity(limit?: number): Promise<(LoginActivity & { user: User })[]>;
 
   // Demo data seeding
   seedDemoData(): Promise<void>;
@@ -1044,6 +1051,36 @@ export class DatabaseStorage implements IStorage {
     });
 
     console.log("Demo data seeded successfully!");
+  }
+
+  async recordLoginActivity(userId: string, userRole: string, ipAddress?: string, userAgent?: string): Promise<LoginActivity> {
+    const [activity] = await db
+      .insert(loginActivity)
+      .values({
+        userId,
+        userRole: userRole as any,
+        ipAddress,
+        userAgent,
+      })
+      .returning();
+    return activity;
+  }
+
+  async getRecentLoginActivity(limit: number = 10): Promise<(LoginActivity & { user: User })[]> {
+    const results = await db
+      .select()
+      .from(loginActivity)
+      .innerJoin(users, eq(loginActivity.userId, users.id))
+      .orderBy(desc(loginActivity.loginAt))
+      .limit(limit);
+
+    return results.map(row => ({
+      ...row.login_activity,
+      user: {
+        ...row.users,
+        password: undefined, // Remove password from response
+      } as User,
+    }));
   }
 }
 

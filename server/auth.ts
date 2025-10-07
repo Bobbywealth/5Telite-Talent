@@ -178,7 +178,7 @@ export function setupAuth(app: Express) {
 
   // Login endpoint
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err: any, user: any, info: any) => {
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
       if (err) {
         return res.status(500).json({ message: "Login failed" });
       }
@@ -186,10 +186,21 @@ export function setupAuth(app: Express) {
         return res.status(401).json({ message: info?.message || "Invalid credentials" });
       }
       
-      req.login(user, (err) => {
+      req.login(user, async (err) => {
         if (err) {
           return res.status(500).json({ message: "Login failed" });
         }
+        
+        // Record login activity
+        try {
+          const ipAddress = req.ip || req.connection.remoteAddress;
+          const userAgent = req.get('User-Agent');
+          await storage.recordLoginActivity(user.id, user.role, ipAddress, userAgent);
+        } catch (activityError) {
+          console.error("Failed to record login activity:", activityError);
+          // Don't fail the login if activity recording fails
+        }
+        
         res.status(200).json(user);
       });
     })(req, res, next);

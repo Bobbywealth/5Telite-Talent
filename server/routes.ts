@@ -266,6 +266,56 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Admin endpoint to create login activity table
+  app.post('/api/admin/create-login-activity-table', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Create login_activity table
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS login_activity (
+          id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id VARCHAR NOT NULL REFERENCES users(id),
+          user_role user_role NOT NULL,
+          login_at TIMESTAMP NOT NULL DEFAULT NOW(),
+          ip_address VARCHAR,
+          user_agent TEXT,
+          created_at TIMESTAMP DEFAULT NOW()
+        );
+      `);
+
+      res.json({ message: "Login activity table created successfully" });
+    } catch (error) {
+      console.error("Error creating login activity table:", error);
+      res.status(500).json({ message: "Failed to create login activity table" });
+    }
+  });
+
+  // Admin login activity endpoint
+  app.get('/api/admin/login-activity', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { limit = "10" } = req.query;
+      const loginActivity = await storage.getRecentLoginActivity(parseInt(limit as string));
+
+      res.json({ loginActivity });
+    } catch (error) {
+      console.error("Error fetching login activity:", error);
+      res.status(500).json({ message: "Failed to fetch login activity" });
+    }
+  });
+
   // Admin dashboard stats endpoint
   app.get('/api/admin/dashboard-stats', isAuthenticated, async (req: any, res) => {
     try {

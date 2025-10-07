@@ -438,3 +438,20 @@ export const insertSettingsSchema = createInsertSchema(settings);
 
 export type Settings = typeof settings.$inferSelect;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
+
+// Login activity table - tracks user login events
+export const loginActivity = pgTable("login_activity", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  userRole: userRoleEnum("user_role").notNull(),
+  loginAt: timestamp("login_at").notNull().defaultNow(),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Login activity schema for validation
+export const insertLoginActivitySchema = createInsertSchema(loginActivity);
+
+export type LoginActivity = typeof loginActivity.$inferSelect;
+export type InsertLoginActivity = z.infer<typeof insertLoginActivitySchema>;

@@ -48,6 +48,14 @@ export default function AdminDashboardSimple() {
     retry: false,
   });
 
+  // Recent login activity query
+  const { data: loginActivityData, isLoading: loginActivityLoading } = useQuery({
+    queryKey: ["/api/admin/login-activity?limit=5"],
+    queryFn: getQueryFn(),
+    enabled: isAuthenticated && user?.role === 'admin',
+    retry: false,
+  });
+
   // Recent tasks query
   const { data: tasksData, isLoading: tasksLoading } = useQuery({
     queryKey: ["/api/tasks?limit=5"],
@@ -476,6 +484,68 @@ export default function AdminDashboardSimple() {
                   </div>
                 ) : (
                   <p className="text-slate-500 text-center py-8">No pending tasks</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Login Activity */}
+          <div className="mb-8">
+            <Card>
+              <CardHeader className="border-b border-slate-200">
+                <CardTitle className="flex items-center justify-between">
+                  <span>Recent Login Activity</span>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    {loginActivityLoading ? "..." : (loginActivityData?.loginActivity?.length || 0)} logins
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {loginActivityLoading ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-3">
+                        <Skeleton className="w-8 h-8 rounded-full" />
+                        <div className="flex-1">
+                          <Skeleton className="h-4 w-3/4 mb-1" />
+                          <Skeleton className="h-3 w-1/2" />
+                        </div>
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    ))}
+                  </div>
+                ) : loginActivityData?.loginActivity?.length > 0 ? (
+                  <div className="space-y-4">
+                    {loginActivityData.loginActivity.slice(0, 5).map((activity: any) => (
+                      <div key={activity.id} className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-semibold">
+                            {activity.user.firstName?.charAt(0) || activity.user.email?.charAt(0) || 'U'}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-900">
+                            {activity.user.firstName} {activity.user.lastName}
+                          </p>
+                          <p className="text-sm text-slate-600">
+                            {activity.user.role === 'talent' ? '🎭 Talent' : 
+                             activity.user.role === 'admin' ? '👑 Admin' : 
+                             '👤 Client'} • {activity.user.email}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-slate-900">
+                            {new Date(activity.loginAt).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {new Date(activity.loginAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-8">No recent login activity</p>
                 )}
               </CardContent>
             </Card>
