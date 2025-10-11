@@ -2810,117 +2810,79 @@ Client Signature: _________________________ Date: _____________
       // Delete associated data first (in correct order due to foreign key constraints)
       console.log('🗑️ Deleting associated data...');
       
-      // Delete login activity
-      await db.delete(loginActivity).where(eq(loginActivity.userId, userId));
-      console.log('   ✅ Deleted login activity');
-      
-      // Delete notifications
-      await db.delete(notifications).where(eq(notifications.userId, userId));
-      console.log('   ✅ Deleted notifications');
-      
-      // Delete booking talents (if user was assigned to bookings)
-      await db.delete(bookingTalents).where(eq(bookingTalents.talentId, talentId));
-      console.log('   ✅ Deleted booking talent assignments');
-      
-      // Delete bookings created by user
-      await db.delete(bookings).where(eq(bookings.createdBy, userId));
-      console.log('   ✅ Deleted created bookings');
-      
-      // Delete bookings where user was the client
-      await db.delete(bookings).where(eq(bookings.clientId, userId));
-      console.log('   ✅ Deleted client bookings');
-      
-      // Delete tasks assigned to user
-      await db.delete(tasks).where(eq(tasks.assigneeId, userId));
-      console.log('   ✅ Deleted assigned tasks');
-      
-      // Delete contracts created by user
-      await db.delete(contracts).where(eq(contracts.createdBy, userId));
-      console.log('   ✅ Deleted created contracts');
-      
-      // Delete talent profile
-      await db.delete(talentProfiles).where(eq(talentProfiles.id, talentId));
-      console.log('   ✅ Deleted talent profile');
-      
-      // Finally, delete the user
-      await db.delete(users).where(eq(users.id, userId));
-      console.log('   ✅ Deleted user account');
-      
-      console.log(`🎉 Successfully deleted talent profile and user: ${talentId}`);
-      
-      res.json({
-        message: 'Talent profile deleted successfully',
-        deletedTalentId: talentId,
-        deletedUserId: userId
-      });
-      
-    } catch (error) {
-      console.error('❌ Error deleting talent profile:', error);
-      res.status(500).json({ 
-        message: 'Failed to delete talent profile',
-        error: (error as Error).message 
-      });
-    }
-  });
-
-  // Admin endpoint to delete a specific talent
-  app.delete('/api/admin/talents/:talentId', isAuthenticated, async (req: any, res) => {
-    try {
-      if (req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Admin access required' });
+      try {
+        // Delete login activity
+        await db.delete(loginActivity).where(eq(loginActivity.userId, userId));
+        console.log('   ✅ Deleted login activity');
+      } catch (err: any) {
+        console.log('   ⚠️ No login activity to delete:', err.message);
       }
-
-      const { talentId } = req.params;
-      console.log(`🗑️ Admin deleting talent profile: ${talentId}`);
-
-      // Get the talent profile first to get the userId
-      const talentProfile = await db.select().from(talentProfiles).where(eq(talentProfiles.id, talentId)).limit(1);
       
-      if (talentProfile.length === 0) {
-        return res.status(404).json({ message: 'Talent profile not found' });
+      try {
+        // Delete notifications
+        await db.delete(notifications).where(eq(notifications.userId, userId));
+        console.log('   ✅ Deleted notifications');
+      } catch (err: any) {
+        console.log('   ⚠️ No notifications to delete:', err.message);
       }
-
-      const userId = talentProfile[0].userId;
-      console.log(`📋 Found talent profile for user: ${userId}`);
-
-      // Delete associated data first (in correct order due to foreign key constraints)
-      console.log('🗑️ Deleting associated data...');
       
-      // Delete login activity
-      await db.delete(loginActivity).where(eq(loginActivity.userId, userId));
-      console.log('   ✅ Deleted login activity');
+      try {
+        // Delete booking talents (if user was assigned to bookings)
+        await db.delete(bookingTalents).where(eq(bookingTalents.talentId, talentId));
+        console.log('   ✅ Deleted booking talent assignments');
+      } catch (err: any) {
+        console.log('   ⚠️ No booking talent assignments to delete:', err.message);
+      }
       
-      // Delete notifications
-      await db.delete(notifications).where(eq(notifications.userId, userId));
-      console.log('   ✅ Deleted notifications');
+      try {
+        // Delete bookings created by user
+        await db.delete(bookings).where(eq(bookings.createdBy, userId));
+        console.log('   ✅ Deleted created bookings');
+      } catch (err: any) {
+        console.log('   ⚠️ No created bookings to delete:', err.message);
+      }
       
-      // Delete booking talents (if user was assigned to bookings)
-      await db.delete(bookingTalents).where(eq(bookingTalents.talentId, talentId));
-      console.log('   ✅ Deleted booking talent assignments');
+      try {
+        // Delete bookings where user was the client
+        await db.delete(bookings).where(eq(bookings.clientId, userId));
+        console.log('   ✅ Deleted client bookings');
+      } catch (err: any) {
+        console.log('   ⚠️ No client bookings to delete:', err.message);
+      }
       
-      // Delete bookings created by user
-      await db.delete(bookings).where(eq(bookings.createdBy, userId));
-      console.log('   ✅ Deleted created bookings');
+      try {
+        // Delete tasks assigned to user
+        await db.delete(tasks).where(eq(tasks.assigneeId, userId));
+        console.log('   ✅ Deleted assigned tasks');
+      } catch (err: any) {
+        console.log('   ⚠️ No assigned tasks to delete:', err.message);
+      }
       
-      // Delete bookings where user was the client
-      await db.delete(bookings).where(eq(bookings.clientId, userId));
-      console.log('   ✅ Deleted client bookings');
+      try {
+        // Delete contracts created by user
+        await db.delete(contracts).where(eq(contracts.createdBy, userId));
+        console.log('   ✅ Deleted created contracts');
+      } catch (err: any) {
+        console.log('   ⚠️ No contracts to delete:', err.message);
+      }
       
-      // Delete tasks assigned to user
-      await db.delete(tasks).where(eq(tasks.assigneeId, userId));
-      console.log('   ✅ Deleted assigned tasks');
+      try {
+        // Delete talent profile
+        await db.delete(talentProfiles).where(eq(talentProfiles.id, talentId));
+        console.log('   ✅ Deleted talent profile');
+      } catch (err: any) {
+        console.log('   ❌ Failed to delete talent profile:', err.message);
+        throw err;
+      }
       
-      // Delete contracts created by user
-      await db.delete(contracts).where(eq(contracts.createdBy, userId));
-      console.log('   ✅ Deleted created contracts');
-      
-      // Delete talent profile
-      await db.delete(talentProfiles).where(eq(talentProfiles.id, talentId));
-      console.log('   ✅ Deleted talent profile');
-      
-      // Finally, delete the user
-      await db.delete(users).where(eq(users.id, userId));
-      console.log('   ✅ Deleted user account');
+      try {
+        // Finally, delete the user
+        await db.delete(users).where(eq(users.id, userId));
+        console.log('   ✅ Deleted user account');
+      } catch (err: any) {
+        console.log('   ❌ Failed to delete user account:', err.message);
+        throw err;
+      }
       
       console.log(`🎉 Successfully deleted talent profile and user: ${talentId}`);
       
