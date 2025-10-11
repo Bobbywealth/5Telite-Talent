@@ -18,8 +18,8 @@ import { emailService } from "./emailService";
 import { enhancedEmailService } from "./emailServiceEnhanced";
 import { NotificationService } from "./notificationService";
 import { db } from "./db";
-import { bookings, users, talentProfiles, bookingTalents, contracts, signatures, tasks, notifications } from "@shared/schema";
-import { eq, sql, and, desc } from "drizzle-orm";
+import { bookings, users, talentProfiles, bookingTalents, contracts, signatures, tasks, notifications, loginActivity } from "@shared/schema";
+import { eq, sql, and, desc, or, like } from "drizzle-orm";
 import filesRouter from './routes/files';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -2784,6 +2784,111 @@ Client Signature: _________________________ Date: _____________
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
       res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
+  // Admin endpoint to remove Bobby test accounts
+  app.delete('/api/admin/remove-bobby-accounts', isAuthenticated, async (req: any, res) => {
+    try {
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      console.log('🔍 Searching for Bobby test accounts...');
+      
+      // Find Bobby accounts
+      const bobbyUsers = await db.select().from(users).where(
+        or(
+          like(users.email, '%bobby%'),
+          like(users.firstName, '%Bobby%'),
+          and(
+            like(users.firstName, '%Test%'),
+            like(users.lastName, '%Bobby%')
+          )
+        )
+      );
+      
+      if (bobbyUsers.length === 0) {
+        return res.json({ 
+          message: 'No Bobby test accounts found',
+          removedCount: 0,
+          accounts: []
+        });
+      }
+      
+      console.log(`📋 Found ${bobbyUsers.length} Bobby account(s):`);
+      bobbyUsers.forEach((user, index) => {
+        console.log(`   ${index + 1}. ${user.firstName} ${user.lastName} (${user.email}) - ${user.role} - ${user.status}`);
+      });
+      
+      // Delete associated data first (in correct order due to foreign key constraints)
+      for (const user of bobbyUsers) {
+        console.log(`\n🗑️  Removing data for ${user.firstName} ${user.lastName}...`);
+        
+        // Delete login activity
+        await db.delete(loginActivity).where(eq(loginActivity.userId, user.id));
+        console.log('   ✅ Deleted login activity');
+        
+        // Delete notifications
+        await db.delete(notifications).where(eq(notifications.userId, user.id));
+        console.log('   ✅ Deleted notifications');
+        
+        // Note: talentPageViews and documents tables don't exist in current schema
+        
+        // Delete talent profile (if exists)
+        await db.delete(talentProfiles).where(eq(talentProfiles.userId, user.id));
+        console.log('   ✅ Deleted talent profile');
+        
+        // Delete booking talents (if user was assigned to bookings)
+        const talentProfileIds = await db.select({ id: talentProfiles.id })
+          .from(talentProfiles)
+          .where(eq(talentProfiles.userId, user.id));
+        
+        for (const profile of talentProfileIds) {
+          await db.delete(bookingTalents).where(eq(bookingTalents.talentId, profile.id));
+        }
+        console.log('   ✅ Deleted booking talent assignments');
+        
+        // Delete bookings created by user
+        await db.delete(bookings).where(eq(bookings.createdBy, user.id));
+        console.log('   ✅ Deleted created bookings');
+        
+        // Delete bookings where user was the client
+        await db.delete(bookings).where(eq(bookings.clientId, user.id));
+        console.log('   ✅ Deleted client bookings');
+        
+        // Delete tasks assigned to user
+        await db.delete(tasks).where(eq(tasks.assigneeId, user.id));
+        console.log('   ✅ Deleted assigned tasks');
+        
+        // Delete contracts created by user
+        await db.delete(contracts).where(eq(contracts.createdBy, user.id));
+        console.log('   ✅ Deleted created contracts');
+        
+        // Finally, delete the user
+        await db.delete(users).where(eq(users.id, user.id));
+        console.log('   ✅ Deleted user account');
+      }
+      
+      console.log('\n🎉 Successfully removed all Bobby test accounts and associated data!');
+      
+      res.json({
+        message: 'Successfully removed Bobby test accounts',
+        removedCount: bobbyUsers.length,
+        accounts: bobbyUsers.map(user => ({
+          id: user.id,
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          role: user.role
+        }))
+      });
+      
+    } catch (error) {
+      console.error('❌ Error removing Bobby accounts:', error);
+      res.status(500).json({ 
+        message: 'Failed to remove Bobby accounts',
+        error: (error as Error).message 
+      });
     }
   });
 

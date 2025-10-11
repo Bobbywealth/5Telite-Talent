@@ -2,6 +2,7 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,6 +35,7 @@ import AdminTraining from "@/pages/admin/training";
 import AdminReports from "@/pages/admin/reports";
 import AdminApprovals from "@/pages/admin/approvals";
 import AdminSettings from "@/pages/admin/settings";
+import RemoveBobby from "@/pages/admin/remove-bobby";
 import Support from "@/pages/support";
 
 // Talent Pages
@@ -110,6 +112,7 @@ function Router() {
               <Route path="/admin/training" component={AdminTraining} />
               <Route path="/admin/reports" component={AdminReports} />
               <Route path="/admin/approvals" component={AdminApprovals} />
+              <Route path="/admin/remove-bobby" component={RemoveBobby} />
             </>
           )}
           
@@ -155,18 +158,20 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <LanguageProvider>
-          <TimezoneProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
-          </TimezoneProvider>
-        </LanguageProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <TimezoneProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </TimezoneProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

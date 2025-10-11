@@ -13,6 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Loader2 } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 export default function Landing() {
   const { toast } = useToast();
@@ -75,6 +76,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="5T Elite Talent Platform - Professional Talent Booking & Management"
+        description="Connect with top-tier professional talent for your events, productions, and projects. Browse verified profiles, book talent directly, and manage your entertainment needs with 5T Elite."
+        keywords="talent booking, professional talent, entertainment booking, actors, models, performers, casting, production, events, talent management"
+        url="/"
+      />
       <Navbar />
 
       {/* Hero Section */}
