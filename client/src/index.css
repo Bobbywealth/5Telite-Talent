@@ -62,7 +62,7 @@
   left: 50% !important;
   top: 50% !important;
   transform: translate(-50%, -50%) !important;
-  z-index: 9999 !important;
+  z-index: 50 !important;
   background: white !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
   max-width: 90vw !important;
@@ -683,5 +683,12 @@ main {
   [data-radix-dropdown-menu-viewport],
   [data-radix-dropdown-menu-item] {
     position: absolute !important;
+    z-index: 60 !important;
+  }
+
+  /* Fix SelectContent positioning within modals */
+  .fixed.inset-0 [data-radix-select-content] {
+    position: fixed !important;
+    z-index: 70 !important;
   }
 }
