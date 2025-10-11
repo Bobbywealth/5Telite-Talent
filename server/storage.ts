@@ -457,10 +457,14 @@ export class DatabaseStorage implements IStorage {
     // Get created by user and booking talents for each booking
     const bookingsWithDetails = await Promise.all(
       results.map(async (row) => {
-        const [createdBy] = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, row.bookings.createdBy));
+        let createdBy = null;
+        if (row.bookings.createdBy) {
+          const [userResult] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, row.bookings.createdBy));
+          createdBy = userResult;
+        }
 
         const bookingTalentsResult = await db
           .select()
@@ -483,7 +487,16 @@ export class DatabaseStorage implements IStorage {
         return {
           ...row.bookings,
           client: client as User,
-          createdBy: createdBy,
+          createdBy: createdBy || {
+            id: "system",
+            email: "system@5telite.org",
+            firstName: "System",
+            lastName: "Admin",
+            role: "admin",
+            status: "active",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          } as User,
           bookingTalents: bookingTalentsResult.map(btRow => ({ ...btRow.booking_talents, talent: btRow.users })),
         } as any;
       })

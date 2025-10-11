@@ -153,8 +153,10 @@ export default function AdminSettings() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminNavbar />
-      
-      <div className="flex-1">
+      <div className="flex">
+        <AdminSidebar />
+        <div className="flex-1 lg:ml-64">
+          <div className="flex-1">
 
         {/* Desktop Header */}
         <header className="hidden xl:block bg-white shadow-sm border-b border-slate-200 px-6 py-4">
@@ -903,6 +905,8 @@ export default function AdminSettings() {
             </div>
           </div>
         </main>
+          </div>
+        </div>
       </div>
     </div>
   );

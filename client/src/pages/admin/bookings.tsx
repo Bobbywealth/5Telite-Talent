@@ -316,8 +316,10 @@ export default function AdminBookings() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminNavbar />
-
-      <div className="flex-1">
+      <div className="flex">
+        <AdminSidebar />
+        <div className="flex-1 lg:ml-64">
+          <div className="flex-1">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
           <div className="flex justify-between items-center">
@@ -907,6 +909,8 @@ export default function AdminBookings() {
             </CardContent>
           </Card>
         </main>
+          </div>
+        </div>
       </div>
     </div>
   );
