@@ -410,19 +410,21 @@ export default function ContractsPage() {
 
       {/* Contract Detail Dialog */}
       <Dialog open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>{selectedContract?.title}</DialogTitle>
             <DialogDescription>
               Contract details and signature status
             </DialogDescription>
           </DialogHeader>
-          {selectedContract && (
-            <ContractViewer 
-              contract={selectedContract}
-              currentUserId={user?.id || ""}
-            />
-          )}
+          <div className="flex-1 overflow-y-auto">
+            {selectedContract && (
+              <ContractViewer 
+                contract={selectedContract}
+                currentUserId={user?.id || ""}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

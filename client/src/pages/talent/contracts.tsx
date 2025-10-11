@@ -289,7 +289,7 @@ export default function TalentContractsPage() {
           setShowSignature(false);
         }}>
           <DialogContent 
-            className="max-w-4xl max-h-[90vh] overflow-y-auto" 
+            className="max-w-4xl max-h-[90vh] flex flex-col" 
             style={{ zIndex: 50 }}
             onPointerDownOutside={(e) => e.preventDefault()}
           >
@@ -299,14 +299,16 @@ export default function TalentContractsPage() {
                 Contract details and signature status
               </DialogDescription>
             </DialogHeader>
-            {selectedContract && (
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <ContractViewer 
-                  contract={selectedContract}
-                  currentUserId={user?.id || ""}
-                />
-              </div>
-            )}
+            <div className="flex-1 overflow-y-auto">
+              {selectedContract && (
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <ContractViewer 
+                    contract={selectedContract}
+                    currentUserId={user?.id || ""}
+                  />
+                </div>
+              )}
+            </div>
           </DialogContent>
         </Dialog>
 

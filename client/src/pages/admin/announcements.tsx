@@ -305,7 +305,7 @@ export default function AdminAnnouncements() {
           }}
         >
           <DialogContent 
-            className="max-w-2xl max-h-[90vh] overflow-y-auto" 
+            className="max-w-2xl max-h-[90vh] flex flex-col" 
             onPointerDownOutside={(e) => e.preventDefault()}
             onInteractOutside={(e) => e.preventDefault()}
           >
@@ -327,9 +327,10 @@ export default function AdminAnnouncements() {
                 </Button>
               </DialogHeader>
               
-              <Form {...form}>
-                <form 
-                  onSubmit={form.handleSubmit(editingAnnouncement ? handleEditSubmit : handleCreateSubmit)}
+              <div className="flex-1 overflow-y-auto">
+                <Form {...form}>
+                  <form 
+                    onSubmit={form.handleSubmit(editingAnnouncement ? handleEditSubmit : handleCreateSubmit)}
                   className="space-y-6"
                 >
                   <FormField
@@ -541,6 +542,7 @@ export default function AdminAnnouncements() {
                   </div>
                 </form>
               </Form>
+              </div>
           </DialogContent>
         </Dialog>
 

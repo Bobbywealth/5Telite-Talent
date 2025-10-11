@@ -591,7 +591,7 @@ export default function AuthPage() {
                                   <SelectValue placeholder="Select your role" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="bg-white border-0 shadow-xl rounded-xl">
+                              <SelectContent className="bg-white border-0 shadow-xl rounded-xl z-[999999]">
                                 <SelectItem value="talent" className="hover:bg-purple-50 focus:bg-purple-50 rounded-lg p-3 m-1">
                                   <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
