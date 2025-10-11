@@ -1571,6 +1571,7 @@ Client Signature: _________________________ Date: _____________
 
   app.post('/api/tasks', isAuthenticated, async (req: any, res) => {
     try {
+      console.log("📝 Creating task with data:", req.body);
       const userId = req.user.id;
       const user = await storage.getUser(userId);
 
@@ -1582,7 +1583,9 @@ Client Signature: _________________________ Date: _____________
         ...req.body,
         createdBy: userId // Automatically set the createdBy field to the authenticated user
       });
+      console.log("✅ Parsed task data:", taskData);
       const task = await storage.createTask(taskData);
+      console.log("🎉 Task created successfully:", task);
       
       // 📧 Send email notification to assigned talent about new task
       try {
@@ -1600,9 +1603,10 @@ Client Signature: _________________________ Date: _____________
       res.json(task);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("❌ Validation error:", error.errors);
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }
-      console.error("Error creating task:", error);
+      console.error("❌ Error creating task:", error);
       res.status(500).json({ message: "Failed to create task" });
     }
   });
