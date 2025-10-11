@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import logoImage from "@assets/5t-logo.png";
-import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Search, Menu, ChevronDown, Settings, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Search, Menu, ChevronDown, Settings, BarChart3, Home } from "lucide-react";
 
 export default function AdminNavbar() {
   const { user } = useAuth();
@@ -28,6 +28,7 @@ export default function AdminNavbar() {
   };
 
   const navigationItems = [
+    { href: "/", label: "Homepage", icon: Home },
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/talents", label: "Manage Talents", icon: Users },
     { href: "/admin/bookings", label: "Manage Bookings", icon: Calendar },
@@ -80,7 +81,7 @@ export default function AdminNavbar() {
               </SheetContent>
             </Sheet>
             
-            <Link href="/admin" className="flex items-center" data-testid="link-logo-admin">
+            <Link href="/" className="flex items-center" data-testid="link-logo-admin">
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 

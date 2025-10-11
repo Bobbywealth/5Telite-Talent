@@ -8,9 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from "@assets/5t-logo.png";
-import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3, Shield, Trash2 } from "lucide-react";
+import { LayoutDashboard, Users, Search, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3, Shield, Trash2, Home } from "lucide-react";
 
 const sidebarItems = [
+  {
+    title: "Homepage",
+    href: "/",
+    icon: Home,
+  },
   {
     title: "Dashboard",
     href: "/admin",

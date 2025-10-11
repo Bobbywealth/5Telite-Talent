@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoImage from "@assets/5t-logo.png";
 import { NotificationBell } from "@/components/ui/notification-bell";
-import { Home, User, Calendar, ClipboardList, FileText, Users, Menu, ChevronDown, Settings, LogOut } from "lucide-react";
+import { Home, User, Calendar, ClipboardList, FileText, Users, Menu, ChevronDown, Settings, LogOut, House } from "lucide-react";
 
 
 export default function TalentNavbar() {
@@ -30,6 +30,7 @@ export default function TalentNavbar() {
   };
 
   const navigationItems = [
+    { href: "/", label: "Homepage", icon: House },
     { href: "/talent/dashboard", label: "Dashboard", icon: Home },
     { href: "/talent/profile", label: "My Profile", icon: User },
     { href: "/talent/bookings", label: "My Bookings", icon: Calendar },
@@ -81,7 +82,7 @@ export default function TalentNavbar() {
               </SheetContent>
             </Sheet>
             
-            <Link href="/dashboard" className="flex items-center" data-testid="link-logo-talent">
+            <Link href="/" className="flex items-center" data-testid="link-logo-talent">
               <img 
                 src={logoImage} 
                 alt="5T Talent Platform" 
