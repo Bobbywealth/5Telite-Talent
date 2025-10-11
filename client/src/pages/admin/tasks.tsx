@@ -364,7 +364,7 @@ export default function AdminTasks() {
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60]">
+                  <SelectContent className="z-[999999]">
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="todo">To Do</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
@@ -376,7 +376,7 @@ export default function AdminTasks() {
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="All Scopes" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60]">
+                  <SelectContent className="z-[999999]">
                     <SelectItem value="all">All Scopes</SelectItem>
                     <SelectItem value="general">General</SelectItem>
                     <SelectItem value="booking">Booking</SelectItem>
@@ -460,7 +460,7 @@ export default function AdminTasks() {
                             <SelectTrigger className="w-32">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="z-[60]">
+                            <SelectContent className="z-[999999]">
                               <SelectItem value="todo">To Do</SelectItem>
                               <SelectItem value="in_progress">In Progress</SelectItem>
                               <SelectItem value="blocked">Blocked</SelectItem>
@@ -537,10 +537,10 @@ export default function AdminTasks() {
       {showCreateDialog && (
         <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
           <div 
-            className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-200"
+            className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6">
+            <div className="p-6 flex-1 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Create New Task</h2>
                 <Button
@@ -585,7 +585,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -600,7 +600,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -616,7 +616,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -641,7 +641,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[60]">
+                    <SelectContent className="z-[999999]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -660,7 +660,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select booking" />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         {bookingsData?.bookings?.map((booking: any) => (
                           <SelectItem key={booking.id} value={booking.id}>
                             {booking.title} (#{booking.code})
@@ -678,7 +678,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select talent" />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         {talentsData?.talents?.map((talent: any) => (
                           <SelectItem key={talent.userId} value={talent.userId}>
                             {talent.user.firstName} {talent.user.lastName}
@@ -715,10 +715,10 @@ export default function AdminTasks() {
       {showEditDialog && selectedTask && (
         <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
           <div 
-            className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-200"
+            className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6">
+            <div className="p-6 flex-1 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Edit Task</h2>
                 <Button
@@ -764,7 +764,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -779,7 +779,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -795,7 +795,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -820,7 +820,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[60]">
+                    <SelectContent className="z-[999999]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -839,7 +839,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select booking" />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         {bookingsData?.bookings?.map((booking: any) => (
                           <SelectItem key={booking.id} value={booking.id}>
                             {booking.title} (#{booking.code})
@@ -857,7 +857,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select talent" />
                       </SelectTrigger>
-                      <SelectContent className="z-[60]">
+                      <SelectContent className="z-[999999]">
                         {talentsData?.talents?.map((talent: any) => (
                           <SelectItem key={talent.userId} value={talent.userId}>
                             {talent.user.firstName} {talent.user.lastName}
