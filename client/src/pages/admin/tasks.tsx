@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
+import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -297,16 +298,19 @@ export default function AdminTasks() {
     return (
       <div className="min-h-screen bg-slate-50">
         <AdminNavbar />
-        <div className="flex-1 p-6">
+        <div className="flex">
+          <AdminSidebar />
+          <div className="flex-1 p-6">
             <div className="space-y-4">
               <Skeleton className="h-8 w-64" />
               <Skeleton className="h-32 w-full" />
               <Skeleton className="h-64 w-full" />
             </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   if (!isAuthenticated || user?.role !== 'admin') {
     return (
@@ -322,7 +326,10 @@ export default function AdminTasks() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminNavbar />
-      <div className="flex-1 p-6">
+      <div className="flex">
+        <AdminSidebar />
+        
+        <div className="flex-1 p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -528,7 +535,7 @@ export default function AdminTasks() {
 
       {/* Create Task Dialog */}
       {showCreateDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
           <div 
             className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -706,7 +713,7 @@ export default function AdminTasks() {
 
       {/* Edit Task Dialog */}
       {showEditDialog && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
           <div 
             className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
