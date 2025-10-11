@@ -662,15 +662,26 @@ main {
     pointer-events: none !important;
   }
   
-  button,
-  [role="button"],
-  input,
-  textarea,
-  select,
-  [data-testid*="input"],
-  [data-testid*="select"] {
+  /* Apply positioning only to specific elements, not Radix UI components */
+  button:not([data-radix-select-trigger]):not([data-radix-dropdown-menu-trigger]),
+  [role="button"]:not([data-radix-select-trigger]):not([data-radix-dropdown-menu-trigger]),
+  input:not([data-radix-select-trigger]),
+  textarea:not([data-radix-select-trigger]),
+  select:not([data-radix-select-trigger]),
+  [data-testid*="input"]:not([data-radix-select-trigger]),
+  [data-testid*="select"]:not([data-radix-select-trigger]) {
     pointer-events: auto !important;
     position: relative !important;
     z-index: 999999 !important;
+  }
+
+  /* Ensure Radix UI components use their default positioning */
+  [data-radix-select-content],
+  [data-radix-select-viewport],
+  [data-radix-select-item],
+  [data-radix-dropdown-menu-content],
+  [data-radix-dropdown-menu-viewport],
+  [data-radix-dropdown-menu-item] {
+    position: absolute !important;
   }
 }
