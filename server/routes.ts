@@ -1183,6 +1183,96 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
+  // Admin endpoint for all bookings (similar to booking-requests but for all bookings)
+  app.get('/api/admin/bookings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { 
+        status, 
+        talentId, 
+        page = "1", 
+        limit = "20" 
+      } = req.query;
+
+      const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
+
+      // Build conditions for filtering
+      const conditions = [];
+      if (status) {
+        conditions.push(eq(bookings.status, status as any));
+      }
+
+      // Get all bookings with client info
+      let query = db
+        .select({
+          booking: bookings,
+          client: users,
+        })
+        .from(bookings)
+        .leftJoin(users, eq(bookings.clientId, users.id));
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions)) as any;
+      }
+
+      const results = await query
+        .limit(parseInt(limit as string))
+        .offset(offset)
+        .orderBy(desc(bookings.createdAt));
+
+      // Get booking talents for each booking
+      const bookingsWithDetails = await Promise.all(
+        results.map(async (row) => {
+          const bookingTalentsResult = await db
+            .select()
+            .from(bookingTalents)
+            .innerJoin(users, eq(bookingTalents.talentId, users.id))
+            .where(eq(bookingTalents.bookingId, row.booking.id));
+
+          // For public bookings, create a fake client object from booking data
+          const client = row.client || {
+            id: "public",
+            email: row.booking.clientEmail || "unknown@example.com",
+            firstName: row.booking.clientName?.split(' ')[0] || "Public",
+            lastName: row.booking.clientName?.split(' ').slice(1).join(' ') || "Client",
+            role: "client",
+            status: "active",
+            createdAt: row.booking.createdAt,
+            updatedAt: row.booking.updatedAt,
+          };
+
+          return {
+            ...row.booking,
+            client: client as User,
+            bookingTalents: bookingTalentsResult.map(btRow => ({ ...btRow.booking_talents, talent: btRow.users })),
+          } as any;
+        })
+      );
+
+      // Get total count
+      let countQuery = db.select({ count: sql<number>`count(*)` }).from(bookings);
+      if (conditions.length > 0) {
+        countQuery = countQuery.where(and(...conditions)) as any;
+      }
+      const [countResult] = await countQuery;
+
+      res.json({
+        bookings: bookingsWithDetails,
+        total: countResult.count,
+      });
+
+    } catch (error) {
+      console.error("Error fetching admin bookings:", error);
+      res.status(500).json({ message: "Failed to fetch bookings" });
+    }
+  });
+
   // NEW: Admin endpoint to see bookings with requested talents 
   app.get('/api/admin/booking-requests', isAuthenticated, async (req: any, res) => {
     try {

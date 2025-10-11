@@ -86,14 +86,14 @@ export default function AdminBookings() {
 
   // Fetch bookings with filters
   const { data: bookingsData, isLoading: bookingsLoading, error } = useQuery({
-    queryKey: ["/api/bookings", filters],
+    queryKey: ["/api/admin/bookings", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters.status) params.set("status", filters.status);
       params.set("page", filters.page.toString());
       params.set("limit", "20");
 
-      return apiRequest("GET", `/api/bookings?${params}`);
+      return apiRequest("GET", `/api/admin/bookings?${params}`);
     },
     enabled: isAuthenticated && user?.role === 'admin',
     retry: false,
@@ -109,7 +109,7 @@ export default function AdminBookings() {
         title: "Success",
         description: "Booking updated successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings"] });
     },
     onError: (error: Error) => {
       if (isUnauthorizedError(error)) {
@@ -196,7 +196,7 @@ export default function AdminBookings() {
       setShowTalentSelection(false);
       setSelectedTalents([]);
       setNewBookingId("");
-      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings"] });
       toast({
         title: "Success",
         description: "Booking requests sent successfully to selected talents!",

@@ -10,64 +10,64 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logoImage from "@assets/5t-logo.png";
 import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3, Shield, Trash2 } from "lucide-react";
 
-const sidebarItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Approvals",
-    href: "/admin/approvals",
-    icon: Shield,
-    showBadge: true,
-  },
-  {
-    title: "Talent Management",
-    href: "/admin/talents",
-    icon: Users,
-  },
-  {
-    title: "Booking Requests",
-    href: "/admin/booking-requests",
-    icon: Calendar,
-  },
-  {
-    title: "Bookings",
-    href: "/admin/bookings",
-    icon: Calendar,
-  },
-  {
-    title: "Task Manager",
-    href: "/admin/tasks",
-    icon: ClipboardList,
-  },
-  {
-    title: "Announcements",
-    href: "/admin/announcements",
-    icon: Megaphone,
-  },
-  {
-    title: "Contracts",
-    href: "/admin/contracts",
-    icon: FileText,
-  },
-  {
-    title: "Training Guide",
-    href: "/admin/training",
-    icon: BookOpen,
-  },
-  {
-    title: "Reports & Analytics",
-    href: "/admin/reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Remove Bobby Test",
-    href: "/admin/remove-bobby",
-    icon: Trash2,
-  },
-];
+  const sidebarItems = [
+    {
+      title: "Dashboard",
+      href: "/admin",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Approvals",
+      href: "/admin/approvals",
+      icon: Shield,
+      showBadge: true,
+    },
+    {
+      title: "Talent Management",
+      href: "/admin/talents",
+      icon: Users,
+    },
+    {
+      title: "Booking Requests",
+      href: "/admin/booking-requests",
+      icon: Calendar,
+    },
+    {
+      title: "All Bookings",
+      href: "/admin/bookings",
+      icon: Calendar,
+    },
+    {
+      title: "Task Manager",
+      href: "/admin/tasks",
+      icon: ClipboardList,
+    },
+    {
+      title: "Announcements",
+      href: "/admin/announcements",
+      icon: Megaphone,
+    },
+    {
+      title: "Contracts",
+      href: "/admin/contracts",
+      icon: FileText,
+    },
+    {
+      title: "Training Guide",
+      href: "/admin/training",
+      icon: BookOpen,
+    },
+    {
+      title: "Reports & Analytics",
+      href: "/admin/reports",
+      icon: BarChart3,
+    },
+    {
+      title: "Remove Bobby Test",
+      href: "/admin/remove-bobby",
+      icon: Trash2,
+    },
+  ];
 
 interface AdminSidebarProps {
   isMobileOpen?: boolean;
