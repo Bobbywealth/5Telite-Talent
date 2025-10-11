@@ -214,9 +214,7 @@ export default function AdminAnnouncements() {
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminNavbar />
-      <div className="flex">
-        <AdminSidebar />
-        <div className="flex-1 lg:ml-64 p-8">
+      <div className="flex-1 p-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -693,7 +691,6 @@ export default function AdminAnnouncements() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        </div>
       </div>
     </div>
   );

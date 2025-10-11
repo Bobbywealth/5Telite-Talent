@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
-import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminCalendar from "@/components/admin/admin-calendar";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
@@ -152,10 +151,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <AdminNavbar />
-      <div className="flex">
-        <AdminSidebar />
-        <div className="flex-1 lg:ml-64">
-          <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen">
         {/* Main Content Area */}
         <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-8">
           {/* Hero Section */}
@@ -644,8 +640,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
-        </main>
-          </div>
+            </main>
         </div>
       </div>
     </div>

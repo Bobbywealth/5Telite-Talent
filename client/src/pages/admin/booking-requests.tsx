@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,10 +53,7 @@ export default function AdminBookingRequests() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminNavbar />
-      <div className="flex">
-        <AdminSidebar />
-      
-        <div className="flex-1 lg:ml-64 p-8 overflow-auto">
+      <div className="flex-1 p-8 overflow-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Client Booking Requests</h1>
           <p className="text-slate-600">Review booking requests from clients and manage talent outreach</p>
@@ -180,7 +176,6 @@ export default function AdminBookingRequests() {
             ))}
           </div>
         )}
-        </div>
       </div>
     </div>
   );

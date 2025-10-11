@@ -6,7 +6,6 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { GcsImage } from "@/components/GcsImage";
-import AdminSidebar from "@/components/layout/admin-sidebar";
 import AdminNavbar from "@/components/layout/admin-navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -321,9 +320,7 @@ export default function AdminTalents() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminNavbar />
-      <div className="flex">
-        <AdminSidebar />
-        <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
           <div className="flex-1">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
@@ -1244,7 +1241,6 @@ export default function AdminTalents() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-        </div>
       </div>
     </div>
   );
