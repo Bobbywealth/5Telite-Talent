@@ -1198,14 +1198,18 @@ export default function AdminTalents() {
 
       {/* Delete Talent Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white border-2 border-red-200 shadow-2xl max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Talent Profile</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl font-bold text-red-600 flex items-center">
+              <Trash2 className="h-5 w-5 mr-2" />
+              Delete Talent Profile
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-700 text-base leading-relaxed">
               Are you sure you want to delete the talent profile for{" "}
-              <strong>{deletingTalent?.user?.firstName} {deletingTalent?.user?.lastName}</strong>?
-              This action cannot be undone and will permanently remove:
-              <ul className="mt-2 ml-4 list-disc text-sm">
+              <strong className="text-red-600 font-semibold">{deletingTalent?.user?.firstName} {deletingTalent?.user?.lastName}</strong>?
+              <br /><br />
+              <span className="text-red-600 font-semibold">This action cannot be undone and will permanently remove:</span>
+              <ul className="mt-3 ml-4 list-disc text-sm space-y-1 text-slate-600">
                 <li>The talent profile and all associated data</li>
                 <li>Profile images and media</li>
                 <li>Booking history and assignments</li>
@@ -1213,16 +1217,29 @@ export default function AdminTalents() {
               </ul>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteTalentMutation.isPending}>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel 
+              disabled={deleteTalentMutation.isPending}
+              className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteTalentMutation.mutate(deletingTalent?.userId)}
               disabled={deleteTalentMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
+              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold"
             >
-              {deleteTalentMutation.isPending ? "Deleting..." : "Delete Talent"}
+              {deleteTalentMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Talent
+                </>
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
