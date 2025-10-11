@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationBell } from "@/components/ui/notification-bell";
-import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock, BookOpen, Megaphone } from "lucide-react";
+import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock, BookOpen, Megaphone, Shield, BarChart3 } from "lucide-react";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -206,6 +206,18 @@ export default function AdminDashboard() {
                   <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Training Guide
+                  </Button>
+                </Link>
+                <Link href="/admin/approvals">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Approvals
+                  </Button>
+                </Link>
+                <Link href="/admin/reports">
+                  <Button className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105">
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Reports
                   </Button>
                 </Link>
               </div>
