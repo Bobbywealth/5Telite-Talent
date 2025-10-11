@@ -142,7 +142,7 @@ export function setupAuth(app: Express) {
         // Send confirmation email but don't log in
         try {
           if (role === "talent") {
-            await enhancedEmailService.sendTalentWelcomeEmail(userWithoutPassword);
+            await enhancedEmailService.sendTalentWelcomeEmail({...userWithoutPassword, password: ''});
           }
         } catch (emailError) {
           console.error("Failed to send welcome email:", emailError);
@@ -158,7 +158,7 @@ export function setupAuth(app: Express) {
       // 📧 Send welcome email for approved users
       if (role === "talent") {
         try {
-          await enhancedEmailService.sendTalentWelcomeEmail(userWithoutPassword);
+          await enhancedEmailService.sendTalentWelcomeEmail({...userWithoutPassword, password: ''});
         } catch (emailError) {
           console.error("Failed to send welcome email to new talent:", emailError);
           // Don't fail the request if email fails

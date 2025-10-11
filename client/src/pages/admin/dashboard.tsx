@@ -316,19 +316,19 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-amber-700 mb-1">Pending Approvals</p>
-                    {pendingTalentsLoading ? (
+                    {talentsLoading ? (
                       <div className="py-1">
                         <Skeleton className="h-8 w-16" />
                       </div>
                     ) : (
                       <p className="text-3xl font-bold text-amber-900 mb-2" data-testid="text-pending-approvals">
-                        {pendingTalentsData?.talents?.length || 0}
+                        {talentsData?.talents?.filter((t: any) => t.talentProfile?.approvalStatus === 'pending').length || 0}
                       </p>
                     )}
                     <div className="w-full bg-amber-200 rounded-full h-2 mb-3">
                       <div 
                         className="bg-gradient-to-r from-amber-500 to-orange-600 h-2 rounded-full transition-all duration-500" 
-                        style={{width: (pendingTalentsData?.talents?.length || 0) > 0 ? '40%' : '100%'}}
+                        style={{width: (talentsData?.talents?.filter((t: any) => t.talentProfile?.approvalStatus === 'pending').length || 0) > 0 ? '40%' : '100%'}}
                       ></div>
                     </div>
                   </div>
@@ -338,11 +338,11 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center">
-                    {(pendingTalentsData?.talents?.length || 0) > 0 ? (
+                    {(talentsData?.talents?.filter((t: any) => t.talentProfile?.approvalStatus === 'pending').length || 0) > 0 ? (
                       <>
                         <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
                         <span className="text-orange-600 font-semibold">Action needed</span>
-                        <span className="text-slate-600 ml-1">for {pendingTalentsData?.talents?.length}</span>
+                        <span className="text-slate-600 ml-1">for {talentsData?.talents?.filter((t: any) => t.talentProfile?.approvalStatus === 'pending').length}</span>
                       </>
                     ) : (
                       <>
@@ -352,8 +352,8 @@ export default function AdminDashboard() {
                       </>
                     )}
                   </div>
-                  <Badge variant="outline" className={`text-xs ${(pendingTalentsData?.talents?.length || 0) > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
-                    {(pendingTalentsData?.talents?.length || 0) > 0 ? 'Urgent' : 'Clear'}
+                  <Badge variant="outline" className={`text-xs ${(talentsData?.talents?.filter((t: any) => t.talentProfile?.approvalStatus === 'pending').length || 0) > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
+                    {(talentsData?.talents?.filter((t: any) => t.talentProfile?.approvalStatus === 'pending').length || 0) > 0 ? 'Urgent' : 'Clear'}
                   </Badge>
                 </div>
               </CardContent>

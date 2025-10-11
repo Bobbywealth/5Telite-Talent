@@ -486,7 +486,7 @@ export default function TalentProfile() {
               {/* Image Counter Dots */}
               {talent.mediaUrls.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {talent.mediaUrls.map((_, index) => (
+                  {talent.mediaUrls.map((_: any, index: number) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}

@@ -964,7 +964,7 @@ Client Signature: _________________________ Date: _____________
         // Store talent info if provided
         requestedTalentId: talentId || null,
         requestedTalentName: talentName || null,
-        budget: budget ? parseFloat(budget) : null,
+        budget: budget || null,
         // No clientId since this is a public submission
         clientId: "public",
         createdBy: "public",
@@ -2538,11 +2538,11 @@ Client Signature: _________________________ Date: _____________
   app.post('/api/setup/create-sample-tasks', async (req: any, res) => {
     try {
       // Get the first admin user from the database
-      const users = await db.select().from(users).where(eq(users.role, 'admin')).limit(1);
-      if (users.length === 0) {
+      const adminUsers = await db.select().from(users).where(eq(users.role, 'admin')).limit(1);
+      if (adminUsers.length === 0) {
         return res.status(400).json({ message: "No admin user found" });
       }
-      const userId = users[0].id;
+      const userId = adminUsers[0].id;
 
       // Create sample tasks
       const sampleTasks = [

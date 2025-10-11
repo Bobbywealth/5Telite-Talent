@@ -396,15 +396,15 @@ export default function ContractsPage() {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          {renderContractList(contracts.filter((c: Contract) => c.status === 'draft' || c.status === 'sent'), "active")}
+          {renderContractList((contracts as any[]).filter((c: Contract) => c.status === 'draft' || c.status === 'sent'), "active")}
         </TabsContent>
 
         <TabsContent value="completed" className="space-y-4">
-          {renderContractList(contracts.filter((c: Contract) => c.status === 'signed'), "completed")}
+          {renderContractList((contracts as any[]).filter((c: Contract) => c.status === 'signed'), "completed")}
         </TabsContent>
 
         <TabsContent value="all" className="space-y-4">
-          {renderContractList(contracts, "all")}
+          {renderContractList(contracts as any[], "all")}
         </TabsContent>
       </Tabs>
 
