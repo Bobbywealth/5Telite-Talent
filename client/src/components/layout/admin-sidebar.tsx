@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import logoImage from "@assets/5t-logo.png";
-import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3, Shield, Trash2 } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Megaphone, BookOpen, BarChart3, Shield } from "lucide-react";
 
   const sidebarItems = [
     {
@@ -62,11 +61,6 @@ import { LayoutDashboard, Users, Calendar, ClipboardList, FileText, Megaphone, B
       href: "/admin/reports",
       icon: BarChart3,
     },
-    {
-      title: "Remove Bobby Test",
-      href: "/admin/remove-bobby",
-      icon: Trash2,
-    },
   ];
 
 interface AdminSidebarProps {
@@ -98,17 +92,6 @@ export default function AdminSidebar({ isMobileOpen, onMobileToggle }: AdminSide
 
   const SidebarContent = () => (
     <>
-      {/* Header */}
-      <div className="p-4 border-b border-slate-200 flex justify-center">
-        <Link href="/" data-testid="link-logo-admin" className="block">
-          <img 
-            src={logoImage} 
-            alt="5T Talent Platform" 
-            className="h-10 w-auto max-w-full object-contain hover:scale-105 transition-transform duration-200"
-          />
-        </Link>
-      </div>
-
       {/* Navigation */}
       <nav className="mt-6">
         <div className="px-6 space-y-2">
