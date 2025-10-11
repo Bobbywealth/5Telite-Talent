@@ -26,8 +26,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Menu } from "lucide-react";
+import { Menu, Trash2 } from "lucide-react";
 import { NotificationBell } from "@/components/ui/notification-bell";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminTalents() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -43,6 +53,8 @@ export default function AdminTalents() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingTalent, setEditingTalent] = useState<any>(null);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [deletingTalent, setDeletingTalent] = useState<any>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [newTalentData, setNewTalentData] = useState({
     firstName: "",
     lastName: "",
@@ -220,6 +232,42 @@ export default function AdminTalents() {
         description: error.message,
         variant: "destructive",
       });
+    },
+  });
+
+  // Delete talent mutation
+  const deleteTalentMutation = useMutation({
+    mutationFn: async (talentId: string) => {
+      return apiRequest("DELETE", `/api/admin/talents/${talentId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Talent profile deleted successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
+      setShowDeleteDialog(false);
+      setDeletingTalent(null);
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      setShowDeleteDialog(false);
+      setDeletingTalent(null);
     },
   });
 
@@ -518,6 +566,19 @@ export default function AdminTalents() {
                             >
                               <i className="fas fa-edit mr-1"></i>
                               Edit
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              data-testid={`button-delete-${talent.id}`} 
+                              className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                setDeletingTalent(talent);
+                                setShowDeleteDialog(true);
+                              }}
+                            >
+                              <Trash2 className="w-3 h-3 mr-1" />
+                              Delete
                             </Button>
                             <Dialog>
                               <DialogTrigger asChild>
@@ -1132,6 +1193,38 @@ export default function AdminTalents() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Talent Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Talent Profile</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the talent profile for{" "}
+              <strong>{deletingTalent?.user?.firstName} {deletingTalent?.user?.lastName}</strong>?
+              This action cannot be undone and will permanently remove:
+              <ul className="mt-2 ml-4 list-disc text-sm">
+                <li>The talent profile and all associated data</li>
+                <li>Profile images and media</li>
+                <li>Booking history and assignments</li>
+                <li>Task assignments and completion records</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteTalentMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTalentMutation.mutate(deletingTalent?.userId)}
+              disabled={deleteTalentMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteTalentMutation.isPending ? "Deleting..." : "Delete Talent"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );
