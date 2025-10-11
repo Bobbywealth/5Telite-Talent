@@ -19,7 +19,7 @@ import { enhancedEmailService } from "./emailServiceEnhanced";
 import { NotificationService } from "./notificationService";
 import { db } from "./db";
 import { bookings, users, talentProfiles, bookingTalents, contracts, signatures, tasks, notifications, loginActivity } from "@shared/schema";
-import { eq, sql, and, desc, or, like } from "drizzle-orm";
+import { eq, sql, and, desc, or, like, ilike } from "drizzle-orm";
 import filesRouter from './routes/files';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -2796,15 +2796,16 @@ Client Signature: _________________________ Date: _____________
 
       console.log('🔍 Searching for Bobby test accounts...');
       
-      // Find Bobby accounts
+      // Find Bobby accounts (case-insensitive search)
       const bobbyUsers = await db.select().from(users).where(
         or(
-          like(users.email, '%bobby%'),
-          like(users.firstName, '%Bobby%'),
-          and(
-            like(users.firstName, '%Test%'),
-            like(users.lastName, '%Bobby%')
-          )
+          ilike(users.email, '%bobby%'),
+          ilike(users.firstName, '%bobby%'),
+          ilike(users.lastName, '%bobby%'),
+          ilike(users.firstName, '%test%'),
+          ilike(users.lastName, '%test%'),
+          ilike(users.firstName, '%update%'),
+          ilike(users.lastName, '%update%')
         )
       );
       
