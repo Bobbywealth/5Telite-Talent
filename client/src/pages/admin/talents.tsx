@@ -1225,7 +1225,7 @@ export default function AdminTalents() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteTalentMutation.mutate(deletingTalent?.userId)}
+              onClick={() => deleteTalentMutation.mutate(deletingTalent?.id)}
               disabled={deleteTalentMutation.isPending}
               className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold"
             >
