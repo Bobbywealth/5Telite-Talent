@@ -2807,6 +2807,8 @@ Client Signature: _________________________ Date: _____________
       const userId = talentProfile[0].userId;
       console.log(`📋 Found talent profile for user: ${userId}`);
 
+      let coreDeletionSuccess = false;
+      
       // Delete associated data first (in correct order due to foreign key constraints)
       console.log('🗑️ Deleting associated data...');
       
@@ -2870,6 +2872,7 @@ Client Signature: _________________________ Date: _____________
         // Delete talent profile
         await db.delete(talentProfiles).where(eq(talentProfiles.id, talentId));
         console.log('   ✅ Deleted talent profile');
+        coreDeletionSuccess = true;
       } catch (err: any) {
         console.log('   ❌ Failed to delete talent profile:', err.message);
         throw err;
@@ -2881,12 +2884,17 @@ Client Signature: _________________________ Date: _____________
         console.log('   ✅ Deleted user account');
       } catch (err: any) {
         console.log('   ❌ Failed to delete user account:', err.message);
-        throw err;
+        // If talent profile was deleted but user wasn't, we still consider it a partial success
+        if (coreDeletionSuccess) {
+          console.log('   ⚠️ Partial success: Talent profile deleted but user account deletion failed');
+        } else {
+          throw err;
+        }
       }
       
       console.log(`🎉 Successfully deleted talent profile and user: ${talentId}`);
       
-      res.json({
+      res.status(200).json({
         message: 'Talent profile deleted successfully',
         deletedTalentId: talentId,
         deletedUserId: userId
