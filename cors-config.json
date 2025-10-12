@@ -1,0 +1,9 @@
+[
+  {
+    "origin": ["https://www.5telite.org", "https://5telite.org", "http://localhost:5000"],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin"],
+    "maxAgeSeconds": 3600
+  }
+]
+
