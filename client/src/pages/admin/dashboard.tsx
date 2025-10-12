@@ -91,6 +91,26 @@ export default function AdminDashboard() {
     },
   });
 
+  // Setup age verification fields mutation
+  const setupAgeVerificationMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/admin/setup-age-verification", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Age Verification Setup Complete",
+        description: "Age verification fields have been added to users table!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: "Failed to setup age verification: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Setup bookings category column mutation
   const setupBookingsCategoryMutation = useMutation({
     mutationFn: async () => {
@@ -306,6 +326,14 @@ export default function AdminDashboard() {
                     Reports
                   </Button>
                 </Link>
+                <Button 
+                  onClick={() => setupAgeVerificationMutation.mutate()}
+                  disabled={setupAgeVerificationMutation.isPending}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  {setupAgeVerificationMutation.isPending ? "Setting Up..." : "Setup Age Verification"}
+                </Button>
                 <Button 
                   onClick={() => setupBookingsCategoryMutation.mutate()}
                   disabled={setupBookingsCategoryMutation.isPending}
