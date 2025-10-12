@@ -270,6 +270,63 @@ export default function AdminTalents() {
     },
   });
 
+  // Update talent mutation
+  const updateTalentMutation = useMutation({
+    mutationFn: async ({ talentId, talentData, userData }: { 
+      talentId: string; 
+      talentData: any; 
+      userData: any; 
+    }) => {
+      // Update user information first
+      await apiRequest("PATCH", `/api/users/${userData.id}`, {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phone: userData.phone,
+      });
+
+      // Update talent profile
+      return apiRequest("PATCH", `/api/talents/${talentId}`, {
+        stageName: talentData.stageName,
+        bio: talentData.bio,
+        location: talentData.location,
+        experience: talentData.experience,
+        unionStatus: talentData.unionStatus,
+        categories: talentData.categories,
+        skills: talentData.skills,
+        approvalStatus: talentData.approvalStatus,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Talent profile updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
+      setShowEditForm(false);
+      setEditingTalent(null);
+    },
+    onError: (error: any) => {
+      console.error("Error updating talent:", error);
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to update talent profile.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updateFilter = (key: string, value: string) => {
     setFilters(prev => ({
       ...prev,
@@ -1156,38 +1213,18 @@ export default function AdminTalents() {
               Cancel
             </Button>
             <Button
-              onClick={async () => {
-                try {
-                  // Update user information
-                  await apiRequest("PATCH", `/api/users/${editingTalent.user.id}`, {
-                    firstName: editingTalent.user.firstName,
-                    lastName: editingTalent.user.lastName,
-                    email: editingTalent.user.email,
-                    phone: editingTalent.user.phone,
-                  });
-
-                  // Update talent profile
-                  await apiRequest("PATCH", `/api/talents/${editingTalent.id}`, {
-                    stageName: editingTalent.stageName,
-                    bio: editingTalent.bio,
-                    location: editingTalent.location,
-                    experience: editingTalent.experience,
-                    unionStatus: editingTalent.unionStatus,
-                    categories: editingTalent.categories,
-                    skills: editingTalent.skills,
-                    approvalStatus: editingTalent.approvalStatus,
-                  });
-
-                  toast({ title: "Talent profile updated successfully" });
-                  queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
-                  setShowEditForm(false);
-                  setEditingTalent(null);
-                } catch (error) {
-                  toast({ title: "Failed to update talent profile", variant: "destructive" });
-                }
+              onClick={() => {
+                if (!editingTalent) return;
+                
+                updateTalentMutation.mutate({
+                  talentId: editingTalent.id,
+                  talentData: editingTalent,
+                  userData: editingTalent.user
+                });
               }}
+              disabled={updateTalentMutation.isPending}
             >
-              Update Talent
+              {updateTalentMutation.isPending ? "Updating..." : "Update Talent"}
             </Button>
           </div>
         </DialogContent>

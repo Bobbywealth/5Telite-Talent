@@ -10,6 +10,7 @@ import {
   insertBookingSchema,
   insertTaskSchema,
   insertAnnouncementSchema,
+  User,
 } from "@shared/schema";
 // Object storage imports removed - now using Google Cloud Storage
 import { ObjectPermission } from "./objectAcl";
@@ -692,9 +693,9 @@ Client Signature: _________________________ Date: _____________
 
       // Check if profile already exists
       try {
-        const existingProfile = await storage.getTalentProfile(userId);
-        if (existingProfile) {
-          return res.status(400).json({ message: "Talent profile already exists" });
+      const existingProfile = await storage.getTalentProfile(userId);
+      if (existingProfile) {
+        return res.status(400).json({ message: "Talent profile already exists" });
         }
       } catch (error) {
         // Profile doesn't exist, which is what we want
@@ -716,29 +717,6 @@ Client Signature: _________________________ Date: _____________
     }
   });
 
-  // Update talent profile
-  app.patch('/api/talents/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const profileId = req.params.id;
-      const userId = req.user.id;
-      const user = await storage.getUser(userId);
-
-      if (!user || user.role !== 'talent') {
-        return res.status(403).json({ message: "Talent access required" });
-      }
-
-      // Only allow updating own profile (by user ID)
-      if (profileId !== userId) {
-        return res.status(403).json({ message: "Can only update own profile" });
-      }
-
-      const updatedProfile = await storage.updateTalentProfile(userId, req.body);
-      res.json(updatedProfile);
-    } catch (error) {
-      console.error("Error updating talent profile:", error);
-      res.status(500).json({ message: "Failed to update talent profile" });
-    }
-  });
 
   // Admin endpoint to create talent profiles for new users
   app.post('/api/talents/admin-create', isAuthenticated, async (req: any, res) => {
@@ -1367,7 +1345,7 @@ Client Signature: _________________________ Date: _____________
       if (!booking) {
         return res.status(404).json({ message: "Booking not found" });
       }
-
+      
       // Add each talent to the booking
       const bookingTalents = [];
       for (const talentId of talentIds) {

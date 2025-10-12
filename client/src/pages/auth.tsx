@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
-import { Eye, EyeOff, Sparkles, Users, Briefcase, Shield, CheckCircle, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Users, Briefcase, Shield, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import logoImage from "@assets/5t-logo.png";
 
 const loginSchema = z.object({
