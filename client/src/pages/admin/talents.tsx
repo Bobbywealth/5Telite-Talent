@@ -1262,7 +1262,7 @@ export default function AdminTalents() {
                 if (!editingTalent) return;
                 
                 updateTalentMutation.mutate({
-                  talentId: editingTalent.id,
+                  talentId: editingTalent.userId,  // Use userId instead of talent profile id
                   talentData: editingTalent,
                   userData: editingTalent.user
                 });
