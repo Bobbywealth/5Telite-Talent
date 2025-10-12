@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import path from "path";
 import express from "express";
+import crypto from "crypto";
 import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, hashPassword } from "./auth";
@@ -51,7 +52,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Generate reset token (random 32-byte hex string)
-      const crypto = await import('crypto');
       const resetToken = crypto.randomBytes(32).toString('hex');
       const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
       
@@ -90,7 +90,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Hash the token to compare with stored hash
-      const crypto = await import('crypto');
       const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
       // Find user with valid reset token
