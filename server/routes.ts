@@ -789,9 +789,16 @@ Client Signature: _________________________ Date: _____________
 
       const profile = await storage.updateTalentProfile(targetUserId, profileData);
       res.json(profile);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating talent profile:", error);
-      res.status(500).json({ message: "Failed to update talent profile" });
+      console.error("Error details:", error.message, error.stack);
+      console.error("Profile data:", profileData);
+      console.error("Target user ID:", targetUserId);
+      res.status(500).json({ 
+        message: "Failed to update talent profile",
+        error: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   });
 
