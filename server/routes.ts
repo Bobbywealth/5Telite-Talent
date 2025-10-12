@@ -1166,6 +1166,10 @@ Client Signature: _________________________ Date: _____________
 
   app.post('/api/bookings', isAuthenticated, async (req: any, res) => {
     try {
+      console.log('=== CREATE BOOKING REQUEST ===');
+      console.log('User ID:', req.user?.id);
+      console.log('Request body:', JSON.stringify(req.body, null, 2));
+      
       let bookingData;
       
       // Convert date strings to Date objects for validation
@@ -1174,6 +1178,8 @@ Client Signature: _________________________ Date: _____________
         startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
         endDate: req.body.endDate ? new Date(req.body.endDate) : undefined,
       };
+      
+      console.log('Processed body:', JSON.stringify(processedBody, null, 2));
       
       // Extract talent info for admin review (NEW WORKFLOW)
       const { talentId, talentName, talents, ...bookingInfo } = processedBody;
@@ -1194,20 +1200,33 @@ Client Signature: _________________________ Date: _____________
         bookingData = insertBookingSchema.parse(processedBody);
       }
 
+      console.log('Pre-validation booking data:', JSON.stringify(bookingData, null, 2));
       bookingData = insertBookingSchema.parse(bookingData);
+      console.log('Post-validation booking data:', JSON.stringify(bookingData, null, 2));
+      
       const booking = await storage.createBooking(bookingData);
+      console.log('Booking created successfully:', booking.id);
       
       // NOTE: We NO LONGER automatically create booking_talents records
       // Admin will handle talent outreach manually
       
       res.json(booking);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        console.error("Booking validation error:", error.errors);
-        return res.status(400).json({ message: "Validation error", errors: error.errors });
+        console.error("Booking validation error:", JSON.stringify(error.errors, null, 2));
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors,
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        });
       }
       console.error("Error creating booking:", error);
-      res.status(500).json({ message: "Failed to create booking" });
+      console.error("Error message:", error?.message);
+      console.error("Error stack:", error?.stack);
+      res.status(500).json({ 
+        message: "Failed to create booking",
+        error: error?.message || "Unknown error"
+      });
     }
   });
 
