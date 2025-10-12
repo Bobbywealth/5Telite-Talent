@@ -414,6 +414,22 @@ export default function AuthPage() {
                         )}
                       />
 
+                      {/* Forgot Password Link */}
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            toast({
+                              title: "Password Reset",
+                              description: "Please contact support at support@5telite.org to reset your password.",
+                            });
+                          }}
+                          className="text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
+
                       <Button
                         type="submit"
                         className="w-full h-12 bg-gradient-to-r from-slate-900 to-purple-900 hover:from-slate-800 hover:to-purple-800 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
