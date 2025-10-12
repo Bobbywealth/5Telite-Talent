@@ -414,8 +414,26 @@ Client Signature: _________________________ Date: _____________
       // Remove password from response
       const { password: _, ...userWithoutPassword } = createdUser;
       
-      // 📧 Send welcome email with login credentials for admin-created users
+      // 🎭 Create talent profile for talent users
       if (role === "talent") {
+        try {
+          await storage.createTalentProfile({
+            userId: createdUser.id,
+            stageName: `${firstName} ${lastName}`,
+            categories: [],
+            skills: [],
+            bio: "",
+            location: "",
+            unionStatus: "Non-Union",
+            approvalStatus: "approved", // Auto-approve admin-created talents
+          });
+          console.log("Created talent profile for admin-created user:", createdUser.id);
+        } catch (profileError) {
+          console.error("Failed to create talent profile:", profileError);
+          // Don't fail the request if profile creation fails
+        }
+        
+        // 📧 Send welcome email with login credentials
         try {
           await emailService.sendAdminCreatedTalentWelcome({...userWithoutPassword, password: tempPassword} as any, tempPassword);
         } catch (emailError) {
