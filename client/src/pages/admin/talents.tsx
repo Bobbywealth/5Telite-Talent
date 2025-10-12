@@ -1199,10 +1199,10 @@ export default function AdminTalents() {
                 <div>
                   <label className="block text-sm font-medium mb-1">Skills</label>
                   <Textarea
-                    value={editingTalent.skills || ""}
+                    value={Array.isArray(editingTalent.skills) ? editingTalent.skills.join(", ") : ""}
                     onChange={(e) => setEditingTalent({
                       ...editingTalent,
-                      skills: e.target.value
+                      skills: e.target.value.split(",").map(s => s.trim()).filter(s => s.length > 0)
                     })}
                     rows={2}
                     placeholder="List your skills separated by commas"
