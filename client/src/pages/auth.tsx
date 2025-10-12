@@ -306,20 +306,22 @@ export default function AuthPage() {
             </p>
           </div>
           
-          <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm relative overflow-hidden">
-            {/* Card decoration */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"></div>
-            
-            {/* Back to Homepage Button */}
+          {/* Back to Homepage Button - Above the card */}
+          <div className="flex justify-start mb-6 w-full max-w-md">
             <Button
               variant="ghost"
               onClick={() => setLocation("/")}
-              className="absolute top-4 right-4 z-10 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all duration-200"
-              size="sm"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm transition-all duration-200 hover:scale-105 text-lg px-6 py-6 h-auto"
+              size="lg"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-5 w-5 mr-3" />
               Back to Homepage
             </Button>
+          </div>
+
+          <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm relative overflow-hidden">
+            {/* Card decoration */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"></div>
             
             <CardHeader className="text-center pb-4 pt-8">
               <div className="w-20 h-20 mx-auto mb-4">
