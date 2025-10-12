@@ -39,6 +39,7 @@ import AdminApprovals from "@/pages/admin/approvals";
 import AdminSettings from "@/pages/admin/settings";
 import RemoveBobby from "@/pages/admin/remove-bobby";
 import DatabaseFix from "@/pages/admin/database-fix";
+import AgeVerificationSetup from "@/pages/admin/age-verification-setup";
 import Support from "@/pages/support";
 
 // Talent Pages
@@ -119,6 +120,7 @@ function Router() {
               <Route path="/admin/approvals" component={AdminApprovals} />
               <Route path="/admin/remove-bobby" component={RemoveBobby} />
               <Route path="/admin/database-fix" component={DatabaseFix} />
+              <Route path="/admin/age-verification-setup" component={AgeVerificationSetup} />
             </>
           )}
           
