@@ -30,7 +30,12 @@ import {
   Calendar,
   User,
   FileText,
-  X
+  X,
+  Grid3X3,
+  List,
+  Clock,
+  AlertCircle,
+  CheckCircle2
 } from "lucide-react";
 
 interface Task {
@@ -64,6 +69,87 @@ interface Task {
   };
 }
 
+// Task Card Component for Kanban View
+const TaskCard = ({ task, onEdit, onDelete }: { 
+  task: Task; 
+  onEdit: (task: Task) => void; 
+  onDelete: (taskId: string) => void; 
+}) => {
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getScopeColor = (scope: string) => {
+    switch (scope) {
+      case 'booking': return 'bg-blue-100 text-blue-800';
+      case 'talent': return 'bg-purple-100 text-purple-800';
+      case 'general': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+      <div className="flex items-start justify-between mb-2">
+        <h4 className="font-medium text-gray-900 text-sm line-clamp-2">{task.title}</h4>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+              <MoreHorizontal className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(task)}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onDelete(task.id)}
+              className="text-red-600"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      
+      {task.description && (
+        <p className="text-xs text-gray-600 mb-3 line-clamp-2">{task.description}</p>
+      )}
+      
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
+            {task.priority}
+          </Badge>
+          <Badge variant="outline" className={`text-xs ${getScopeColor(task.scope)}`}>
+            {task.scope}
+          </Badge>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center">
+          <User className="h-3 w-3 mr-1" />
+          {task.assignee ? `${task.assignee.firstName} ${task.assignee.lastName}` : 'Unassigned'}
+        </div>
+        {task.dueAt && (
+          <div className="flex items-center">
+            <Calendar className="h-3 w-3 mr-1" />
+            {new Date(task.dueAt).toLocaleDateString()}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function AdminTasks() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
@@ -76,6 +162,7 @@ export default function AdminTasks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [scopeFilter, setScopeFilter] = useState("");
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   
   // Form state
   const [taskForm, setTaskForm] = useState({
@@ -189,7 +276,7 @@ export default function AdminTasks() {
     onError: (error) => {
       if (isUnauthorizedError(error)) {
         toast({
-          title: "Unauthorized",
+          title: "Unauthorized", 
           description: "You are logged out. Logging in again...",
           variant: "destructive",
         });
@@ -328,22 +415,45 @@ export default function AdminTasks() {
       <AdminNavbar />
       <div className="flex">
         <AdminSidebar />
-        
+
         <div className="flex-1 p-6">
-          {/* Header */}
+        {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Task Management</h1>
               <p className="text-gray-600">Manage and track all platform tasks</p>
             </div>
-            <Button 
-              onClick={() => setShowCreateDialog(true)}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Task
-            </Button>
-          </div>
+            <div className="flex items-center space-x-4">
+              {/* View Toggle */}
+              <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                <Button
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('table')}
+                  className="h-8 px-3"
+                >
+                  <List className="h-4 w-4 mr-2" />
+                  Table
+                  </Button>
+                <Button
+                  variant={viewMode === 'kanban' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('kanban')}
+                  className="h-8 px-3"
+                >
+                  <Grid3X3 className="h-4 w-4 mr-2" />
+                  Kanban
+                </Button>
+                    </div>
+              <Button 
+                onClick={() => setShowCreateDialog(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Task
+                      </Button>
+                    </div>
+            </div>
 
           {/* Filters */}
           <Card className="mb-6">
@@ -352,39 +462,39 @@ export default function AdminTasks() {
                 <div className="flex-1 min-w-64">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Search tasks..."
+                  <Input
+                    placeholder="Search tasks..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
-                    />
-                  </div>
+                  />
+                </div>
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-40">
-                    <SelectValue placeholder="All Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="todo">To Do</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="blocked">Blocked</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                  </SelectContent>
-                </Select>
+                      <SelectValue placeholder="All Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="todo">To Do</SelectItem>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="blocked">Blocked</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                    </SelectContent>
+                  </Select>
                 <Select value={scopeFilter} onValueChange={setScopeFilter}>
                   <SelectTrigger className="w-40">
-                    <SelectValue placeholder="All Scopes" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Scopes</SelectItem>
+                      <SelectValue placeholder="All Scopes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Scopes</SelectItem>
                     <SelectItem value="general">General</SelectItem>
-                    <SelectItem value="booking">Booking</SelectItem>
-                    <SelectItem value="talent">Talent</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
+                      <SelectItem value="booking">Booking</SelectItem>
+                      <SelectItem value="talent">Talent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    variant="outline" 
                   onClick={() => {
                     setSearchTerm("");
                     setStatusFilter("all");
@@ -392,23 +502,24 @@ export default function AdminTasks() {
                   }}
                 >
                   Clear Filters
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                                </Button>
+                            </div>
+                    </CardContent>
+                  </Card>
 
-          {/* Tasks Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tasks ({filteredTasks.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {tasksLoading ? (
-                <div className="space-y-4">
+          {/* Tasks View */}
+          {viewMode === 'table' ? (
+              <Card>
+              <CardHeader>
+                <CardTitle>Tasks ({filteredTasks.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {tasksLoading ? (
+                    <div className="space-y-4">
                   {[...Array(5)].map((_, i) => (
                     <Skeleton key={i} className="h-16 w-full" />
-                  ))}
-                </div>
+                      ))}
+                    </div>
               ) : filteredTasks.length === 0 ? (
                 <div className="text-center py-8">
                   <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -425,34 +536,34 @@ export default function AdminTasks() {
                     </Button>
                   )}
                 </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Status</TableHead>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Status</TableHead>
                       <TableHead>Priority</TableHead>
-                      <TableHead>Scope</TableHead>
-                      <TableHead>Assignee</TableHead>
-                      <TableHead>Due Date</TableHead>
+                          <TableHead>Scope</TableHead>
+                          <TableHead>Assignee</TableHead>
+                          <TableHead>Due Date</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead className="w-12"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
                     {filteredTasks.map((task: Task) => (
                       <TableRow key={task.id}>
                         <TableCell>
-                          <div>
-                            <div className="font-medium">{task.title}</div>
-                            {task.description && (
+                              <div>
+                                <div className="font-medium">{task.title}</div>
+                                {task.description && (
                               <div className="text-sm text-gray-600 truncate max-w-xs">
                                 {task.description}
                               </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
                           <Select
                             value={task.status}
                             onValueChange={(value) => handleStatusChange(task.id, value as Task['status'])}
@@ -471,67 +582,160 @@ export default function AdminTasks() {
                         <TableCell>
                           <Badge className={getPriorityBadgeColor(task.priority || 'medium')}>
                             {task.priority || 'medium'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {task.scope}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {task.assignee ? (
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {task.scope}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {task.assignee ? (
                             <div className="flex items-center">
                               <User className="h-4 w-4 mr-1 text-gray-400" />
-                              {task.assignee.firstName} {task.assignee.lastName}
-                            </div>
-                          ) : (
+                                  {task.assignee.firstName} {task.assignee.lastName}
+                                </div>
+                              ) : (
                             <span className="text-gray-400">Unassigned</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {task.dueAt ? (
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {task.dueAt ? (
                             <div className="flex items-center">
                               <Calendar className="h-4 w-4 mr-1 text-gray-400" />
                               {new Date(task.dueAt).toLocaleDateString()}
                             </div>
                           ) : (
                             <span className="text-gray-400">No due date</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
+                              )}
+                            </TableCell>
+                            <TableCell>
                           {new Date(task.createdAt).toLocaleDateString()}
-                        </TableCell>
+                            </TableCell>
                         <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm">
                                 <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
+                                  </Button>
+                                </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleEditTask(task)}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
                                 onClick={() => handleDeleteTask(task.id)}
                                 className="text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Tasks ({filteredTasks.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {tasksLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="space-y-3">
+                        <Skeleton className="h-6 w-24" />
+                        <Skeleton className="h-32 w-full" />
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* To Do Column */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-4 w-4 text-gray-500" />
+                        <h3 className="font-semibold text-gray-700">To Do</h3>
+                        <Badge variant="secondary" className="ml-auto">
+                          {filteredTasks.filter(task => task.status === 'todo').length}
+                        </Badge>
+                      </div>
+                      <div className="space-y-3 min-h-[400px]">
+                        {filteredTasks
+                          .filter(task => task.status === 'todo')
+                          .map((task) => (
+                            <TaskCard key={task.id} task={task} onEdit={handleEditTask} onDelete={handleDeleteTask} />
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* In Progress Column */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <AlertCircle className="h-4 w-4 text-blue-500" />
+                        <h3 className="font-semibold text-gray-700">In Progress</h3>
+                        <Badge variant="secondary" className="ml-auto">
+                          {filteredTasks.filter(task => task.status === 'in_progress').length}
+                        </Badge>
+                      </div>
+                      <div className="space-y-3 min-h-[400px]">
+                        {filteredTasks
+                          .filter(task => task.status === 'in_progress')
+                          .map((task) => (
+                            <TaskCard key={task.id} task={task} onEdit={handleEditTask} onDelete={handleDeleteTask} />
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Blocked Column */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <h3 className="font-semibold text-gray-700">Blocked</h3>
+                        <Badge variant="secondary" className="ml-auto">
+                          {filteredTasks.filter(task => task.status === 'blocked').length}
+                      </Badge>
+                      </div>
+                      <div className="space-y-3 min-h-[400px]">
+                        {filteredTasks
+                          .filter(task => task.status === 'blocked')
+                          .map((task) => (
+                            <TaskCard key={task.id} task={task} onEdit={handleEditTask} onDelete={handleDeleteTask} />
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Done Column */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <h3 className="font-semibold text-gray-700">Done</h3>
+                        <Badge variant="secondary" className="ml-auto">
+                          {filteredTasks.filter(task => task.status === 'done').length}
+                      </Badge>
+                      </div>
+                      <div className="space-y-3 min-h-[400px]">
+                        {filteredTasks
+                          .filter(task => task.status === 'done')
+                          .map((task) => (
+                            <TaskCard key={task.id} task={task} onEdit={handleEditTask} onDelete={handleDeleteTask} />
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+                      )}
+                    </div>
+                  </div>
 
       {/* Create Task Dialog */}
       {showCreateDialog && (
@@ -543,17 +747,17 @@ export default function AdminTasks() {
             <div className="p-6 flex-1 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Create New Task</h2>
-                <Button
+                      <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() => {
+                        size="sm"
+                        onClick={() => {
                     setShowCreateDialog(false);
                     resetForm();
                   }}
                 >
                   <X className="h-4 w-4" />
-                </Button>
-              </div>
+                      </Button>
+                  </div>
               
               <form onSubmit={handleCreateTask} className="space-y-4">
                 <div>
@@ -567,7 +771,7 @@ export default function AdminTasks() {
                   />
                 </div>
 
-                <div>
+                  <div>
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
@@ -576,7 +780,7 @@ export default function AdminTasks() {
                     placeholder="Enter task description"
                     rows={3}
                   />
-                </div>
+                  </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -594,7 +798,7 @@ export default function AdminTasks() {
                     </Select>
                   </div>
 
-                  <div>
+                      <div>
                     <Label htmlFor="priority">Priority</Label>
                     <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
                       <SelectTrigger>
@@ -606,11 +810,11 @@ export default function AdminTasks() {
                         <SelectItem value="high">High</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                              </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                              <div>
                     <Label htmlFor="scope">Scope</Label>
                     <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
                       <SelectTrigger>
@@ -622,7 +826,7 @@ export default function AdminTasks() {
                         <SelectItem value="talent">Talent Specific</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                              </div>
 
                   <div>
                     <Label htmlFor="dueAt">Due Date</Label>
@@ -632,8 +836,8 @@ export default function AdminTasks() {
                       value={taskForm.dueAt}
                       onChange={(e) => setTaskForm(prev => ({ ...prev, dueAt: e.target.value }))}
                     />
-                  </div>
-                </div>
+                            </div>
+                        </div>
 
                 <div>
                   <Label htmlFor="assigneeId">Assign To</Label>
@@ -651,10 +855,10 @@ export default function AdminTasks() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                      </div>
 
                 {taskForm.scope === 'booking' && (
-                  <div>
+                        <div>
                     <Label htmlFor="bookingId">Related Booking</Label>
                     <Select value={taskForm.bookingId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, bookingId: value }))}>
                       <SelectTrigger>
@@ -668,8 +872,8 @@ export default function AdminTasks() {
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                )}
+                              </div>
+                            )}
 
                 {taskForm.scope === 'talent' && (
                   <div>
@@ -687,8 +891,8 @@ export default function AdminTasks() {
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                )}
+                        </div>
+                      )}
 
                 <div className="flex space-x-2 pt-4">
                   <Button type="submit" disabled={createTaskMutation.isPending}>
@@ -704,12 +908,12 @@ export default function AdminTasks() {
                   >
                     Cancel
                   </Button>
-                </div>
+                            </div>
               </form>
             </div>
-          </div>
-        </div>
-      )}
+                          </div>
+                        </div>
+                      )}
 
       {/* Edit Task Dialog */}
       {showEditDialog && selectedTask && (
@@ -732,7 +936,7 @@ export default function AdminTasks() {
                 >
                   <X className="h-4 w-4" />
                 </Button>
-              </div>
+                    </div>
               
               <form onSubmit={handleUpdateTask} className="space-y-4">
                 <div>
@@ -744,7 +948,7 @@ export default function AdminTasks() {
                     required
                     placeholder="Enter task title"
                   />
-                </div>
+                  </div>
 
                 <div>
                   <Label htmlFor="edit-description">Description</Label>
@@ -758,7 +962,7 @@ export default function AdminTasks() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                      <div>
                     <Label htmlFor="edit-status">Status</Label>
                     <Select value={taskForm.status} onValueChange={(value) => setTaskForm(prev => ({ ...prev, status: value as Task['status'] }))}>
                       <SelectTrigger>
@@ -771,9 +975,9 @@ export default function AdminTasks() {
                         <SelectItem value="done">Done</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                      </div>
 
-                  <div>
+                      <div>
                     <Label htmlFor="edit-priority">Priority</Label>
                     <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
                       <SelectTrigger>
@@ -785,11 +989,11 @@ export default function AdminTasks() {
                         <SelectItem value="high">High</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                </div>
+                        </div>
+                      </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                        <div>
                     <Label htmlFor="edit-scope">Scope</Label>
                     <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
                       <SelectTrigger>
@@ -801,7 +1005,7 @@ export default function AdminTasks() {
                         <SelectItem value="talent">Talent Specific</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                          </div>
 
                   <div>
                     <Label htmlFor="edit-dueAt">Due Date</Label>
@@ -811,8 +1015,8 @@ export default function AdminTasks() {
                       value={taskForm.dueAt}
                       onChange={(e) => setTaskForm(prev => ({ ...prev, dueAt: e.target.value }))}
                     />
-                  </div>
-                </div>
+                        </div>
+                    </div>
 
                 <div>
                   <Label htmlFor="edit-assigneeId">Assign To</Label>
@@ -872,24 +1076,24 @@ export default function AdminTasks() {
                 <div className="flex space-x-2 pt-4">
                   <Button type="submit" disabled={updateTaskMutation.isPending}>
                     {updateTaskMutation.isPending ? "Updating..." : "Update Task"}
-                  </Button>
-                  <Button 
+                    </Button>
+                    <Button 
                     type="button" 
                     variant="outline" 
-                    onClick={() => {
+                      onClick={() => {
                       setShowEditDialog(false);
                       setSelectedTask(null);
                       resetForm();
-                    }}
-                  >
+                      }}
+                    >
                     Cancel
-                  </Button>
+                    </Button>
                 </div>
               </form>
-            </div>
-          </div>
-        </div>
-      )}
+                  </div>
+                </div>
+              </div>
+            )}
     </div>
   );
 }
