@@ -1119,16 +1119,16 @@ export default function AdminTalents() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select experience level" />
                       </SelectTrigger>
-                      <SelectContent className="z-[70]">
-                        <SelectItem value="0-1">0-1 years</SelectItem>
-                        <SelectItem value="1-2">1-2 years</SelectItem>
-                        <SelectItem value="2-3">2-3 years</SelectItem>
-                        <SelectItem value="3-5">3-5 years</SelectItem>
-                        <SelectItem value="5-7">5-7 years</SelectItem>
-                        <SelectItem value="7-10">7-10 years</SelectItem>
-                        <SelectItem value="10-15">10-15 years</SelectItem>
-                        <SelectItem value="15-20">15-20 years</SelectItem>
-                        <SelectItem value="20+">20+ years</SelectItem>
+                      <SelectContent className="z-[100]">
+                        <SelectItem value="0-1 experience">0-1 experience</SelectItem>
+                        <SelectItem value="1-2 years">1-2 years</SelectItem>
+                        <SelectItem value="2-3 years">2-3 years</SelectItem>
+                        <SelectItem value="3-5 years">3-5 years</SelectItem>
+                        <SelectItem value="5-7 years">5-7 years</SelectItem>
+                        <SelectItem value="7-10 years">7-10 years</SelectItem>
+                        <SelectItem value="10-15 years">10-15 years</SelectItem>
+                        <SelectItem value="15-20 years">15-20 years</SelectItem>
+                        <SelectItem value="20+ years">20+ years</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1145,7 +1145,7 @@ export default function AdminTalents() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select union status" />
                     </SelectTrigger>
-                    <SelectContent className="z-[70]">
+                    <SelectContent className="z-[100]">
                       <SelectItem value="SAG-AFTRA">SAG-AFTRA</SelectItem>
                       <SelectItem value="Non-Union">Non-Union</SelectItem>
                       <SelectItem value="Other">Other</SelectItem>
@@ -1154,14 +1154,19 @@ export default function AdminTalents() {
                 </div>
               </div>
 
-              {/* Categories */}
+              {/* Categories & Skills */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Categories & Skills</h3>
+                
+                {/* Categories - What type of talent */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Categories</label>
-                  <div className="flex flex-wrap gap-2 mb-2">
+                  <label className="block text-sm font-medium mb-2">
+                    Primary Categories 
+                    <span className="text-xs text-gray-500 ml-2">(What type of performer are you?)</span>
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-3">
                     {editingTalent.categories?.map((category: string) => (
-                      <Badge key={category} variant="secondary" className="flex items-center gap-1">
+                      <Badge key={category} variant="secondary" className="flex items-center gap-1 px-3 py-1">
                         {category}
                         <button
                           type="button"
@@ -1176,37 +1181,57 @@ export default function AdminTalents() {
                       </Badge>
                     ))}
                   </div>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Add category"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          const input = e.target as HTMLInputElement;
-                          const category = input.value.trim();
-                          if (category && !editingTalent.categories?.includes(category)) {
-                            setEditingTalent({
-                              ...editingTalent,
-                              categories: [...(editingTalent.categories || []), category]
-                            });
-                            input.value = '';
-                          }
-                        }
-                      }}
-                    />
-                  </div>
+                  <Select
+                    onValueChange={(value) => {
+                      if (value && !editingTalent.categories?.includes(value)) {
+                        setEditingTalent({
+                          ...editingTalent,
+                          categories: [...(editingTalent.categories || []), value]
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category to add" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[100]">
+                      <SelectItem value="Actor">Actor</SelectItem>
+                      <SelectItem value="Model">Model</SelectItem>
+                      <SelectItem value="Dancer">Dancer</SelectItem>
+                      <SelectItem value="Singer">Singer</SelectItem>
+                      <SelectItem value="Musician">Musician</SelectItem>
+                      <SelectItem value="Voice Over">Voice Over</SelectItem>
+                      <SelectItem value="Comedian">Comedian</SelectItem>
+                      <SelectItem value="Host">Host/MC</SelectItem>
+                      <SelectItem value="Stunt Performer">Stunt Performer</SelectItem>
+                      <SelectItem value="Writer">Writer</SelectItem>
+                      <SelectItem value="Poet">Poet</SelectItem>
+                      <SelectItem value="Visual Artist">Visual Artist</SelectItem>
+                      <SelectItem value="Motivational Speaker">Motivational Speaker</SelectItem>
+                      <SelectItem value="DJ">DJ</SelectItem>
+                      <SelectItem value="Producer">Producer</SelectItem>
+                      <SelectItem value="Director">Director</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+                
+                {/* Skills - Specific abilities */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Skills</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Skills & Abilities
+                    <span className="text-xs text-gray-500 ml-2">(Specific talents, e.g., Stage Combat, Piano, Spanish Fluent)</span>
+                  </label>
                   <Textarea
                     value={Array.isArray(editingTalent.skills) ? editingTalent.skills.join(", ") : ""}
                     onChange={(e) => setEditingTalent({
                       ...editingTalent,
                       skills: e.target.value.split(",").map(s => s.trim()).filter(s => s.length > 0)
                     })}
-                    rows={2}
-                    placeholder="List your skills separated by commas"
+                    rows={3}
+                    placeholder="e.g., Stage Combat, Piano, Spanish Fluent, Social Media Marketing"
+                    className="resize-none"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Separate multiple skills with commas</p>
                 </div>
               </div>
 
