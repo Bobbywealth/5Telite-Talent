@@ -91,6 +91,29 @@ export default function AdminDashboard() {
     },
   });
 
+  // Setup bookings category column mutation
+  const setupBookingsCategoryMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/admin/setup-bookings-category", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Bookings Setup Complete",
+        description: "Category column has been added to bookings table!",
+      });
+      // Refresh bookings data
+      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: "Failed to setup bookings category: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Setup password reset fields mutation
   const setupPasswordResetMutation = useMutation({
     mutationFn: async () => {
@@ -283,6 +306,14 @@ export default function AdminDashboard() {
                     Reports
                   </Button>
                 </Link>
+                <Button 
+                  onClick={() => setupBookingsCategoryMutation.mutate()}
+                  disabled={setupBookingsCategoryMutation.isPending}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105"
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  {setupBookingsCategoryMutation.isPending ? "Setting Up..." : "Fix Bookings Table"}
+                </Button>
                 <Button 
                   onClick={() => setupPasswordResetMutation.mutate()}
                   disabled={setupPasswordResetMutation.isPending}

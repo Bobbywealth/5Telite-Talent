@@ -34,6 +34,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount files router
   app.use('/api/files', filesRouter);
 
+  // 🔧 Setup endpoint to add missing bookings category column (run once)
+  app.post('/api/admin/setup-bookings-category', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Add category column if it doesn't exist
+      await db.execute(sql`
+        ALTER TABLE bookings 
+        ADD COLUMN IF NOT EXISTS category VARCHAR
+      `);
+
+      res.json({ message: "Bookings category column added successfully" });
+    } catch (error) {
+      console.error("Error setting up bookings category column:", error);
+      res.status(500).json({ message: "Failed to setup bookings category column" });
+    }
+  });
+
   // 🔧 Setup endpoint to add password reset columns (run once)
   app.post('/api/admin/setup-password-reset', isAuthenticated, async (req: any, res) => {
     try {
