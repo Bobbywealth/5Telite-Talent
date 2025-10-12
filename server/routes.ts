@@ -451,9 +451,16 @@ Client Signature: _________________________ Date: _____________
       const updatedUser = await storage.updateUser(targetUserId, updates);
 
       res.json(updatedUser);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating user:", error);
-      res.status(500).json({ message: "Failed to update user" });
+      console.error("Error details:", error.message, error.stack);
+      console.error("Target user ID:", targetUserId);
+      console.error("Updates:", updates);
+      res.status(500).json({ 
+        message: "Failed to update user",
+        error: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   });
 
