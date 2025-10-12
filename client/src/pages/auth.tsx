@@ -31,7 +31,18 @@ const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   role: z.enum(["admin", "talent", "client"]).default("talent"),
+  isOver18: z.boolean(),
+  guardianPhone: z.string().optional(),
   acceptTerms: z.boolean().refine(val => val === true, "You must accept the terms and conditions"),
+}).refine((data) => {
+  // If under 18, guardian phone is required
+  if (!data.isOver18 && (!data.guardianPhone || data.guardianPhone.trim() === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Parent/guardian phone number is required for users under 18",
+  path: ["guardianPhone"],
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -72,6 +83,8 @@ export default function AuthPage() {
       firstName: "",
       lastName: "",
       role: "talent",
+      isOver18: true,
+      guardianPhone: "",
       acceptTerms: false,
     },
   });
@@ -655,6 +668,68 @@ export default function AuthPage() {
                           </FormItem>
                         )}
                       />
+
+                      {/* Age Verification */}
+                      <FormField
+                        control={registerForm.control}
+                        name="isOver18"
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200">
+                              <FormLabel className="text-base font-semibold text-gray-900 mb-3 block">
+                                Age Verification
+                              </FormLabel>
+                              <div className="flex items-start space-x-3">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    data-testid="checkbox-over-18"
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel className="text-sm font-medium text-gray-700">
+                                    I am 18 years or older
+                                  </FormLabel>
+                                  <p className="text-xs text-gray-500">
+                                    If you are under 18, we'll need a parent/guardian contact
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Guardian Phone - Only show if under 18 */}
+                      {!registerForm.watch("isOver18") && (
+                        <FormField
+                          control={registerForm.control}
+                          name="guardianPhone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center space-x-2">
+                                <span>Parent/Guardian Phone Number</span>
+                                <span className="text-red-500">*</span>
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="tel"
+                                  placeholder="(555) 123-4567"
+                                  className="h-12 rounded-xl border-gray-200 focus:border-purple-400 focus:ring-purple-400/20 transition-all duration-300"
+                                  data-testid="input-guardian-phone"
+                                />
+                              </FormControl>
+                              <p className="text-xs text-gray-500 mt-1">
+                                We'll contact your parent/guardian for verification
+                              </p>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
 
                       <FormField
                         control={registerForm.control}

@@ -69,6 +69,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // 🔧 Setup endpoint to add age verification columns (run once)
+  app.post('/api/admin/setup-age-verification', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Add age verification columns if they don't exist
+      await db.execute(sql`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS is_over_18 BOOLEAN DEFAULT true,
+        ADD COLUMN IF NOT EXISTS guardian_phone VARCHAR
+      `);
+
+      res.json({ message: "Age verification fields added successfully" });
+    } catch (error) {
+      console.error("Error setting up age verification fields:", error);
+      res.status(500).json({ message: "Failed to setup age verification fields" });
+    }
+  });
+
   // 🔧 Setup endpoint to add password reset columns (run once)
   app.post('/api/admin/setup-password-reset', isAuthenticated, async (req: any, res) => {
     try {
