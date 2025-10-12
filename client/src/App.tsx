@@ -14,6 +14,8 @@ import { TimezoneProvider } from "@/contexts/TimezoneContext";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Auth from "@/pages/auth";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import TalentDirectory from "@/pages/talent-directory";
 import TalentProfile from "@/pages/talent-profile";
 import BookRequest from "@/pages/book-request";
@@ -75,6 +77,8 @@ function Router() {
         <>
           <Route path="/" component={Landing} />
           <Route path="/auth" component={Auth} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password" component={ResetPassword} />
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
           <Route path="/announcements" component={Announcements} />

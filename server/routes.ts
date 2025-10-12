@@ -33,6 +33,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount files router
   app.use('/api/files', filesRouter);
 
+  // 🔐 Password Reset - Request reset token
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      
+      // Always return success to prevent email enumeration
+      if (!user) {
+        return res.json({ message: "If an account exists with this email, a password reset link has been sent." });
+      }
+
+      // Generate reset token (random 32-byte hex string)
+      const crypto = await import('crypto');
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+      
+      // Set token expiration (1 hour from now)
+      const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+      // Save hashed token to database
+      await db.update(users)
+        .set({ 
+          resetPasswordToken: resetTokenHash,
+          resetPasswordExpires: resetExpires 
+        })
+        .where(eq(users.id, user.id));
+
+      // Send reset email
+      await enhancedEmailService.sendPasswordResetEmail(user, resetToken);
+
+      res.json({ message: "If an account exists with this email, a password reset link has been sent." });
+    } catch (error) {
+      console.error("Error in forgot-password:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // 🔐 Password Reset - Verify token and reset password
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      // Hash the token to compare with stored hash
+      const crypto = await import('crypto');
+      const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+      // Find user with valid reset token
+      const [user] = await db.select()
+        .from(users)
+        .where(
+          and(
+            eq(users.resetPasswordToken, resetTokenHash),
+            sql`${users.resetPasswordExpires} > NOW()`
+          )
+        )
+        .limit(1);
+
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      // Hash new password
+      const hashedPassword = await hashPassword(newPassword);
+
+      // Update password and clear reset token
+      await db.update(users)
+        .set({ 
+          password: hashedPassword,
+          resetPasswordToken: null,
+          resetPasswordExpires: null,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, user.id));
+
+      // Send confirmation email
+      await enhancedEmailService.sendPasswordResetConfirmation(user);
+
+      res.json({ message: "Password has been reset successfully" });
+    } catch (error) {
+      console.error("Error in reset-password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   // Admin endpoint to approve/reject users
   app.patch('/api/admin/users/:userId/status', isAuthenticated, async (req: any, res) => {
     try {
@@ -454,6 +552,9 @@ Client Signature: _________________________ Date: _____________
 
   // Update user information
   app.patch('/api/users/:id', isAuthenticated, async (req: any, res) => {
+    const targetUserId = req.params.id;
+    const updates = req.body;
+    
     try {
       const userId = req.user.id;
       const currentUser = await storage.getUser(userId);
@@ -461,9 +562,6 @@ Client Signature: _________________________ Date: _____________
       if (!currentUser || currentUser.role !== 'admin') {
         return res.status(403).json({ message: "Admin access required" });
       }
-
-      const targetUserId = req.params.id;
-      const updates = req.body;
 
       // Update user in database
       const updatedUser = await storage.updateUser(targetUserId, updates);
@@ -783,10 +881,12 @@ Client Signature: _________________________ Date: _____________
   });
 
   app.patch('/api/talents/:id', isAuthenticated, async (req: any, res) => {
+    const targetUserId = req.params.id;
+    const profileData = req.body;
+    
     try {
       const userId = req.user.id;
       const user = await storage.getUser(userId);
-      const targetUserId = req.params.id;
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -796,8 +896,6 @@ Client Signature: _________________________ Date: _____________
       if (user.role !== 'admin' && userId !== targetUserId) {
         return res.status(403).json({ message: "Access denied" });
       }
-
-      const profileData = req.body;
       
       // If admin is updating, preserve the approval status unless specifically changing it
       if (user.role === 'admin' && !profileData.hasOwnProperty('approvalStatus')) {

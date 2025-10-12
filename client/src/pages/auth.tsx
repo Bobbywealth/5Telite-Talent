@@ -418,12 +418,7 @@ export default function AuthPage() {
                       <div className="flex justify-end">
                         <button
                           type="button"
-                          onClick={() => {
-                            toast({
-                              title: "Password Reset",
-                              description: "Please contact support at support@5telite.org to reset your password.",
-                            });
-                          }}
+                          onClick={() => setLocation("/forgot-password")}
                           className="text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
                         >
                           Forgot Password?

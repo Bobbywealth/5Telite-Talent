@@ -522,6 +522,71 @@ class EmailServiceEnhanced {
     const html = this.createEmailTemplate("New Booking Request", content, ctaButton);
     await this.sendEmail(this.adminEmail, subject, html);
   }
+
+  // 🔐 Password Reset Email
+  async sendPasswordResetEmail(user: User, resetToken: string) {
+    const subject = '🔐 Reset Your Password - 5T Elite Talent Platform';
+    const resetUrl = `${this.frontendUrl}/reset-password?token=${resetToken}`;
+    
+    const content = `
+      <p>Hi ${user.firstName || 'there'},</p>
+      
+      <p>We received a request to reset your password for your 5T Elite Talent Platform account.</p>
+      
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">🔑 Reset Your Password</h3>
+        <p>Click the button below to create a new password. This link will expire in <strong>1 hour</strong> for security reasons.</p>
+      </div>
+      
+      <p><strong>⚠️ Important:</strong> If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
+      
+      <p style="color: #888; font-size: 14px; margin-top: 30px;">
+        <strong>Security Tip:</strong> Never share your password with anyone. 5T Elite will never ask for your password via email.
+      </p>
+    `;
+
+    const ctaButton = {
+      text: 'Reset Password',
+      url: resetUrl,
+      color: "#dc3545"
+    };
+
+    const html = this.createEmailTemplate("Password Reset Request", content, ctaButton);
+    await this.sendEmail(user.email, subject, html);
+  }
+
+  // ✅ Password Reset Confirmation Email
+  async sendPasswordResetConfirmation(user: User) {
+    const subject = '✅ Your Password Has Been Changed';
+    
+    const content = `
+      <p>Hi ${user.firstName || 'there'},</p>
+      
+      <p>This email confirms that your password for your 5T Elite Talent Platform account has been successfully changed.</p>
+      
+      <div class="card">
+        <h3 style="color: #1a1a1a; margin-top: 0;">🔐 Password Changed</h3>
+        <p>Your password was changed on <strong>${new Date().toLocaleString()}</strong>.</p>
+        <p>If you made this change, no further action is needed.</p>
+      </div>
+      
+      <p><strong>⚠️ Didn't change your password?</strong></p>
+      <p>If you didn't make this change, please contact our support team immediately at <a href="mailto:support@5telite.org">support@5telite.org</a>.</p>
+      
+      <p style="color: #888; font-size: 14px; margin-top: 30px;">
+        <strong>Security Tip:</strong> Regularly update your password and use a strong, unique password for your account.
+      </p>
+    `;
+
+    const ctaButton = {
+      text: 'Sign In to Your Account',
+      url: `${this.frontendUrl}/auth`,
+      color: "#28a745"
+    };
+
+    const html = this.createEmailTemplate("Password Changed Successfully", content, ctaButton);
+    await this.sendEmail(user.email, subject, html);
+  }
 }
 
 export const enhancedEmailService = new EmailServiceEnhanced();

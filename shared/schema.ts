@@ -41,6 +41,8 @@ export const users = pgTable("users", {
   phone: varchar("phone"),
   profileImageUrl: varchar("profile_image_url"),
   status: userStatusEnum("status").notNull().default("pending"),
+  resetPasswordToken: varchar("reset_password_token"),
+  resetPasswordExpires: timestamp("reset_password_expires"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
