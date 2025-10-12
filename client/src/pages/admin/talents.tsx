@@ -1216,15 +1216,60 @@ export default function AdminTalents() {
                 <div>
                   <label className="block text-sm font-medium mb-2">Profile Photos</label>
                   <ObjectUploader
-                    value={editingTalent.mediaUrls || []}
-                    onChange={(urls) => setEditingTalent({
-                      ...editingTalent,
-                      mediaUrls: urls
-                    })}
-                    maxFiles={5}
-                    permission="public"
-                  />
-                  <p className="text-sm text-gray-500 mt-2">Upload up to 5 photos</p>
+                    maxNumberOfFiles={5}
+                    maxFileSize={10485760}
+                    onComplete={(uploads) => {
+                      const newUrls = uploads.map(u => u.objectName);
+                      setEditingTalent({
+                        ...editingTalent,
+                        mediaUrls: [...(editingTalent.mediaUrls || []), ...newUrls]
+                      });
+                    }}
+                    buttonClassName="w-full"
+                    prefix="headshots"
+                  >
+                    <div className="flex items-center gap-2">
+                      <i className="fas fa-camera"></i>
+                      <span>Upload Photos (up to 5)</span>
+                    </div>
+                  </ObjectUploader>
+                  
+                  {/* Display existing photos */}
+                  {editingTalent.mediaUrls && editingTalent.mediaUrls.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium mb-2">{editingTalent.mediaUrls.length} photo(s) uploaded</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {editingTalent.mediaUrls.map((url, index) => (
+                          <div key={index} className="relative">
+                            <GcsImage
+                              objectName={url}
+                              alt={`Photo ${index + 1}`}
+                              className="w-full h-24 object-cover rounded"
+                              fallback={
+                                <div className="w-full h-24 bg-slate-200 flex items-center justify-center rounded">
+                                  <i className="fas fa-image text-slate-400"></i>
+                                </div>
+                              }
+                            />
+                            <button
+                              onClick={() => {
+                                const newUrls = editingTalent.mediaUrls?.filter((_, i) => i !== index);
+                                setEditingTalent({
+                                  ...editingTalent,
+                                  mediaUrls: newUrls
+                                });
+                              }}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <p className="text-sm text-gray-500 mt-2">Upload up to 5 photos total</p>
                 </div>
               </div>
 
