@@ -307,7 +307,7 @@ export default function AuthPage() {
           </div>
           
           {/* Back to Homepage Button - Above the card */}
-          <div className="flex justify-start mb-6 w-full max-w-md">
+          <div className="flex justify-center mb-6 w-full max-w-md">
             <Button
               variant="ghost"
               onClick={() => setLocation("/")}
