@@ -739,7 +739,7 @@ export default function AdminTasks() {
 
       {/* Create Task Dialog */}
       {showCreateDialog && (
-        <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div 
             className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col"
             onClick={(e) => e.stopPropagation()}
@@ -789,7 +789,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -804,7 +804,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -820,7 +820,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -845,7 +845,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[100]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -864,7 +864,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select booking" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         {bookingsData?.bookings?.map((booking: any) => (
                           <SelectItem key={booking.id} value={booking.id}>
                             {booking.title} (#{booking.code})
@@ -882,7 +882,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select talent" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         {talentsData?.talents?.map((talent: any) => (
                           <SelectItem key={talent.userId} value={talent.userId}>
                             {talent.user.firstName} {talent.user.lastName}
