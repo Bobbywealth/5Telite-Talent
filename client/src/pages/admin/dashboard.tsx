@@ -91,6 +91,26 @@ export default function AdminDashboard() {
     },
   });
 
+  // Create notifications table mutation
+  const createNotificationsTableMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/admin/create-notifications-table", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Notifications Table Created",
+        description: "The notifications table has been created successfully!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create notifications table: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Test notification mutation
   const testNotificationMutation = useMutation({
     mutationFn: async () => {
@@ -243,6 +263,14 @@ export default function AdminDashboard() {
                     Reports
                   </Button>
                 </Link>
+                <Button 
+                  onClick={() => createNotificationsTableMutation.mutate()}
+                  disabled={createNotificationsTableMutation.isPending}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  {createNotificationsTableMutation.isPending ? "Creating Table..." : "Setup Notifications"}
+                </Button>
                 <Button 
                   onClick={() => testNotificationMutation.mutate()}
                   disabled={testNotificationMutation.isPending}
@@ -683,8 +711,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
-            </main>
-        </div>
+        </main>
       </div>
     </div>
   );
