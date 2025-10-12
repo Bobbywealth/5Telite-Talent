@@ -691,4 +691,21 @@ main {
     position: fixed !important;
     z-index: 70 !important;
   }
+
+  /* Ensure date input calendars appear above modal overlays */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    position: relative !important;
+    z-index: 99999 !important;
+    cursor: pointer !important;
+  }
+
+  /* Ensure date input fields themselves are accessible */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    position: relative !important;
+    z-index: 10001 !important;
+  }
 }
