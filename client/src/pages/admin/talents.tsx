@@ -116,6 +116,8 @@ export default function AdminTalents() {
   // Add talent mutation
   const addTalentMutation = useMutation({
     mutationFn: async (data: typeof newTalentData) => {
+      console.log('Creating talent with data:', data);
+      
       // First create user
       const userResponse = await apiRequest("POST", "/api/admin/users", {
         firstName: data.firstName,
@@ -124,6 +126,8 @@ export default function AdminTalents() {
         role: "talent",
         status: "active"
       });
+      
+      console.log('User created successfully:', userResponse);
 
       // Then create talent profile
       return apiRequest("POST", "/api/talents/admin-create", {
@@ -173,9 +177,11 @@ export default function AdminTalents() {
       queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
     },
     onError: (error: any) => {
+      console.error('Error adding talent:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to add talent";
       toast({
         title: "Error Adding Talent",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
