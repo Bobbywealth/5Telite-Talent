@@ -1402,9 +1402,14 @@ Client Signature: _________________________ Date: _____________
         total: countResult.count,
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching admin bookings:", error);
-      res.status(500).json({ message: "Failed to fetch bookings" });
+      console.error("Error stack:", error?.stack);
+      console.error("Error message:", error?.message);
+      res.status(500).json({ 
+        message: "Failed to fetch bookings",
+        error: error?.message || "Unknown error"
+      });
     }
   });
 

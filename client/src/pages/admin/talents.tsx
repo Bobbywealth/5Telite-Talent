@@ -1109,48 +1109,42 @@ export default function AdminTalents() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Experience</label>
-                    <Select
+                    <select
                       value={editingTalent.experience || ""}
-                      onValueChange={(value) => setEditingTalent({
+                      onChange={(e) => setEditingTalent({
                         ...editingTalent,
-                        experience: value
+                        experience: e.target.value
                       })}
+                      className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select experience level" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[100]">
-                        <SelectItem value="0-1 experience">0-1 experience</SelectItem>
-                        <SelectItem value="1-2 years">1-2 years</SelectItem>
-                        <SelectItem value="2-3 years">2-3 years</SelectItem>
-                        <SelectItem value="3-5 years">3-5 years</SelectItem>
-                        <SelectItem value="5-7 years">5-7 years</SelectItem>
-                        <SelectItem value="7-10 years">7-10 years</SelectItem>
-                        <SelectItem value="10-15 years">10-15 years</SelectItem>
-                        <SelectItem value="15-20 years">15-20 years</SelectItem>
-                        <SelectItem value="20+ years">20+ years</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="">Select experience level</option>
+                      <option value="0-1 experience">0-1 experience</option>
+                      <option value="1-2 years">1-2 years</option>
+                      <option value="2-3 years">2-3 years</option>
+                      <option value="3-5 years">3-5 years</option>
+                      <option value="5-7 years">5-7 years</option>
+                      <option value="7-10 years">7-10 years</option>
+                      <option value="10-15 years">10-15 years</option>
+                      <option value="15-20 years">15-20 years</option>
+                      <option value="20+ years">20+ years</option>
+                    </select>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Union Status</label>
-                  <Select
+                  <select
                     value={editingTalent.unionStatus || ""}
-                    onValueChange={(value) => setEditingTalent({
+                    onChange={(e) => setEditingTalent({
                       ...editingTalent,
-                      unionStatus: value
+                      unionStatus: e.target.value
                     })}
+                    className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select union status" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[100]">
-                      <SelectItem value="SAG-AFTRA">SAG-AFTRA</SelectItem>
-                      <SelectItem value="Non-Union">Non-Union</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="">Select union status</option>
+                    <option value="SAG-AFTRA">SAG-AFTRA</option>
+                    <option value="Non-Union">Non-Union</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
 
@@ -1181,38 +1175,37 @@ export default function AdminTalents() {
                       </Badge>
                     ))}
                   </div>
-                  <Select
-                    onValueChange={(value) => {
+                  <select
+                    onChange={(e) => {
+                      const value = e.target.value;
                       if (value && !editingTalent.categories?.includes(value)) {
                         setEditingTalent({
                           ...editingTalent,
                           categories: [...(editingTalent.categories || []), value]
                         });
+                        e.target.value = ""; // Reset selection
                       }
                     }}
+                    className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category to add" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[100]">
-                      <SelectItem value="Actor">Actor</SelectItem>
-                      <SelectItem value="Model">Model</SelectItem>
-                      <SelectItem value="Dancer">Dancer</SelectItem>
-                      <SelectItem value="Singer">Singer</SelectItem>
-                      <SelectItem value="Musician">Musician</SelectItem>
-                      <SelectItem value="Voice Over">Voice Over</SelectItem>
-                      <SelectItem value="Comedian">Comedian</SelectItem>
-                      <SelectItem value="Host">Host/MC</SelectItem>
-                      <SelectItem value="Stunt Performer">Stunt Performer</SelectItem>
-                      <SelectItem value="Writer">Writer</SelectItem>
-                      <SelectItem value="Poet">Poet</SelectItem>
-                      <SelectItem value="Visual Artist">Visual Artist</SelectItem>
-                      <SelectItem value="Motivational Speaker">Motivational Speaker</SelectItem>
-                      <SelectItem value="DJ">DJ</SelectItem>
-                      <SelectItem value="Producer">Producer</SelectItem>
-                      <SelectItem value="Director">Director</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="">Select a category to add</option>
+                    <option value="Actor">Actor</option>
+                    <option value="Model">Model</option>
+                    <option value="Dancer">Dancer</option>
+                    <option value="Singer">Singer</option>
+                    <option value="Musician">Musician</option>
+                    <option value="Voice Over">Voice Over</option>
+                    <option value="Comedian">Comedian</option>
+                    <option value="Host">Host/MC</option>
+                    <option value="Stunt Performer">Stunt Performer</option>
+                    <option value="Writer">Writer</option>
+                    <option value="Poet">Poet</option>
+                    <option value="Visual Artist">Visual Artist</option>
+                    <option value="Motivational Speaker">Motivational Speaker</option>
+                    <option value="DJ">DJ</option>
+                    <option value="Producer">Producer</option>
+                    <option value="Director">Director</option>
+                  </select>
                 </div>
                 
                 {/* Skills - Specific abilities */}
@@ -1303,22 +1296,19 @@ export default function AdminTalents() {
                 <h3 className="text-lg font-semibold">Status</h3>
                 <div>
                   <label className="block text-sm font-medium mb-1">Approval Status</label>
-                  <Select
+                  <select
                     value={editingTalent.approvalStatus || ""}
-                    onValueChange={(value) => setEditingTalent({
+                    onChange={(e) => setEditingTalent({
                       ...editingTalent,
-                      approvalStatus: value
+                      approvalStatus: e.target.value
                     })}
+                    className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select approval status" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[70]">
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="">Select approval status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
                 </div>
               </div>
             </div>
