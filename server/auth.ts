@@ -85,8 +85,8 @@ export function setupAuth(app: Express) {
             return done(null, false, { message: "Your account has been suspended. Please contact support." });
           }
 
-          // Remove password from user object
-          const { password: _, ...userWithoutPassword } = user;
+          // Remove password and reset token from user object
+          const { password: _, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
           return done(null, userWithoutPassword);
         } catch (error) {
           return done(error);
@@ -101,7 +101,7 @@ export function setupAuth(app: Express) {
     try {
       const user = await storage.getUser(id);
       if (user) {
-        const { password: _, ...userWithoutPassword } = user;
+        const { password: _, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
         done(null, userWithoutPassword);
       } else {
         done(null, false);
@@ -134,8 +134,8 @@ export function setupAuth(app: Express) {
 
       console.log("DEBUG: Created user with status:", user.status, "for email:", email);
 
-      // Remove password from response
-      const { password: _, ...userWithoutPassword } = user;
+      // Remove password and reset token from response
+      const { password: _, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
 
       // Check if user needs admin approval
       if (user.status === "pending") {
