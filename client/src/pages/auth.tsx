@@ -31,20 +31,19 @@ const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   role: z.enum(["admin", "talent", "client"]).default("talent"),
-  // isOver18: z.boolean(),
-  // guardianPhone: z.string().optional(),
+  isOver18: z.boolean(),
+  guardianPhone: z.string().optional(),
   acceptTerms: z.boolean().refine(val => val === true, "You must accept the terms and conditions"),
+}).refine((data) => {
+  // If under 18, guardian phone is required
+  if (!data.isOver18 && (!data.guardianPhone || data.guardianPhone.trim() === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Parent/guardian phone number is required for users under 18",
+  path: ["guardianPhone"],
 });
-// .refine((data) => {
-//   // If under 18, guardian phone is required
-//   if (!data.isOver18 && (!data.guardianPhone || data.guardianPhone.trim() === "")) {
-//     return false;
-//   }
-//   return true;
-// }, {
-//   message: "Parent/guardian phone number is required for users under 18",
-//   path: ["guardianPhone"],
-// });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -84,8 +83,8 @@ export default function AuthPage() {
       firstName: "",
       lastName: "",
       role: "talent",
-      // isOver18: true,
-      // guardianPhone: "",
+      isOver18: true,
+      guardianPhone: "",
       acceptTerms: false,
     },
   });
@@ -670,8 +669,8 @@ export default function AuthPage() {
                         )}
                       />
 
-                      {/* Age Verification - TEMPORARILY DISABLED until database migration runs */}
-                      {/* <FormField
+                      {/* Age Verification */}
+                      <FormField
                         control={registerForm.control}
                         name="isOver18"
                         render={({ field }) => (
@@ -701,10 +700,10 @@ export default function AuthPage() {
                             <FormMessage />
                           </FormItem>
                         )}
-                      /> */}
+                      />
 
                       {/* Guardian Phone - Only show if under 18 */}
-                      {/* {!registerForm.watch("isOver18") && (
+                      {!registerForm.watch("isOver18") && (
                         <FormField
                           control={registerForm.control}
                           name="guardianPhone"
@@ -730,7 +729,7 @@ export default function AuthPage() {
                             </FormItem>
                           )}
                         />
-                      )} */}
+                      )}
 
                       <FormField
                         control={registerForm.control}
