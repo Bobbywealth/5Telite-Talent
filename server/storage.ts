@@ -254,9 +254,27 @@ export class DatabaseStorage implements IStorage {
 
   async updateTalentProfile(userId: string, profile: Partial<InsertTalentProfile>): Promise<TalentProfile> {
     // First get the existing profile
-    const existing = await this.getTalentProfile(userId);
+    let existing = await this.getTalentProfile(userId);
+    
+    // 🔧 If profile doesn't exist, create a default one first
     if (!existing) {
-      throw new Error("Talent profile not found");
+      console.log(`Talent profile not found for user ${userId}, creating default profile...`);
+      const user = await this.getUser(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      
+      existing = await this.createTalentProfile({
+        userId: userId,
+        stageName: `${user.firstName} ${user.lastName}`,
+        categories: [],
+        skills: [],
+        bio: "",
+        location: "",
+        unionStatus: "Non-Union",
+        approvalStatus: "approved",
+      });
+      console.log(`Created default talent profile for user ${userId}`);
     }
 
     // Only update fields that are actually provided (not undefined)

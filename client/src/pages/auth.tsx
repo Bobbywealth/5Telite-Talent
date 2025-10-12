@@ -192,16 +192,6 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Back to Homepage Button - Fixed Position */}
-      <Button
-        variant="ghost"
-        onClick={() => setLocation("/")}
-        className="fixed top-4 right-4 z-[100] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-200 shadow-lg"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Homepage
-      </Button>
-
       {/* Animated background elements */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Floating geometric shapes */}
@@ -319,6 +309,17 @@ export default function AuthPage() {
           <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm relative overflow-hidden">
             {/* Card decoration */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400"></div>
+            
+            {/* Back to Homepage Button */}
+            <Button
+              variant="ghost"
+              onClick={() => setLocation("/")}
+              className="absolute top-4 right-4 z-10 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all duration-200"
+              size="sm"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Homepage
+            </Button>
             
             <CardHeader className="text-center pb-4 pt-8">
               <div className="w-20 h-20 mx-auto mb-4">
