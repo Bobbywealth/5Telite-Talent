@@ -277,25 +277,37 @@ export default function AdminTalents() {
       talentData: any; 
       userData: any; 
     }) => {
-      // Update user information first
-      await apiRequest("PATCH", `/api/users/${userData.id}`, {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
-        phone: userData.phone,
-      });
+      try {
+        console.log('Updating user data:', userData);
+        console.log('Updating talent data:', talentData);
+        
+        // Update user information first
+        const userResult = await apiRequest("PATCH", `/api/users/${userData.id}`, {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          phone: userData.phone,
+        });
+        console.log('User update result:', userResult);
 
-      // Update talent profile
-      return apiRequest("PATCH", `/api/talents/${talentId}`, {
-        stageName: talentData.stageName,
-        bio: talentData.bio,
-        location: talentData.location,
-        experience: talentData.experience,
-        unionStatus: talentData.unionStatus,
-        categories: talentData.categories,
-        skills: talentData.skills,
-        approvalStatus: talentData.approvalStatus,
-      });
+        // Update talent profile
+        const talentResult = await apiRequest("PATCH", `/api/talents/${talentId}`, {
+          stageName: talentData.stageName,
+          bio: talentData.bio,
+          location: talentData.location,
+          experience: talentData.experience,
+          unionStatus: talentData.unionStatus,
+          categories: talentData.categories,
+          skills: talentData.skills,
+          approvalStatus: talentData.approvalStatus,
+        });
+        console.log('Talent update result:', talentResult);
+        
+        return talentResult;
+      } catch (error) {
+        console.error('Error in updateTalentMutation:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({
@@ -319,9 +331,12 @@ export default function AdminTalents() {
         }, 500);
         return;
       }
+      
+      // Show more specific error message
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to update talent profile.";
       toast({
         title: "Error",
-        description: "Failed to update talent profile.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
