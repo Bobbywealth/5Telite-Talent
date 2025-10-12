@@ -313,7 +313,13 @@ export default function ContractsPage() {
         {user?.role === "admin" && (
           <Dialog open={showCreateDialog} onOpenChange={handleCloseDialog}>
             <DialogTrigger asChild>
-              <Button data-testid="button-create-contract">
+              <Button 
+                data-testid="button-create-contract"
+                onClick={() => {
+                  console.log('Create Contract button clicked');
+                  setShowCreateDialog(true);
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Contract
               </Button>
