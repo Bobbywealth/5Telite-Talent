@@ -91,6 +91,26 @@ export default function AdminDashboard() {
     },
   });
 
+  // Setup password reset fields mutation
+  const setupPasswordResetMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/admin/setup-password-reset", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password Reset Setup Complete",
+        description: "Password reset fields have been added to the database!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: "Failed to setup password reset: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Create notifications table mutation
   const createNotificationsTableMutation = useMutation({
     mutationFn: async () => {
@@ -263,6 +283,14 @@ export default function AdminDashboard() {
                     Reports
                   </Button>
                 </Link>
+                <Button 
+                  onClick={() => setupPasswordResetMutation.mutate()}
+                  disabled={setupPasswordResetMutation.isPending}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  {setupPasswordResetMutation.isPending ? "Setting Up..." : "Setup Password Reset"}
+                </Button>
                 <Button 
                   onClick={() => createNotificationsTableMutation.mutate()}
                   disabled={createNotificationsTableMutation.isPending}

@@ -34,6 +34,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount files router
   app.use('/api/files', filesRouter);
 
+  // 🔧 Setup endpoint to add password reset columns (run once)
+  app.post('/api/admin/setup-password-reset', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      const user = await storage.getUser(userId);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Add columns if they don't exist
+      await db.execute(sql`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS reset_password_token VARCHAR,
+        ADD COLUMN IF NOT EXISTS reset_password_expires TIMESTAMP
+      `);
+
+      await db.execute(sql`
+        CREATE INDEX IF NOT EXISTS idx_users_reset_token ON users(reset_password_token)
+      `);
+
+      res.json({ message: "Password reset fields added successfully" });
+    } catch (error) {
+      console.error("Error setting up password reset fields:", error);
+      res.status(500).json({ message: "Failed to setup password reset fields" });
+    }
+  });
+
   // 🔐 Password Reset - Request reset token
   app.post('/api/auth/forgot-password', async (req, res) => {
     try {
