@@ -34,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount files router
   app.use('/api/files', filesRouter);
 
-  // 🔧 Setup endpoint to add missing bookings category column (run once)
+  // 🔧 Setup endpoint to add missing bookings columns (run once)
   app.post('/api/admin/setup-bookings-category', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.id;
@@ -44,16 +44,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      // Add category column if it doesn't exist
+      // Add all missing columns if they don't exist
       await db.execute(sql`
         ALTER TABLE bookings 
-        ADD COLUMN IF NOT EXISTS category VARCHAR
+        ADD COLUMN IF NOT EXISTS category VARCHAR,
+        ADD COLUMN IF NOT EXISTS description TEXT,
+        ADD COLUMN IF NOT EXISTS location VARCHAR,
+        ADD COLUMN IF NOT EXISTS rate DECIMAL(10, 2),
+        ADD COLUMN IF NOT EXISTS budget DECIMAL(10, 2),
+        ADD COLUMN IF NOT EXISTS usage JSONB,
+        ADD COLUMN IF NOT EXISTS deliverables TEXT,
+        ADD COLUMN IF NOT EXISTS notes TEXT,
+        ADD COLUMN IF NOT EXISTS requested_talent_id VARCHAR,
+        ADD COLUMN IF NOT EXISTS requested_talent_name VARCHAR,
+        ADD COLUMN IF NOT EXISTS client_name VARCHAR,
+        ADD COLUMN IF NOT EXISTS client_email VARCHAR,
+        ADD COLUMN IF NOT EXISTS client_phone VARCHAR
       `);
 
-      res.json({ message: "Bookings category column added successfully" });
+      res.json({ message: "All missing bookings columns added successfully" });
     } catch (error) {
-      console.error("Error setting up bookings category column:", error);
-      res.status(500).json({ message: "Failed to setup bookings category column" });
+      console.error("Error setting up bookings columns:", error);
+      res.status(500).json({ message: "Failed to setup bookings columns" });
     }
   });
 

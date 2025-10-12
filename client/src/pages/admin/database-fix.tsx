@@ -59,7 +59,7 @@ export default function DatabaseFix() {
                 <div>
                   <h3 className="font-semibold text-blue-900">Current Issue</h3>
                   <p className="text-sm text-blue-700">
-                    The bookings page shows a 500 error because the database is missing the 'category' column.
+                    The bookings page shows a 500 error because the database is missing several columns (category, description, location, etc.).
                   </p>
                 </div>
               </div>
@@ -71,8 +71,8 @@ export default function DatabaseFix() {
                 <div>
                   <h3 className="font-semibold text-green-900">What This Does</h3>
                   <ul className="text-sm text-green-700 space-y-1 mt-2">
-                    <li>• Adds the missing 'category' column to the bookings table</li>
-                    <li>• Safe to run multiple times (won't duplicate the column)</li>
+                    <li>• Adds ALL missing columns to the bookings table (category, description, location, rate, budget, deliverables, notes, etc.)</li>
+                    <li>• Safe to run multiple times (won't duplicate columns)</li>
                     <li>• Fixes both viewing and creating bookings</li>
                     <li>• Takes just a few seconds to complete</li>
                   </ul>
