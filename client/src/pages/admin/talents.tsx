@@ -306,6 +306,7 @@ export default function AdminTalents() {
           categories: talentData.categories,
           skills: talentData.skills,
           approvalStatus: talentData.approvalStatus,
+          mediaUrls: talentData.mediaUrls,
         });
         console.log('Talent update result:', talentResult);
         
@@ -1206,6 +1207,24 @@ export default function AdminTalents() {
                     rows={2}
                     placeholder="List your skills separated by commas"
                   />
+                </div>
+              </div>
+
+              {/* Photos Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Photos</h3>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Profile Photos</label>
+                  <ObjectUploader
+                    value={editingTalent.mediaUrls || []}
+                    onChange={(urls) => setEditingTalent({
+                      ...editingTalent,
+                      mediaUrls: urls
+                    })}
+                    maxFiles={5}
+                    permission="public"
+                  />
+                  <p className="text-sm text-gray-500 mt-2">Upload up to 5 photos</p>
                 </div>
               </div>
 
