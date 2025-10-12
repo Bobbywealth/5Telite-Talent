@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationBell } from "@/components/ui/notification-bell";
-import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock, BookOpen, Megaphone, Shield, BarChart3 } from "lucide-react";
+import { Users, Calendar, DollarSign, CheckCircle, ClipboardList, Star, Menu, X, Check, Inbox, Clock, BookOpen, Megaphone, Shield, BarChart3, Bell } from "lucide-react";
 
 export default function AdminDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -86,6 +86,29 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Test notification mutation
+  const testNotificationMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/notifications/test", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Test Notification Created",
+        description: "A test notification has been created. Check the notification bell!",
+      });
+      // Invalidate notification queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications-new"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications/unread-count"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create test notification: " + error.message,
         variant: "destructive",
       });
     },
@@ -220,6 +243,14 @@ export default function AdminDashboard() {
                     Reports
                   </Button>
                 </Link>
+                <Button 
+                  onClick={() => testNotificationMutation.mutate()}
+                  disabled={testNotificationMutation.isPending}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-200 hover:scale-105"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  {testNotificationMutation.isPending ? "Creating..." : "Test Notification"}
+                </Button>
               </div>
             </div>
           </div>

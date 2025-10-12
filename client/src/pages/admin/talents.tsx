@@ -1097,11 +1097,16 @@ export default function AdminTalents() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select experience level" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[70]">
                         <SelectItem value="0-1">0-1 years</SelectItem>
-                        <SelectItem value="2-5">2-5 years</SelectItem>
-                        <SelectItem value="6-10">6-10 years</SelectItem>
-                        <SelectItem value="10+">10+ years</SelectItem>
+                        <SelectItem value="1-2">1-2 years</SelectItem>
+                        <SelectItem value="2-3">2-3 years</SelectItem>
+                        <SelectItem value="3-5">3-5 years</SelectItem>
+                        <SelectItem value="5-7">5-7 years</SelectItem>
+                        <SelectItem value="7-10">7-10 years</SelectItem>
+                        <SelectItem value="10-15">10-15 years</SelectItem>
+                        <SelectItem value="15-20">15-20 years</SelectItem>
+                        <SelectItem value="20+">20+ years</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1118,7 +1123,7 @@ export default function AdminTalents() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select union status" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[70]">
                       <SelectItem value="SAG-AFTRA">SAG-AFTRA</SelectItem>
                       <SelectItem value="Non-Union">Non-Union</SelectItem>
                       <SelectItem value="Other">Other</SelectItem>
@@ -1198,7 +1203,7 @@ export default function AdminTalents() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select approval status" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[70]">
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="approved">Approved</SelectItem>
                       <SelectItem value="rejected">Rejected</SelectItem>
