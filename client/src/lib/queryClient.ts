@@ -51,7 +51,23 @@ export async function apiRequest(method: string, url: string, body?: any) {
   });
 
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
+    // Try to extract error message from response body
+    let errorMessage = `Request failed: ${response.status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData?.message) {
+        errorMessage = errorData.message;
+      }
+    } catch {
+      // If response is not JSON, use the status text
+      errorMessage = response.statusText || errorMessage;
+    }
+    
+    // Create error object with response data for better debugging
+    const error = new Error(errorMessage) as any;
+    error.status = response.status;
+    error.response = { status: response.status, data: { message: errorMessage } };
+    throw error;
   }
 
   return response.json();

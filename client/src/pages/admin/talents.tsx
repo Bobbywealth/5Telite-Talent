@@ -173,17 +173,25 @@ export default function AdminTalents() {
       queryClient.invalidateQueries({ queryKey: ["/api/talents"] });
     },
     onError: (error: any) => {
-      console.error('Error adding talent:', error);
+      console.error('Error adding talent - Full error object:', error);
       console.error('Error details:', {
         response: error?.response,
         data: error?.response?.data,
         message: error?.message,
         status: error?.response?.status
       });
-      const errorMessage = error?.message || "Failed to add talent. Please check all required fields.";
+      
+      // Extract the most specific error message
+      const errorMessage = error?.response?.data?.message 
+        || error?.data?.message 
+        || error?.message 
+        || "Failed to add talent. Please check all required fields.";
+      
+      const statusCode = error?.response?.status || error?.status || 'Unknown';
+      
       toast({
         title: "Error Adding Talent",
-        description: `Request failed: ${error?.response?.status || 'Unknown'} - ${errorMessage}`,
+        description: `Status ${statusCode}: ${errorMessage}`,
         variant: "destructive",
       });
     },
