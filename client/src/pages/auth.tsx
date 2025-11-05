@@ -744,27 +744,31 @@ export default function AuthPage() {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-700 cursor-pointer">
-                                  I agree to the{" "}
+                                <FormLabel className="text-sm font-normal text-gray-700">
+                                  <span className="select-none">I agree to the </span>
                                   <a 
                                     href="/terms" 
-                                    className="text-blue-600 hover:underline font-medium pointer-events-auto relative z-10" 
+                                    className="text-blue-600 hover:underline font-medium inline-block cursor-pointer" 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => {
+                                      e.preventDefault();
                                       e.stopPropagation();
+                                      window.open('/terms', '_blank');
                                     }}
                                   >
                                     Terms of Service
                                   </a>
-                                  {" "}and{" "}
+                                  <span className="select-none"> and </span>
                                   <a 
                                     href="/privacy" 
-                                    className="text-blue-600 hover:underline font-medium pointer-events-auto relative z-10" 
+                                    className="text-blue-600 hover:underline font-medium inline-block cursor-pointer" 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => {
+                                      e.preventDefault();
                                       e.stopPropagation();
+                                      window.open('/privacy', '_blank');
                                     }}
                                   >
                                     Privacy Policy
