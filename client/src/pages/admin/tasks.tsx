@@ -204,9 +204,6 @@ export default function AdminTasks() {
   // Create task mutation
   const createTaskMutation = useMutation({
     mutationFn: async (taskData: typeof taskForm) => {
-      console.log('Creating task with data:', taskData);
-      console.log('Due date value:', taskData.dueAt);
-      
       const cleanedData = {
         title: taskData.title.trim(),
         description: taskData.description?.trim() || null,
@@ -218,8 +215,6 @@ export default function AdminTasks() {
         bookingId: taskData.scope === 'booking' ? taskData.bookingId || null : null,
         talentId: taskData.scope === 'talent' ? taskData.talentId || null : null,
       };
-      
-      console.log('Cleaned data being sent:', cleanedData);
       
       return apiRequest("POST", "/api/tasks", cleanedData);
     },

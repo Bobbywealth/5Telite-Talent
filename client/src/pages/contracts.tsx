@@ -147,20 +147,7 @@ export default function ContractsPage() {
 
   // Show all bookings (simplified - no filtering for now)
   const allBookings = bookingsData?.bookings || [];
-  const bookings = allBookings; // Show all bookings for debugging
-  
-  // Debug logging
-  console.log("Contracts Debug:", {
-    bookingsData,
-    bookingsError,
-    bookingsLoading,
-    allBookings,
-    bookings,
-    bookingsLength: bookings.length,
-    bookingsDataType: typeof bookingsData,
-    hasBookingsArray: !!bookingsData?.bookings,
-    bookingsArrayLength: bookingsData?.bookings?.length
-  });
+  const bookings = allBookings;
 
   const createContractMutation = useMutation({
     mutationFn: async ({ bookingId, bookingTalentId }: { bookingId: string; bookingTalentId: string }) => {
@@ -340,7 +327,6 @@ export default function ContractsPage() {
               <Button 
                 data-testid="button-create-contract"
                 onClick={() => {
-                  console.log('Create Contract button clicked');
                   setShowCreateDialog(true);
                 }}
               >
@@ -365,14 +351,11 @@ export default function ContractsPage() {
                     data-testid="select-booking"
                   >
                     <option value="">Choose a booking</option>
-                    {bookings.map((booking: any) => {
-                      console.log("Rendering booking:", booking);
-                      return (
+                    {bookings.map((booking: any) => (
                         <option key={booking.id} value={booking.id}>
                           {booking.title} ({booking.code})
                         </option>
-                      );
-                    })}
+                    ))}
                   </select>
                 </div>
 

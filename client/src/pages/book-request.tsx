@@ -107,6 +107,31 @@ export default function BookRequest() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.clientEmail && !emailRegex.test(formData.clientEmail)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate dates
+    if (formData.startDate && formData.endDate) {
+      const startDate = new Date(formData.startDate);
+      const endDate = new Date(formData.endDate);
+      if (startDate > endDate) {
+        toast({
+          title: "Invalid Dates",
+          description: "End date must be after start date",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     // Submit directly without authentication
     bookingMutation.mutate(formData);
   };

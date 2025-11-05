@@ -116,8 +116,6 @@ export default function AdminTalents() {
   // Add talent mutation
   const addTalentMutation = useMutation({
     mutationFn: async (data: typeof newTalentData) => {
-      console.log('Creating talent with data:', data);
-      
       // First create user
       const userResponse = await apiRequest("POST", "/api/admin/users", {
         firstName: data.firstName,
@@ -126,8 +124,6 @@ export default function AdminTalents() {
         role: "talent",
         status: "active"
       });
-      
-      console.log('User created successfully:', userResponse);
 
       // Then create talent profile
       return apiRequest("POST", "/api/talents/admin-create", {
@@ -290,9 +286,6 @@ export default function AdminTalents() {
       userData: any; 
     }) => {
       try {
-        console.log('Updating user data:', userData);
-        console.log('Updating talent data:', talentData);
-        
         // Update user information first
         const userResult = await apiRequest("PATCH", `/api/users/${userData.id}`, {
           firstName: userData.firstName,
@@ -300,7 +293,6 @@ export default function AdminTalents() {
           email: userData.email,
           phone: userData.phone,
         });
-        console.log('User update result:', userResult);
 
         // Update talent profile
         const talentResult = await apiRequest("PATCH", `/api/talents/${talentId}`, {
@@ -314,7 +306,6 @@ export default function AdminTalents() {
           approvalStatus: talentData.approvalStatus,
           mediaUrls: talentData.mediaUrls,
         });
-        console.log('Talent update result:', talentResult);
         
         return talentResult;
       } catch (error) {

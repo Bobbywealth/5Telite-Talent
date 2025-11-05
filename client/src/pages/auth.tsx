@@ -136,7 +136,6 @@ export default function AuthPage() {
           client: '/client'
         };
         const redirectPath = redirectPaths[data?.role] || '/';
-        console.log('Redirecting to:', redirectPath, 'for role:', data?.role);
         window.location.href = redirectPath; // Force full page navigation
       }, 1000); // Longer delay for auth state
     },
@@ -182,7 +181,6 @@ export default function AuthPage() {
           client: '/client'
         };
         const redirectPath = redirectPaths[data?.role || data?.user?.role] || '/';
-        console.log('Registration redirect to:', redirectPath, 'for role:', data?.role || data?.user?.role);
         window.location.href = redirectPath; // Force full page navigation
       }, 1000);
     },
