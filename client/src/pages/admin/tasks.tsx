@@ -576,7 +576,7 @@ export default function AdminTasks() {
                             <SelectTrigger className="w-32">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="z-[9999]">
                               <SelectItem value="todo">To Do</SelectItem>
                               <SelectItem value="in_progress">In Progress</SelectItem>
                               <SelectItem value="blocked">Blocked</SelectItem>
