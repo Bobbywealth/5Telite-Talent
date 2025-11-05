@@ -742,16 +742,33 @@ export default function AuthPage() {
                                   checked={field.value}
                                   onCheckedChange={field.onChange}
                                   data-testid="checkbox-accept-terms"
+                                  className="cursor-pointer"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-700">
+                                <FormLabel className="text-sm font-normal text-gray-700 cursor-pointer">
                                   I agree to the{" "}
-                                  <a href="/terms" className="text-blue-600 hover:underline" target="_blank">
+                                  <a 
+                                    href="/terms" 
+                                    className="text-blue-600 hover:underline font-medium pointer-events-auto relative z-10" 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                  >
                                     Terms of Service
                                   </a>
                                   {" "}and{" "}
-                                  <a href="/privacy" className="text-blue-600 hover:underline" target="_blank">
+                                  <a 
+                                    href="/privacy" 
+                                    className="text-blue-600 hover:underline font-medium pointer-events-auto relative z-10" 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                  >
                                     Privacy Policy
                                   </a>
                                 </FormLabel>

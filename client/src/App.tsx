@@ -57,6 +57,8 @@ import ClientBookings from "@/pages/client/bookings";
 import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
 import Contracts from "@/pages/contracts";
+import Terms from "@/pages/terms";
+import Privacy from "@/pages/privacy";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -87,6 +89,8 @@ function Router() {
           <Route path="/book" component={BookRequest} />
           <Route path="/register" component={Register} />
           <Route path="/contracts" component={Contracts} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
         </>
       ) : (
         <>
@@ -133,6 +137,8 @@ function Router() {
           <Route path="/book" component={BookRequest} />
           <Route path="/register" component={Register} />
           <Route path="/support" component={Support} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
 
           {/* Client routes */}
           {user?.role === 'client' && (
