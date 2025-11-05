@@ -54,7 +54,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
   // Local state for search input to allow fast typing
   const [localSearch, setLocalSearch] = useState(filters.search);
 
-  // Debounce search updates
+  // Debounce search updates - only update parent when user stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
       if (localSearch !== filters.search) {
@@ -65,10 +65,13 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
     return () => clearTimeout(timer);
   }, [localSearch]);
 
-  // Sync local search with external filter changes
+  // Sync local search with external filter changes ONLY when cleared externally
+  // Don't sync back during typing to avoid cursor position reset
   useEffect(() => {
-    if (filters.search !== localSearch) {
-      setLocalSearch(filters.search);
+    // Only sync if filters.search is empty (cleared) or if it's significantly different
+    // This prevents the cursor jump during normal typing
+    if (filters.search === "" && localSearch !== "") {
+      setLocalSearch("");
     }
   }, [filters.search]);
 
