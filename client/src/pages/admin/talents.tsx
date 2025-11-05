@@ -876,9 +876,12 @@ export default function AdminTalents() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-slate-900">Professional Information</h3>
 
-              <div>
-                <Label>Talent Categories * (Select all that apply)</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+              <div className="space-y-2">
+                <Label className="text-base font-semibold">
+                  Talent Categories <span className="text-red-500">*</span>
+                </Label>
+                <p className="text-sm text-gray-600">Select at least one category that applies</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2 p-4 border-2 border-gray-200 rounded-lg bg-gray-50">
                   {categories.map((category) => (
                     <div key={category} className="flex items-center space-x-2">
                       <Checkbox
@@ -886,12 +889,17 @@ export default function AdminTalents() {
                         checked={newTalentData.categories.includes(category)}
                         onCheckedChange={(checked) => handleCategoryChange(category, !!checked)}
                       />
-                      <Label htmlFor={category} className="text-sm">
+                      <Label htmlFor={category} className="text-sm cursor-pointer">
                         {category}
                       </Label>
                     </div>
                   ))}
                 </div>
+                {newTalentData.categories.length > 0 && (
+                  <p className="text-sm text-green-600 font-medium">
+                    ✓ {newTalentData.categories.length} category(ies) selected
+                  </p>
+                )}
               </div>
 
               <div>
@@ -1009,8 +1017,11 @@ export default function AdminTalents() {
             </Button>
             <Button
               onClick={() => {
+                console.log('Add Talent clicked - Current data:', newTalentData);
+                
                 // Validate required fields
                 if (!newTalentData.firstName || !newTalentData.lastName || !newTalentData.email) {
+                  console.log('Validation failed: Missing name or email');
                   toast({
                     title: "Missing Required Fields",
                     description: "Please fill in First Name, Last Name, and Email",
@@ -1019,9 +1030,10 @@ export default function AdminTalents() {
                   return;
                 }
                 if (newTalentData.categories.length === 0) {
+                  console.log('Validation failed: No categories selected');
                   toast({
                     title: "Category Required",
-                    description: "Please select at least one category",
+                    description: "Please select at least one talent category (Actor, Model, Dancer, etc.)",
                     variant: "destructive",
                   });
                   return;
@@ -1029,6 +1041,7 @@ export default function AdminTalents() {
                 // Validate email format
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(newTalentData.email)) {
+                  console.log('Validation failed: Invalid email format');
                   toast({
                     title: "Invalid Email",
                     description: "Please enter a valid email address",
@@ -1036,9 +1049,12 @@ export default function AdminTalents() {
                   });
                   return;
                 }
+                
+                console.log('Validation passed, submitting...');
                 addTalentMutation.mutate(newTalentData);
               }}
-              disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email || newTalentData.categories.length === 0}
+              disabled={addTalentMutation.isPending}
+              className="min-w-[120px]"
             >
               {addTalentMutation.isPending ? "Creating..." : "Add Talent"}
             </Button>
