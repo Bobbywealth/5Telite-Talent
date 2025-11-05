@@ -789,7 +789,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[10001]">
+                      <SelectContent className="z-[100000]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -798,35 +798,35 @@ export default function AdminTasks() {
                     </Select>
                   </div>
 
-                      <div>
+                  <div>
                     <Label htmlFor="priority">Priority</Label>
                     <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[10001]">
+                      <SelectContent className="z-[100000]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
                       </SelectContent>
                     </Select>
-                              </div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                              <div>
+                  <div>
                     <Label htmlFor="scope">Scope</Label>
                     <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[10001]">
+                      <SelectContent className="z-[100000]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
                       </SelectContent>
                     </Select>
-                              </div>
+                  </div>
 
                   <div>
                     <Label htmlFor="dueAt">Due Date</Label>
@@ -845,7 +845,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[10001]">
+                    <SelectContent className="z-[100000]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -968,7 +968,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[10001]">
+                      <SelectContent className="z-[100000]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -983,7 +983,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[10001]">
+                      <SelectContent className="z-[100000]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -999,7 +999,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[10001]">
+                      <SelectContent className="z-[100000]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -1024,7 +1024,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[10001]">
+                    <SelectContent className="z-[100000]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
