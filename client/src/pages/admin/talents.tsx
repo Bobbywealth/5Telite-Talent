@@ -925,7 +925,7 @@ export default function AdminTalents() {
                   <SelectTrigger>
                     <SelectValue placeholder="Select experience level" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[10001]">
                     <SelectItem value="0-1">0-1 years</SelectItem>
                     <SelectItem value="2-5">2-5 years</SelectItem>
                     <SelectItem value="6-10">6-10 years</SelectItem>
