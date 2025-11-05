@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BookRequest() {
   const { toast } = useToast();
@@ -228,7 +229,19 @@ export default function BookRequest() {
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Selected Talent Display */}
-                {selectedTalent && (
+                {talentLoading && talentId ? (
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <Skeleton className="h-5 w-32 mb-3" />
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-16 h-16 rounded-lg" />
+                      <div className="space-y-2 flex-1">
+                        <Skeleton className="h-5 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-4 w-40" />
+                      </div>
+                    </div>
+                  </div>
+                ) : selectedTalent && (
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <h3 className="font-semibold text-slate-900 mb-2">Selected Talent</h3>
                     <div className="flex items-center gap-3">

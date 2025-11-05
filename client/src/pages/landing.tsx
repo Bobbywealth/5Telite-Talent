@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
@@ -352,22 +353,22 @@ export default function Landing() {
             )) || (
               // Loading skeleton
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
-                  <div className="w-full h-64 bg-slate-200"></div>
-                  <div className="p-4">
-                    <div className="h-4 bg-slate-200 rounded mb-2"></div>
-                    <div className="h-3 bg-slate-200 rounded mb-2"></div>
-                    <div className="h-3 bg-slate-200 rounded mb-3"></div>
-                    <div className="flex gap-2 mb-3">
-                      <div className="h-6 w-16 bg-slate-200 rounded-full"></div>
-                      <div className="h-6 w-20 bg-slate-200 rounded-full"></div>
+                <Card key={i} className="bg-white overflow-hidden">
+                  <Skeleton className="w-full h-64" />
+                  <CardContent className="p-4 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-2/3" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                      <Skeleton className="h-6 w-20 rounded-full" />
                     </div>
-                    <div className="flex justify-between items-center">
-                      <div className="h-4 w-16 bg-slate-200 rounded"></div>
-                      <div className="h-6 w-20 bg-slate-200 rounded"></div>
+                    <div className="flex justify-between items-center pt-2">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-9 w-24" />
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))
             )}
           </div>
