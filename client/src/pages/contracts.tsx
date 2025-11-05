@@ -74,8 +74,15 @@ export default function ContractsPage() {
     setSelectedBooking("");
     setSelectedBookingTalent("");
   };
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [location, navigate] = useLocation();
+  
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isAuthenticated, isLoading, navigate]);
   
   // Redirect admin users to proper admin URL
   useEffect(() => {
@@ -83,6 +90,23 @@ export default function ContractsPage() {
       navigate('/admin/contracts');
     }
   }, [user, location, navigate]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // Handle URL parameters for quick contract creation from email notifications
   useEffect(() => {

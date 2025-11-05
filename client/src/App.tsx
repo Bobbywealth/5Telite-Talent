@@ -86,6 +86,7 @@ function Router() {
           <Route path="/announcements" component={Announcements} />
           <Route path="/book" component={BookRequest} />
           <Route path="/register" component={Register} />
+          <Route path="/contracts" component={Contracts} />
         </>
       ) : (
         <>
