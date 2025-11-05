@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -50,6 +51,27 @@ const availableLocations = [
 ];
 
 export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
+  // Local state for search input to allow fast typing
+  const [localSearch, setLocalSearch] = useState(filters.search);
+
+  // Debounce search updates
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== filters.search) {
+        updateFilter('search', localSearch);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [localSearch]);
+
+  // Sync local search with external filter changes
+  useEffect(() => {
+    if (filters.search !== localSearch) {
+      setLocalSearch(filters.search);
+    }
+  }, [filters.search]);
+
   const updateFilter = (key: string, value: any) => {
     onFiltersChange({
       ...filters,
@@ -69,6 +91,7 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
   };
 
   const clearAllFilters = () => {
+    setLocalSearch(""); // Clear local search state
     onFiltersChange({
       search: "",
       category: "",
@@ -92,8 +115,8 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
             <Input
               id="search"
               placeholder="Name or keyword..."
-              value={filters.search}
-              onChange={(e) => updateFilter('search', e.target.value)}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
               data-testid="input-search"
             />
           </div>
