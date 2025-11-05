@@ -178,10 +178,16 @@ export default function AdminTalents() {
     },
     onError: (error: any) => {
       console.error('Error adding talent:', error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to add talent";
+      console.error('Error details:', {
+        response: error?.response,
+        data: error?.response?.data,
+        message: error?.message,
+        status: error?.response?.status
+      });
+      const errorMessage = error?.message || "Failed to add talent. Please check all required fields.";
       toast({
         title: "Error Adding Talent",
-        description: errorMessage,
+        description: `Request failed: ${error?.response?.status || 'Unknown'} - ${errorMessage}`,
         variant: "destructive",
       });
     },
@@ -1003,7 +1009,36 @@ export default function AdminTalents() {
               Cancel
             </Button>
             <Button
-              onClick={() => addTalentMutation.mutate(newTalentData)}
+              onClick={() => {
+                // Validate required fields
+                if (!newTalentData.firstName || !newTalentData.lastName || !newTalentData.email) {
+                  toast({
+                    title: "Missing Required Fields",
+                    description: "Please fill in First Name, Last Name, and Email",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                if (newTalentData.categories.length === 0) {
+                  toast({
+                    title: "Category Required",
+                    description: "Please select at least one category",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                // Validate email format
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(newTalentData.email)) {
+                  toast({
+                    title: "Invalid Email",
+                    description: "Please enter a valid email address",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                addTalentMutation.mutate(newTalentData);
+              }}
               disabled={addTalentMutation.isPending || !newTalentData.firstName || !newTalentData.lastName || !newTalentData.email || newTalentData.categories.length === 0}
             >
               {addTalentMutation.isPending ? "Creating..." : "Add Talent"}
