@@ -1128,6 +1128,7 @@ Client Signature: _________________________ Date: _____________
         endDate, 
         location, 
         description, 
+        deliverables,
         clientName, 
         clientEmail, 
         clientPhone,
@@ -1143,6 +1144,15 @@ Client Signature: _________________________ Date: _____________
         });
       }
 
+      // Get the first admin user to use as the creator for public bookings
+      const adminUsers = await storage.getAdminUsers();
+      if (!adminUsers || adminUsers.length === 0) {
+        return res.status(500).json({ 
+          message: "System configuration error: No admin users found" 
+        });
+      }
+      const firstAdmin = adminUsers[0];
+
       // Create booking record in database for admin dashboard
       const bookingData = {
         title,
@@ -1151,6 +1161,7 @@ Client Signature: _________________________ Date: _____________
         endDate: endDate ? new Date(endDate) : new Date(),
         location: location || null,
         description: description || null,
+        deliverables: deliverables || null,
         clientName,
         clientEmail,
         clientPhone: clientPhone || null,
@@ -1159,9 +1170,9 @@ Client Signature: _________________________ Date: _____________
         requestedTalentId: talentId || null,
         requestedTalentName: talentName || null,
         budget: budget || null,
-        // No clientId since this is a public submission
-        clientId: "public",
-        createdBy: "public",
+        // Use first admin as both client and creator for public submissions
+        clientId: firstAdmin.id,
+        createdBy: firstAdmin.id,
       };
 
       const booking = await storage.createBooking(bookingData);
@@ -1217,9 +1228,17 @@ Client Signature: _________________________ Date: _____________
         success: true,
         bookingId: booking.id
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error processing public booking request:", error);
-      res.status(500).json({ message: "Failed to submit booking request" });
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+      });
+      res.status(500).json({ 
+        message: "Failed to submit booking request",
+        error: error.message || "Unknown error"
+      });
     }
   });
 
