@@ -629,36 +629,36 @@ export default function AuthPage() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-white border-0 shadow-xl rounded-xl z-[999999]">
-                                <SelectItem value="talent" className="hover:bg-purple-50 focus:bg-purple-50 rounded-lg p-3 m-1">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                                <SelectItem value="talent" className="hover:bg-purple-50 focus:bg-purple-50 rounded-lg py-4 cursor-pointer">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
                                       <Sparkles className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
                                       <div className="font-semibold text-gray-900">Talent/Performer</div>
-                                      <div className="text-xs text-gray-500">Showcase your skills, get booked</div>
+                                      <div className="text-xs text-gray-500 mt-0.5">Showcase your skills, get booked</div>
                                     </div>
                                   </div>
                                 </SelectItem>
-                                <SelectItem value="client" className="hover:bg-blue-50 focus:bg-blue-50 rounded-lg p-3 m-1">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <SelectItem value="client" className="hover:bg-blue-50 focus:bg-blue-50 rounded-lg py-4 cursor-pointer">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
                                       <Briefcase className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
                                       <div className="font-semibold text-gray-900">Client/Booker</div>
-                                      <div className="text-xs text-gray-500">Find and book talented performers</div>
+                                      <div className="text-xs text-gray-500 mt-0.5">Find and book talented performers</div>
                                     </div>
                                   </div>
                                 </SelectItem>
-                                <SelectItem value="admin" className="hover:bg-green-50 focus:bg-green-50 rounded-lg p-3 m-1">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                                <SelectItem value="admin" className="hover:bg-green-50 focus:bg-green-50 rounded-lg py-4 cursor-pointer">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
                                       <Shield className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
                                       <div className="font-semibold text-gray-900">Admin</div>
-                                      <div className="text-xs text-gray-500">Manage platform operations</div>
+                                      <div className="text-xs text-gray-500 mt-0.5">Manage platform operations</div>
                                     </div>
                                   </div>
                                 </SelectItem>
