@@ -88,6 +88,7 @@ export default function AdminBookings() {
     queryKey: ["/api/admin/bookings", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
+      if (filters.search) params.set("search", filters.search);
       if (filters.status) params.set("status", filters.status);
       params.set("page", filters.page.toString());
       params.set("limit", "20");
