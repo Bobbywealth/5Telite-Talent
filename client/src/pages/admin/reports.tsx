@@ -80,6 +80,62 @@ export default function AdminReports() {
   const [timeRange, setTimeRange] = useState("6months");
   const [reportType, setReportType] = useState("overview");
 
+  const handleExportReport = () => {
+    // Generate CSV data
+    const csvData = [];
+    
+    // Add header
+    csvData.push(['5Telite Talent Platform - Analytics Report']);
+    csvData.push(['Generated:', new Date().toLocaleString()]);
+    csvData.push(['Time Range:', timeRange]);
+    csvData.push([]);
+    
+    // Revenue Data
+    csvData.push(['Revenue Trends']);
+    csvData.push(['Month', 'Revenue', 'Bookings', 'Contracts']);
+    revenueData.forEach(item => {
+      csvData.push([item.month, `$${item.revenue}`, item.bookings, item.contracts]);
+    });
+    csvData.push([]);
+    
+    // Talent Performance
+    csvData.push(['Top Performing Talents']);
+    csvData.push(['Name', 'Bookings', 'Revenue', 'Rating']);
+    talentPerformanceData.forEach(item => {
+      csvData.push([item.name, item.bookings, `$${item.revenue}`, item.rating]);
+    });
+    csvData.push([]);
+    
+    // Booking Status
+    csvData.push(['Booking Status Distribution']);
+    csvData.push(['Status', 'Count']);
+    bookingStatusData.forEach(item => {
+      csvData.push([item.name, item.value]);
+    });
+    csvData.push([]);
+    
+    // Category Performance
+    csvData.push(['Performance by Category']);
+    csvData.push(['Category', 'Bookings', 'Revenue']);
+    categoryData.forEach(item => {
+      csvData.push([item.category, item.bookings, `$${item.revenue}`]);
+    });
+    
+    // Convert to CSV string
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `5telite-analytics-report-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Fetch dashboard stats for real data
   const { data: dashboardStats } = useQuery({
     queryKey: ["/api/admin/dashboard-stats"],
@@ -130,7 +186,7 @@ export default function AdminReports() {
                   </SelectContent>
                 </Select>
                 
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleExportReport}>
                   <Download className="h-4 w-4 mr-2" />
                   Export Report
                 </Button>

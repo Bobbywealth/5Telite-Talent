@@ -129,7 +129,7 @@ export default function ContractsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: contracts = [], isLoading } = useQuery({
+  const { data: contracts = [], isLoading: contractsLoading } = useQuery({
     queryKey: ["/api/contracts"],
   });
 
@@ -313,7 +313,7 @@ export default function ContractsPage() {
     );
   };
 
-  if (isLoading) {
+  if (contractsLoading) {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center h-64">

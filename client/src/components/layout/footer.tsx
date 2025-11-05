@@ -75,13 +75,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/book-request" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <Link href="/book" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <Users className="w-4 h-4 mr-2 text-black" />
                   Event Staffing
                 </Link>
               </li>
               <li>
-                <Link href="/book-request" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
+                <Link href="/book" className="hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center">
                   <Settings className="w-4 h-4 mr-2 text-black" />
                   Production Support
                 </Link>
