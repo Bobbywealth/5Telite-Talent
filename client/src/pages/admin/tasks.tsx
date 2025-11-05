@@ -789,7 +789,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000]">
+                      <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -804,7 +804,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000]">
+                      <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -820,7 +820,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000]">
+                      <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -845,7 +845,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[100000]">
+                    <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -968,7 +968,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000]">
+                      <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -983,7 +983,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000]">
+                      <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -999,7 +999,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000]">
+                      <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -1024,7 +1024,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[100000]">
+                    <SelectContent className="z-[100000]" position="popper" sideOffset={5}>
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
