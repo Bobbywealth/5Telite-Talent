@@ -794,7 +794,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100]">
+                      <SelectContent className="z-[10001]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -809,7 +809,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100]">
+                      <SelectContent className="z-[10001]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -825,7 +825,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100]">
+                      <SelectContent className="z-[10001]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -850,7 +850,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[100]">
+                    <SelectContent className="z-[10001]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -869,7 +869,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select booking" />
                       </SelectTrigger>
-                      <SelectContent className="z-[100]">
+                      <SelectContent className="z-[10001]">
                         {bookingsData?.bookings?.map((booking: any) => (
                           <SelectItem key={booking.id} value={booking.id}>
                             {booking.title} (#{booking.code})
@@ -887,7 +887,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select talent" />
                       </SelectTrigger>
-                      <SelectContent className="z-[100]">
+                      <SelectContent className="z-[10001]">
                         {talentsData?.talents?.map((talent: any) => (
                           <SelectItem key={talent.userId} value={talent.userId}>
                             {talent.user.firstName} {talent.user.lastName}
@@ -973,7 +973,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[10001]">
                         <SelectItem value="todo">To Do</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>
                         <SelectItem value="blocked">Blocked</SelectItem>
@@ -988,7 +988,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[10001]">
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -1004,7 +1004,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[10001]">
                         <SelectItem value="general">General</SelectItem>
                         <SelectItem value="booking">Booking Related</SelectItem>
                         <SelectItem value="talent">Talent Specific</SelectItem>
@@ -1029,7 +1029,7 @@ export default function AdminTasks() {
                     <SelectTrigger>
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[10001]">
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
                         <SelectItem key={talent.userId} value={talent.userId}>
@@ -1048,7 +1048,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select booking" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[10001]">
                         {bookingsData?.bookings?.map((booking: any) => (
                           <SelectItem key={booking.id} value={booking.id}>
                             {booking.title} (#{booking.code})
@@ -1066,7 +1066,7 @@ export default function AdminTasks() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select talent" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[10001]">
                         {talentsData?.talents?.map((talent: any) => (
                           <SelectItem key={talent.userId} value={talent.userId}>
                             {talent.user.firstName} {talent.user.lastName}
