@@ -198,6 +198,8 @@ export default function AuthPage() {
   };
 
   const onRegister = (data: RegisterFormData) => {
+    console.log('Registration form submitted with data:', data);
+    console.log('Form validation passed');
     registerMutation.mutate(data);
   };
 
@@ -799,6 +801,12 @@ export default function AuthPage() {
                         className="w-full h-12 bg-gradient-to-r from-slate-900 to-purple-900 hover:from-slate-800 hover:to-purple-800 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                         disabled={registerMutation.isPending}
                         data-testid="button-register"
+                        onClick={(e) => {
+                          console.log('Create Account button clicked');
+                          console.log('Form values:', registerForm.getValues());
+                          console.log('Form errors:', registerForm.formState.errors);
+                          // Let the form's onSubmit handle the rest
+                        }}
                       >
                         {registerMutation.isPending ? (
                           <div className="flex items-center">
