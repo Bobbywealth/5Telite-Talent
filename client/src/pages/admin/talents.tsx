@@ -1017,11 +1017,8 @@ export default function AdminTalents() {
             </Button>
             <Button
               onClick={() => {
-                console.log('Add Talent clicked - Current data:', newTalentData);
-                
                 // Validate required fields
                 if (!newTalentData.firstName || !newTalentData.lastName || !newTalentData.email) {
-                  console.log('Validation failed: Missing name or email');
                   toast({
                     title: "Missing Required Fields",
                     description: "Please fill in First Name, Last Name, and Email",
@@ -1030,7 +1027,6 @@ export default function AdminTalents() {
                   return;
                 }
                 if (newTalentData.categories.length === 0) {
-                  console.log('Validation failed: No categories selected');
                   toast({
                     title: "Category Required",
                     description: "Please select at least one talent category (Actor, Model, Dancer, etc.)",
@@ -1041,7 +1037,6 @@ export default function AdminTalents() {
                 // Validate email format
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(newTalentData.email)) {
-                  console.log('Validation failed: Invalid email format');
                   toast({
                     title: "Invalid Email",
                     description: "Please enter a valid email address",
@@ -1050,7 +1045,6 @@ export default function AdminTalents() {
                   return;
                 }
                 
-                console.log('Validation passed, submitting...');
                 addTalentMutation.mutate(newTalentData);
               }}
               disabled={addTalentMutation.isPending}
