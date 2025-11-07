@@ -57,23 +57,27 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
   // Debounce search updates - only update parent when user stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
+      // Only update if the value has actually changed
       if (localSearch !== filters.search) {
-        updateFilter('search', localSearch);
+        onFiltersChange({
+          ...filters,
+          search: localSearch,
+          page: 1
+        });
       }
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timer);
-  }, [localSearch]);
+  }, [localSearch]); // Only depend on localSearch, not filters
 
-  // Sync local search with external filter changes ONLY when cleared externally
-  // Don't sync back during typing to avoid cursor position reset
+  // Sync local search ONLY when filters are cleared externally (e.g., "Clear All" button)
   useEffect(() => {
-    // Only sync if filters.search is empty (cleared) or if it's significantly different
-    // This prevents the cursor jump during normal typing
+    // Only sync if filters.search is explicitly empty and localSearch is not
+    // This prevents cursor jump during normal typing
     if (filters.search === "" && localSearch !== "") {
       setLocalSearch("");
     }
-  }, [filters.search]);
+  }, [filters.search, localSearch]);
 
   const updateFilter = (key: string, value: any) => {
     onFiltersChange({
