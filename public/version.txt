@@ -1,0 +1,13 @@
+Build Version: 2025-11-06-19:19
+Last Updated: November 6, 2025 7:19 PM
+Commit: 44650ee50535a4226c8c3caffcce3a53a7c30173
+
+All fixes deployed:
+- Terms & Privacy links clickable
+- Years of Experience dropdown working
+- Dropdown visibility enhanced
+- Task form dropdowns positioned correctly
+- Search bar debounce implemented
+- Add Talent validation improved
+- Error message extraction enhanced
+
