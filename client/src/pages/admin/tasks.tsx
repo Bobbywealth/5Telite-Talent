@@ -535,7 +535,7 @@ export default function AdminTasks() {
                       Create Task
                     </Button>
                   )}
-                </div>
+                    </div>
                   ) : (
                     <Table>
                       <TableHeader>
@@ -568,14 +568,22 @@ export default function AdminTasks() {
                             value={task.status}
                             onValueChange={(value) => handleStatusChange(task.id, value as Task['status'])}
                           >
-                            <SelectTrigger className="w-32">
+                            <SelectTrigger className="w-36">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="z-[99999]" position="popper" side="bottom" align="start" sideOffset={5}>
-                              <SelectItem value="todo">To Do</SelectItem>
-                              <SelectItem value="in_progress">In Progress</SelectItem>
-                              <SelectItem value="blocked">Blocked</SelectItem>
-                              <SelectItem value="done">Done</SelectItem>
+                            <SelectContent 
+                              className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                              position="popper" 
+                              side="bottom" 
+                              align="start" 
+                              sideOffset={4}
+                              avoidCollisions={true}
+                              collisionPadding={20}
+                            >
+                              <SelectItem value="todo" className="cursor-pointer hover:bg-gray-100">To Do</SelectItem>
+                              <SelectItem value="in_progress" className="cursor-pointer hover:bg-blue-50">In Progress</SelectItem>
+                              <SelectItem value="blocked" className="cursor-pointer hover:bg-red-50">Blocked</SelectItem>
+                              <SelectItem value="done" className="cursor-pointer hover:bg-green-50">Done</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
@@ -757,10 +765,10 @@ export default function AdminTasks() {
                 >
                   <X className="h-4 w-4" />
                       </Button>
-                  </div>
-              
+                </div>
+
               <form onSubmit={handleCreateTask} className="space-y-4">
-                <div>
+                  <div>
                   <Label htmlFor="title">Title *</Label>
                   <Input
                     id="title"
@@ -769,9 +777,9 @@ export default function AdminTasks() {
                     required
                     placeholder="Enter task title"
                   />
-                </div>
+                  </div>
 
-                  <div>
+                      <div>
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
@@ -780,55 +788,79 @@ export default function AdminTasks() {
                     placeholder="Enter task description"
                     rows={3}
                   />
-                  </div>
+                              </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="relative">
                     <Label htmlFor="status">Status</Label>
                     <Select value={taskForm.status} onValueChange={(value) => setTaskForm(prev => ({ ...prev, status: value as Task['status'] }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                        <SelectItem value="todo">To Do</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="blocked">Blocked</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
+                      <SelectContent 
+                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                        position="popper" 
+                        side="bottom" 
+                        align="start" 
+                        sideOffset={4}
+                        avoidCollisions={true}
+                        collisionPadding={20}
+                      >
+                        <SelectItem value="todo" className="cursor-pointer hover:bg-gray-100">To Do</SelectItem>
+                        <SelectItem value="in_progress" className="cursor-pointer hover:bg-blue-50">In Progress</SelectItem>
+                        <SelectItem value="blocked" className="cursor-pointer hover:bg-red-50">Blocked</SelectItem>
+                        <SelectItem value="done" className="cursor-pointer hover:bg-green-50">Done</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                              </div>
 
-                  <div>
+                  <div className="relative">
                     <Label htmlFor="priority">Priority</Label>
                     <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                      <SelectContent 
+                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                        position="popper" 
+                        side="bottom" 
+                        align="start" 
+                        sideOffset={4}
+                        avoidCollisions={true}
+                        collisionPadding={20}
+                      >
+                        <SelectItem value="low" className="cursor-pointer hover:bg-green-50">Low</SelectItem>
+                        <SelectItem value="medium" className="cursor-pointer hover:bg-yellow-50">Medium</SelectItem>
+                        <SelectItem value="high" className="cursor-pointer hover:bg-red-50">High</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                </div>
+                            </div>
+                        </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="relative">
                     <Label htmlFor="scope">Scope</Label>
                     <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                        <SelectItem value="general">General</SelectItem>
-                        <SelectItem value="booking">Booking Related</SelectItem>
-                        <SelectItem value="talent">Talent Specific</SelectItem>
+                      <SelectContent 
+                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                        position="popper" 
+                        side="bottom" 
+                        align="start" 
+                        sideOffset={4}
+                        avoidCollisions={true}
+                        collisionPadding={20}
+                      >
+                        <SelectItem value="general" className="cursor-pointer hover:bg-gray-50">General</SelectItem>
+                        <SelectItem value="booking" className="cursor-pointer hover:bg-blue-50">Booking Related</SelectItem>
+                        <SelectItem value="talent" className="cursor-pointer hover:bg-purple-50">Talent Specific</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                      </div>
 
-                  <div>
+                        <div>
                     <Label htmlFor="dueAt">Due Date</Label>
                     <Input
                       id="dueAt"
@@ -836,19 +868,27 @@ export default function AdminTasks() {
                       value={taskForm.dueAt}
                       onChange={(e) => setTaskForm(prev => ({ ...prev, dueAt: e.target.value }))}
                     />
-                            </div>
-                        </div>
+                              </div>
+                          </div>
 
-                <div>
+                <div className="relative">
                   <Label htmlFor="assigneeId">Assign To</Label>
                   <Select value={taskForm.assigneeId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, assigneeId: value }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
-                    <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                    <SelectContent 
+                      className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl max-h-[300px]" 
+                      position="popper" 
+                      side="bottom" 
+                      align="start" 
+                      sideOffset={4}
+                      avoidCollisions={true}
+                      collisionPadding={20}
+                    >
+                      <SelectItem value="unassigned" className="cursor-pointer hover:bg-gray-100">Unassigned</SelectItem>
                       {talentsData?.talents?.map((talent: any) => (
-                        <SelectItem key={talent.userId} value={talent.userId}>
+                        <SelectItem key={talent.userId} value={talent.userId} className="cursor-pointer hover:bg-purple-50">
                           {talent.user.firstName} {talent.user.lastName}
                           {talent.stageName && ` (${talent.stageName})`}
                         </SelectItem>
@@ -872,11 +912,11 @@ export default function AdminTasks() {
                         ))}
                       </SelectContent>
                     </Select>
-                              </div>
-                            )}
+                        </div>
+                      )}
 
                 {taskForm.scope === 'talent' && (
-                  <div>
+                        <div>
                     <Label htmlFor="talentId">Related Talent</Label>
                     <Select value={taskForm.talentId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, talentId: value }))}>
                       <SelectTrigger>
@@ -891,7 +931,7 @@ export default function AdminTasks() {
                         ))}
                       </SelectContent>
                     </Select>
-                        </div>
+                            </div>
                       )}
 
                 <div className="flex space-x-2 pt-4">
@@ -908,11 +948,11 @@ export default function AdminTasks() {
                   >
                     Cancel
                   </Button>
-                            </div>
-              </form>
-            </div>
                           </div>
+              </form>
                         </div>
+                    </div>
+                  </div>
                       )}
 
       {/* Edit Task Dialog */}
@@ -939,7 +979,7 @@ export default function AdminTasks() {
                     </div>
               
               <form onSubmit={handleUpdateTask} className="space-y-4">
-                <div>
+                      <div>
                   <Label htmlFor="edit-title">Title *</Label>
                   <Input
                     id="edit-title"
@@ -948,9 +988,9 @@ export default function AdminTasks() {
                     required
                     placeholder="Enter task title"
                   />
-                  </div>
+                      </div>
 
-                <div>
+                      <div>
                   <Label htmlFor="edit-description">Description</Label>
                   <Textarea
                     id="edit-description"
@@ -959,53 +999,77 @@ export default function AdminTasks() {
                     placeholder="Enter task description"
                     rows={3}
                   />
-                </div>
+                        </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                      <div>
+                      <div className="relative">
                     <Label htmlFor="edit-status">Status</Label>
                     <Select value={taskForm.status} onValueChange={(value) => setTaskForm(prev => ({ ...prev, status: value as Task['status'] }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                        <SelectItem value="todo">To Do</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="blocked">Blocked</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
+                      <SelectContent 
+                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                        position="popper" 
+                        side="bottom" 
+                        align="start" 
+                        sideOffset={4}
+                        avoidCollisions={true}
+                        collisionPadding={20}
+                      >
+                        <SelectItem value="todo" className="cursor-pointer hover:bg-gray-100">To Do</SelectItem>
+                        <SelectItem value="in_progress" className="cursor-pointer hover:bg-blue-50">In Progress</SelectItem>
+                        <SelectItem value="blocked" className="cursor-pointer hover:bg-red-50">Blocked</SelectItem>
+                        <SelectItem value="done" className="cursor-pointer hover:bg-green-50">Done</SelectItem>
                       </SelectContent>
                     </Select>
                       </div>
 
-                      <div>
+                      <div className="relative">
                     <Label htmlFor="edit-priority">Priority</Label>
                     <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                        </div>
-                      </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                        <div>
-                    <Label htmlFor="edit-scope">Scope</Label>
-                    <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                        <SelectItem value="general">General</SelectItem>
-                        <SelectItem value="booking">Booking Related</SelectItem>
-                        <SelectItem value="talent">Talent Specific</SelectItem>
+                      <SelectContent 
+                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                        position="popper" 
+                        side="bottom" 
+                        align="start" 
+                        sideOffset={4}
+                        avoidCollisions={true}
+                        collisionPadding={20}
+                      >
+                        <SelectItem value="low" className="cursor-pointer hover:bg-green-50">Low</SelectItem>
+                        <SelectItem value="medium" className="cursor-pointer hover:bg-yellow-50">Medium</SelectItem>
+                        <SelectItem value="high" className="cursor-pointer hover:bg-red-50">High</SelectItem>
                       </SelectContent>
                     </Select>
                           </div>
+                        </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                        <div className="relative">
+                    <Label htmlFor="edit-scope">Scope</Label>
+                    <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent 
+                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
+                        position="popper" 
+                        side="bottom" 
+                        align="start" 
+                        sideOffset={4}
+                        avoidCollisions={true}
+                        collisionPadding={20}
+                      >
+                        <SelectItem value="general" className="cursor-pointer hover:bg-gray-50">General</SelectItem>
+                        <SelectItem value="booking" className="cursor-pointer hover:bg-blue-50">Booking Related</SelectItem>
+                        <SelectItem value="talent" className="cursor-pointer hover:bg-purple-50">Talent Specific</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    </div>
 
                   <div>
                     <Label htmlFor="edit-dueAt">Due Date</Label>
@@ -1015,10 +1079,10 @@ export default function AdminTasks() {
                       value={taskForm.dueAt}
                       onChange={(e) => setTaskForm(prev => ({ ...prev, dueAt: e.target.value }))}
                     />
-                        </div>
-                    </div>
+                  </div>
+                </div>
 
-                <div>
+                  <div>
                   <Label htmlFor="edit-assigneeId">Assign To</Label>
                   <Select value={taskForm.assigneeId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, assigneeId: value }))}>
                     <SelectTrigger>
@@ -1034,7 +1098,7 @@ export default function AdminTasks() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                    </div>
 
                 {taskForm.scope === 'booking' && (
                   <div>

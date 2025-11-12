@@ -499,8 +499,13 @@ export default function AdminTalents() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle>Talent Directory</CardTitle>
-              <Button onClick={() => setShowAddForm(true)} data-testid="button-add-talent">
-                <i className="fas fa-plus mr-2"></i>Add Talent
+              <Button 
+                onClick={() => setShowAddForm(true)} 
+                data-testid="button-add-talent"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-6 py-2 h-11 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+              >
+                <i className="fas fa-plus mr-2"></i>
+                <span>Add Talent</span>
               </Button>
             </CardHeader>
             <CardContent>
@@ -1065,8 +1070,12 @@ export default function AdminTalents() {
               </div>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setShowAddForm(false)}>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAddForm(false)}
+              className="px-6"
+            >
               Cancel
             </Button>
             <Button
@@ -1102,9 +1111,19 @@ export default function AdminTalents() {
                 addTalentMutation.mutate(newTalentData);
               }}
               disabled={addTalentMutation.isPending}
-              className="min-w-[120px]"
+              className="min-w-[160px] bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-base px-8 py-3 h-12 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
-              {addTalentMutation.isPending ? "Creating..." : "Add Talent"}
+              {addTalentMutation.isPending ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Creating...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>✨</span>
+                  <span>Add Talent</span>
+                </div>
+              )}
             </Button>
           </div>
         </DialogContent>
