@@ -43,6 +43,7 @@ export default function AdminTalents() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState(""); // Local search input state
   const [filters, setFilters] = useState({
     search: "",
     category: "",
@@ -71,6 +72,15 @@ export default function AdminTalents() {
     eyeColor: "",
     uploadedImages: [] as string[],
   });
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters(prev => ({ ...prev, search: searchInput, page: 1 }));
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Categories for talent selection
   const categories = [
@@ -436,8 +446,8 @@ export default function AdminTalents() {
                 <div>
                   <Input
                     placeholder="Search talents..."
-                    value={filters.search}
-                    onChange={(e) => updateFilter('search', e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     data-testid="input-search-talents"
                   />
                 </div>
@@ -472,7 +482,10 @@ export default function AdminTalents() {
                 <div>
                   <Button
                     variant="outline"
-                    onClick={() => setFilters({ search: "", category: "", approvalStatus: "", page: 1 })}
+                    onClick={() => {
+                      setSearchInput("");
+                      setFilters({ search: "", category: "", approvalStatus: "", page: 1 });
+                    }}
                     data-testid="button-clear-filters"
                   >
                     Clear Filters
@@ -923,22 +936,63 @@ export default function AdminTalents() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="experience">Years of Experience</Label>
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-xl border-2 border-blue-200">
+                <Label htmlFor="experience" className="text-base font-bold text-gray-900 mb-2 block flex items-center gap-2">
+                  <span className="text-blue-600">📅</span>
+                  Years of Experience
+                  <span className="text-xs font-normal text-gray-600 ml-2">(How long have you been performing?)</span>
+                </Label>
                 <Select
                   value={newTalentData.experience}
                   onValueChange={(value) => setNewTalentData(prev => ({ ...prev, experience: value }))}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select experience level" />
+                  <SelectTrigger className="h-14 text-base font-semibold bg-white border-2 border-blue-300 hover:border-blue-500 focus:border-blue-600 focus:ring-4 focus:ring-blue-200 transition-all shadow-sm">
+                    <SelectValue placeholder="👉 Click here to select your experience level" />
                   </SelectTrigger>
-                  <SelectContent className="z-[100000]" position="popper" side="bottom" align="start" sideOffset={5}>
-                    <SelectItem value="0-1">0-1 years</SelectItem>
-                    <SelectItem value="2-5">2-5 years</SelectItem>
-                    <SelectItem value="6-10">6-10 years</SelectItem>
-                    <SelectItem value="10+">10+ years</SelectItem>
+                  <SelectContent className="z-[100000] bg-white border-2 border-blue-300 shadow-2xl" position="popper" side="bottom" align="start" sideOffset={8}>
+                    <SelectItem value="0-1" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🌱</span>
+                        <div>
+                          <div className="font-bold text-gray-900">0-1 years</div>
+                          <div className="text-xs text-gray-600">Just starting out</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="2-5" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🚀</span>
+                        <div>
+                          <div className="font-bold text-gray-900">2-5 years</div>
+                          <div className="text-xs text-gray-600">Building experience</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="6-10" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">⭐</span>
+                        <div>
+                          <div className="font-bold text-gray-900">6-10 years</div>
+                          <div className="text-xs text-gray-600">Experienced professional</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="10+" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">👑</span>
+                        <div>
+                          <div className="font-bold text-gray-900">10+ years</div>
+                          <div className="text-xs text-gray-600">Seasoned veteran</div>
+                        </div>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
+                {newTalentData.experience && (
+                  <p className="text-sm text-green-700 font-semibold mt-2 flex items-center gap-1">
+                    <span>✓</span> Experience level selected: {newTalentData.experience}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -1151,43 +1205,44 @@ export default function AdminTalents() {
                       })}
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Experience</label>
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-lg border-2 border-blue-200">
+                    <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      <span className="text-blue-600">📅</span>
+                      Years of Experience
+                    </label>
                     <select
                       value={editingTalent.experience || ""}
                       onChange={(e) => setEditingTalent({
                         ...editingTalent,
                         experience: e.target.value
                       })}
-                      className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full h-12 px-4 py-2 text-base font-semibold border-2 border-blue-300 rounded-lg bg-white hover:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-600 transition-all shadow-sm cursor-pointer"
                     >
-                      <option value="">Select experience level</option>
-                      <option value="0-1 experience">0-1 experience</option>
-                      <option value="1-2 years">1-2 years</option>
-                      <option value="2-3 years">2-3 years</option>
-                      <option value="3-5 years">3-5 years</option>
-                      <option value="5-7 years">5-7 years</option>
-                      <option value="7-10 years">7-10 years</option>
-                      <option value="10-15 years">10-15 years</option>
-                      <option value="15-20 years">15-20 years</option>
-                      <option value="20+ years">20+ years</option>
+                      <option value="">👉 Select experience level</option>
+                      <option value="0-1">🌱 0-1 years (Just starting out)</option>
+                      <option value="2-5">🚀 2-5 years (Building experience)</option>
+                      <option value="6-10">⭐ 6-10 years (Experienced professional)</option>
+                      <option value="10+">👑 10+ years (Seasoned veteran)</option>
                     </select>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Union Status</label>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-lg border-2 border-green-200">
+                  <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                    <span className="text-green-600">🎭</span>
+                    Union Status
+                  </label>
                   <select
                     value={editingTalent.unionStatus || ""}
                     onChange={(e) => setEditingTalent({
                       ...editingTalent,
                       unionStatus: e.target.value
                     })}
-                    className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-12 px-4 py-2 text-base font-semibold border-2 border-green-300 rounded-lg bg-white hover:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-600 transition-all shadow-sm cursor-pointer"
                   >
-                    <option value="">Select union status</option>
-                    <option value="SAG-AFTRA">SAG-AFTRA</option>
-                    <option value="Non-Union">Non-Union</option>
-                    <option value="Other">Other</option>
+                    <option value="">👉 Select union status</option>
+                    <option value="SAG-AFTRA">⭐ SAG-AFTRA Member</option>
+                    <option value="Non-Union">📋 Non-Union</option>
+                    <option value="Other">🔄 Other</option>
                   </select>
                 </div>
               </div>
@@ -1338,20 +1393,23 @@ export default function AdminTalents() {
               {/* Approval Status */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Status</h3>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Approval Status</label>
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-3 rounded-lg border-2 border-purple-200">
+                  <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                    <span className="text-purple-600">✅</span>
+                    Approval Status
+                  </label>
                   <select
                     value={editingTalent.approvalStatus || ""}
                     onChange={(e) => setEditingTalent({
                       ...editingTalent,
                       approvalStatus: e.target.value
                     })}
-                    className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full h-12 px-4 py-2 text-base font-semibold border-2 border-purple-300 rounded-lg bg-white hover:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-200 focus:border-purple-600 transition-all shadow-sm cursor-pointer"
                   >
-                    <option value="">Select approval status</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="">👉 Select approval status</option>
+                    <option value="pending">⏳ Pending Review</option>
+                    <option value="approved">✅ Approved</option>
+                    <option value="rejected">❌ Rejected</option>
                   </select>
                 </div>
               </div>

@@ -626,37 +626,37 @@ export default function AuthPage() {
                                   <SelectValue placeholder="Select your role" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="bg-white border-0 shadow-xl rounded-xl z-[999999] min-w-[320px]">
-                                <SelectItem value="talent" className="hover:bg-purple-50 focus:bg-purple-50 rounded-lg py-3 px-3 m-1 cursor-pointer">
+                              <SelectContent className="bg-white border-0 shadow-xl rounded-xl z-[999999] w-[400px] max-w-[calc(100vw-2rem)]">
+                                <SelectItem value="talent" className="hover:bg-purple-50 focus:bg-purple-50 rounded-lg py-4 px-4 m-1 cursor-pointer h-auto">
                                   <div className="flex items-center gap-3 w-full">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                                      <Sparkles className="w-5 h-5 text-white" />
+                                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                                      <Sparkles className="w-6 h-6 text-white" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="font-semibold text-gray-900 text-sm truncate">Talent/Performer</div>
-                                      <div className="text-xs text-gray-500 truncate">Showcase your skills, get booked</div>
+                                    <div className="flex-1 min-w-0 text-left">
+                                      <div className="font-bold text-gray-900 text-base mb-0.5 whitespace-normal leading-tight">Talent/Performer</div>
+                                      <div className="text-xs text-gray-600 whitespace-normal leading-relaxed">Showcase your skills and get booked for gigs</div>
                                     </div>
                                   </div>
                                 </SelectItem>
-                                <SelectItem value="client" className="hover:bg-blue-50 focus:bg-blue-50 rounded-lg py-3 px-3 m-1 cursor-pointer">
+                                <SelectItem value="client" className="hover:bg-blue-50 focus:bg-blue-50 rounded-lg py-4 px-4 m-1 cursor-pointer h-auto">
                                   <div className="flex items-center gap-3 w-full">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                                      <Briefcase className="w-5 h-5 text-white" />
+                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                                      <Briefcase className="w-6 h-6 text-white" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="font-semibold text-gray-900 text-sm truncate">Client/Booker</div>
-                                      <div className="text-xs text-gray-500 truncate">Find and book talented performers</div>
+                                    <div className="flex-1 min-w-0 text-left">
+                                      <div className="font-bold text-gray-900 text-base mb-0.5 whitespace-normal leading-tight">Client/Booker</div>
+                                      <div className="text-xs text-gray-600 whitespace-normal leading-relaxed">Find and book talented performers</div>
                                     </div>
                                   </div>
                                 </SelectItem>
-                                <SelectItem value="admin" className="hover:bg-green-50 focus:bg-green-50 rounded-lg py-3 px-3 m-1 cursor-pointer">
+                                <SelectItem value="admin" className="hover:bg-green-50 focus:bg-green-50 rounded-lg py-4 px-4 m-1 cursor-pointer h-auto">
                                   <div className="flex items-center gap-3 w-full">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                                      <Shield className="w-5 h-5 text-white" />
+                                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                                      <Shield className="w-6 h-6 text-white" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="font-semibold text-gray-900 text-sm truncate">Admin</div>
-                                      <div className="text-xs text-gray-500 truncate">Manage platform operations</div>
+                                    <div className="flex-1 min-w-0 text-left">
+                                      <div className="font-bold text-gray-900 text-base mb-0.5 whitespace-normal leading-tight">Admin</div>
+                                      <div className="text-xs text-gray-600 whitespace-normal leading-relaxed">Manage platform operations</div>
                                     </div>
                                   </div>
                                 </SelectItem>
