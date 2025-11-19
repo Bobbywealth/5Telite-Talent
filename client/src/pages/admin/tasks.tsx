@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -165,6 +165,18 @@ export default function AdminTasks() {
   const [statusFilter, setStatusFilter] = useState("");
   const [scopeFilter, setScopeFilter] = useState("");
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+
+  useEffect(() => {
+    const isOpen = showCreateDialog || showEditDialog;
+    if (isOpen) {
+      document.body.classList.add("task-modal-open");
+    } else {
+      document.body.classList.remove("task-modal-open");
+    }
+    return () => {
+      document.body.classList.remove("task-modal-open");
+    };
+  }, [showCreateDialog, showEditDialog]);
   
   // Form state
   const [taskForm, setTaskForm] = useState({
@@ -737,7 +749,7 @@ export default function AdminTasks() {
       {showCreateDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
           <div 
-            className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col relative z-[10000]"
+            className="task-modal bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col relative z-[10000]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 flex-1 overflow-y-auto pb-[300px]">
@@ -923,7 +935,7 @@ export default function AdminTasks() {
       {showEditDialog && selectedTask && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
           <div 
-            className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col relative z-[10000]"
+            className="task-modal bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col relative z-[10000]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 flex-1 overflow-y-auto pb-[300px]">
