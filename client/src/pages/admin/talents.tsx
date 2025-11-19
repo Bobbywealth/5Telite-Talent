@@ -943,20 +943,18 @@ export default function AdminTalents() {
 
               <div>
                 <Label htmlFor="experience">Years of Experience</Label>
-                <Select
+                <select
+                  id="experience"
                   value={newTalentData.experience}
-                  onValueChange={(value) => setNewTalentData(prev => ({ ...prev, experience: value }))}
+                  onChange={(e) => setNewTalentData(prev => ({ ...prev, experience: e.target.value }))}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select experience level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0-1">0-1 years</SelectItem>
-                    <SelectItem value="2-5">2-5 years</SelectItem>
-                    <SelectItem value="6-10">6-10 years</SelectItem>
-                    <SelectItem value="10+">10+ years</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="">Select experience level</option>
+                  <option value="0-1">0-1 years</option>
+                  <option value="2-5">2-5 years</option>
+                  <option value="6-10">6-10 years</option>
+                  <option value="10+">10+ years</option>
+                </select>
               </div>
             </div>
 
