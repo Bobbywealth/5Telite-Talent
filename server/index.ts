@@ -12,6 +12,8 @@ const allowedOrigins = [
   'http://localhost:5000', // Local production test
   'https://5telite.netlify.app', // Production Netlify domain
   'https://fivetelite-talent.onrender.com', // Render deployment
+  'https://5telite.org', // Production domain
+  'https://www.5telite.org', // Production domain with www
 ];
 
 // Add environment-specific frontend URL if set
@@ -24,10 +26,14 @@ const corsOptions = {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
 
-    // Check if origin is in allowed list or is a Netlify preview
-    if (allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
+    // Check if origin is in allowed list or is a Netlify/Render preview
+    if (allowedOrigins.includes(origin) || 
+        origin.endsWith('.netlify.app') || 
+        origin.endsWith('.onrender.com')) {
       callback(null, true);
     } else {
+      // Log rejected origins for debugging
+      console.warn(`CORS rejected origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
