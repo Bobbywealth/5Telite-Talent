@@ -6,13 +6,31 @@ import { setupVite, serveStatic, log } from "./vite";
 const app = express();
 
 // CORS configuration - allow frontend to connect to backend
+const allowedOrigins = [
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:3000', // Alternative dev port
+  'http://localhost:5000', // Local production test
+  'https://5telite.netlify.app', // Production Netlify domain
+  'https://fivetelite-talent.onrender.com', // Render deployment
+];
+
+// Add environment-specific frontend URL if set
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 const corsOptions = {
-  origin: [
-    'http://localhost:5173', // Vite dev server
-    'http://localhost:3000', // Alternative dev port
-    'https://5telite.netlify.app', // Your Netlify domain
-    'https://*.netlify.app' // Any Netlify subdomain
-  ],
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    // Check if origin is in allowed list or is a Netlify preview
+    if (allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Allow cookies/sessions
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],

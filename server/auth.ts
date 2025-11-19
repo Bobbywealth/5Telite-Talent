@@ -12,7 +12,7 @@ import connectPg from "connect-pg-simple";
 
 declare global {
   namespace Express {
-    interface User extends Omit<DbUser, "password"> {}
+    interface User extends Omit<DbUser, "password"> { }
   }
 }
 
@@ -32,11 +32,19 @@ async function comparePasswords(supplied: string, stored: string): Promise<boole
 }
 
 export function setupAuth(app: Express) {
+  // Validate SESSION_SECRET in production
+  if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+    throw new Error(
+      'SESSION_SECRET environment variable is required in production. ' +
+      'Generate one with: openssl rand -base64 32'
+    );
+  }
+
   // Session configuration
   const PostgresSessionStore = connectPg(session);
-  
+
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "dev-secret-key-change-in-production",
+    secret: process.env.SESSION_SECRET || "dev-secret-DO-NOT-USE-IN-PRODUCTION",
     resave: false,
     saveUninitialized: false,
     store: new PostgresSessionStore({
@@ -96,13 +104,13 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user: Express.User, done) => done(null, user.id));
-  
+
   passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await storage.getUser(id);
       if (user) {
-        const { password: _, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
-        done(null, userWithoutPassword);
+        const { password: _, resetPasswordToken: __, resetPasswordExpires: ___, ...userWithoutPassword } = user;
+        done(null, userWithoutPassword as any);
       } else {
         done(null, false);
       }
@@ -135,20 +143,20 @@ export function setupAuth(app: Express) {
       console.log("DEBUG: Created user with status:", user.status, "for email:", email);
 
       // Remove password and reset token from response
-      const { password: _, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
+      const { password: _, resetPasswordToken: __, resetPasswordExpires: ___, ...userWithoutPassword } = user;
 
       // Check if user needs admin approval
       if (user.status === "pending") {
         // Send confirmation email but don't log in
         try {
           if (role === "talent") {
-            await enhancedEmailService.sendTalentWelcomeEmail({...userWithoutPassword, password: ''});
+            await enhancedEmailService.sendTalentWelcomeEmail({ ...userWithoutPassword, password: '' } as any);
           }
         } catch (emailError) {
           console.error("Failed to send welcome email:", emailError);
         }
 
-        return res.status(201).json({ 
+        return res.status(201).json({
           message: "Registration successful! Your account is pending admin approval. You'll receive an email once approved.",
           user: userWithoutPassword,
           requiresApproval: true
@@ -158,7 +166,7 @@ export function setupAuth(app: Express) {
       // 📧 Send welcome email for approved users
       if (role === "talent") {
         try {
-          await enhancedEmailService.sendTalentWelcomeEmail({...userWithoutPassword, password: ''});
+          await enhancedEmailService.sendTalentWelcomeEmail({ ...userWithoutPassword, password: '' } as any);
         } catch (emailError) {
           console.error("Failed to send welcome email to new talent:", emailError);
           // Don't fail the request if email fails
@@ -166,7 +174,7 @@ export function setupAuth(app: Express) {
       }
 
       // Log user in only if approved
-      req.login(userWithoutPassword, (err) => {
+      req.login(userWithoutPassword as any, (err) => {
         if (err) return next(err);
         res.status(201).json(userWithoutPassword);
       });
@@ -185,12 +193,12 @@ export function setupAuth(app: Express) {
       if (!user) {
         return res.status(401).json({ message: info?.message || "Invalid credentials" });
       }
-      
+
       req.login(user, async (err) => {
         if (err) {
           return res.status(500).json({ message: "Login failed" });
         }
-        
+
         // Record login activity
         try {
           const ipAddress = req.ip || req.connection.remoteAddress;
@@ -200,7 +208,7 @@ export function setupAuth(app: Express) {
           console.error("Failed to record login activity:", activityError);
           // Don't fail the login if activity recording fails
         }
-        
+
         res.status(200).json(user);
       });
     })(req, res, next);

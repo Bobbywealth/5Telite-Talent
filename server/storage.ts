@@ -65,7 +65,7 @@ export interface IStorage {
   }): Promise<{ bookings: (Booking & { client: User; createdBy: User; bookingTalents: (BookingTalent & { talent: User })[] })[], total: number }>;
   updateBooking(id: string, booking: Partial<InsertBooking>): Promise<Booking>;
   addTalentToBooking(bookingId: string, talentId: string): Promise<BookingTalent>;
-  
+
   // Booking request operations
   getPendingBookingRequests(talentId: string): Promise<(BookingTalent & { booking: Booking & { client: User } })[]>;
   getAllBookingRequests(options?: { status?: string; limit?: number }): Promise<(BookingTalent & { booking: Booking; talent: TalentProfile & { user: User } })[]>;
@@ -165,7 +165,7 @@ export class DatabaseStorage implements IStorage {
   async updateUserRole(id: string, role: string): Promise<User> {
     const [user] = await db
       .update(users)
-      .set({ 
+      .set({
         role: role as any,
         updatedAt: new Date(),
       })
@@ -177,7 +177,7 @@ export class DatabaseStorage implements IStorage {
   async updateUserStatus(id: string, status: string): Promise<User> {
     const [user] = await db
       .update(users)
-      .set({ 
+      .set({
         status: status as any,
         updatedAt: new Date(),
       })
@@ -188,33 +188,33 @@ export class DatabaseStorage implements IStorage {
 
   async getPendingUsers(): Promise<User[]> {
     console.log("DEBUG: Querying for pending users...");
-    
+
     // First, let's see all users and their statuses
     const allUsers = await db.select().from(users).orderBy(users.createdAt);
-    console.log("DEBUG: All users in database:", allUsers.map(u => ({ 
-      id: u.id, 
-      email: u.email, 
-      firstName: u.firstName, 
-      lastName: u.lastName, 
-      status: u.status, 
-      createdAt: u.createdAt 
+    console.log("DEBUG: All users in database:", allUsers.map(u => ({
+      id: u.id,
+      email: u.email,
+      firstName: u.firstName,
+      lastName: u.lastName,
+      status: u.status,
+      createdAt: u.createdAt
     })));
-    
+
     const pendingUsers = await db
       .select()
       .from(users)
       .where(eq(users.status, "pending"))
       .orderBy(users.createdAt);
-    
+
     console.log("DEBUG: Pending users found:", pendingUsers.length);
-    console.log("DEBUG: Pending users details:", pendingUsers.map(u => ({ 
-      id: u.id, 
-      email: u.email, 
-      firstName: u.firstName, 
-      lastName: u.lastName, 
-      status: u.status 
+    console.log("DEBUG: Pending users details:", pendingUsers.map(u => ({
+      id: u.id,
+      email: u.email,
+      firstName: u.firstName,
+      lastName: u.lastName,
+      status: u.status
     })));
-    
+
     // Remove passwords from all users
     return pendingUsers.map(user => {
       const { password: _, ...userWithoutPassword } = user;
@@ -228,7 +228,7 @@ export class DatabaseStorage implements IStorage {
       .from(users)
       .where(eq(users.role, "admin"))
       .orderBy(users.createdAt);
-    
+
     // Remove passwords from all users
     return adminUsers.map(user => {
       const { password: _, ...userWithoutPassword } = user;
@@ -255,7 +255,7 @@ export class DatabaseStorage implements IStorage {
   async updateTalentProfile(userId: string, profile: Partial<InsertTalentProfile>): Promise<TalentProfile> {
     // First get the existing profile
     let existing = await this.getTalentProfile(userId);
-    
+
     // 🔧 If profile doesn't exist, create a default one first
     if (!existing) {
       console.log(`Talent profile not found for user ${userId}, creating default profile...`);
@@ -263,7 +263,7 @@ export class DatabaseStorage implements IStorage {
       if (!user) {
         throw new Error("User not found");
       }
-      
+
       existing = await this.createTalentProfile({
         userId: userId,
         stageName: `${user.firstName} ${user.lastName}`,
@@ -279,23 +279,23 @@ export class DatabaseStorage implements IStorage {
 
     // Only update fields that are actually provided (not undefined)
     const updateData: any = { updatedAt: new Date() };
-    
+
     // Handle each field carefully to preserve existing data
     Object.keys(profile).forEach(key => {
       const value = (profile as any)[key];
       if (value !== undefined) {
         if (key === 'measurements' && typeof value === 'object') {
           // Merge measurements object
-          updateData[key] = { ...existing.measurements, ...value };
+          updateData[key] = { ...(existing.measurements || {}), ...value };
         } else if (key === 'rates' && typeof value === 'object') {
           // Merge rates object  
-          updateData[key] = { ...existing.rates, ...value };
+          updateData[key] = { ...(existing.rates || {}), ...value };
         } else if (key === 'social' && typeof value === 'object') {
           // Merge social object
-          updateData[key] = { ...existing.social, ...value };
+          updateData[key] = { ...(existing.social || {}), ...value };
         } else if (key === 'guardian' && typeof value === 'object') {
           // Merge guardian object
-          updateData[key] = { ...existing.guardian, ...value };
+          updateData[key] = { ...(existing.guardian || {}), ...value };
         } else {
           // For simple fields, just update if provided
           updateData[key] = value;
@@ -588,7 +588,7 @@ export class DatabaseStorage implements IStorage {
 
   async getAllBookingRequests(options: { status?: string; limit?: number } = {}): Promise<(BookingTalent & { booking: Booking; talent: TalentProfile & { user: User } })[]> {
     const { status = 'pending', limit = 10 } = options;
-    
+
     const requests = await db
       .select({
         id: bookingTalents.id,
@@ -656,9 +656,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTask(task: InsertTask): Promise<Task> {
+    // Convert dueAt string to Date if present
+    const taskData = { ...task };
+    if (taskData.dueAt && typeof taskData.dueAt === 'string') {
+      taskData.dueAt = new Date(taskData.dueAt) as any;
+    }
+
     const [created] = await db
       .insert(tasks)
-      .values(task)
+      .values(taskData as any)
       .returning();
     return created;
   }
@@ -705,15 +711,15 @@ export class DatabaseStorage implements IStorage {
     // Get related data for each task
     const tasksWithDetails = await Promise.all(
       results.map(async (task) => {
-        const assignee = task.assigneeId 
+        const assignee = task.assigneeId
           ? await db.select().from(users).where(eq(users.id, task.assigneeId)).then(rows => rows[0])
           : undefined;
 
-        const booking = task.bookingId 
+        const booking = task.bookingId
           ? await db.select().from(bookings).where(eq(bookings.id, task.bookingId)).then(rows => rows[0])
           : undefined;
 
-        const talent = task.talentId 
+        const talent = task.talentId
           ? await db.select().from(users).where(eq(users.id, task.talentId)).then(rows => rows[0])
           : undefined;
 
@@ -737,9 +743,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTask(id: string, task: Partial<InsertTask>): Promise<Task> {
+    // Convert dueAt string to Date if present
+    const taskData = { ...task };
+    if (taskData.dueAt && typeof taskData.dueAt === 'string') {
+      taskData.dueAt = new Date(taskData.dueAt) as any;
+    }
+
     const [updated] = await db
       .update(tasks)
-      .set({ ...task, updatedAt: new Date() })
+      .set({ ...taskData, updatedAt: new Date() })
       .where(eq(tasks.id, id))
       .returning();
     return updated;
@@ -791,16 +803,16 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as any;
     }
 
     // Get total count
-    const totalQuery = db
+    let totalQuery = db
       .select({ count: sql`count(*)` })
       .from(announcements);
 
     if (conditions.length > 0) {
-      totalQuery.where(and(...conditions));
+      totalQuery = totalQuery.where(and(...conditions)) as any;
     }
 
     const [totalResult] = await totalQuery;
@@ -808,10 +820,10 @@ export class DatabaseStorage implements IStorage {
 
     // Apply pagination
     if (options?.limit) {
-      query = query.limit(options.limit);
+      query = query.limit(options.limit) as any;
     }
     if (options?.offset) {
-      query = query.offset(options.offset);
+      query = query.offset(options.offset) as any;
     }
 
     const results = await query;
@@ -819,7 +831,7 @@ export class DatabaseStorage implements IStorage {
     const announcementsWithCreatedBy = results.map(row => ({
       ...row.announcement,
       createdBy: row.createdBy!,
-    }));
+    })) as (Announcement & { createdBy: User })[];
 
     return {
       announcements: announcementsWithCreatedBy,
@@ -842,7 +854,7 @@ export class DatabaseStorage implements IStorage {
     return {
       ...result.announcement,
       createdBy: result.createdBy!,
-    };
+    } as any;
   }
 
   async updateAnnouncement(id: string, announcementData: Partial<InsertAnnouncement>): Promise<Announcement> {
@@ -865,13 +877,13 @@ export class DatabaseStorage implements IStorage {
   // Settings methods
   async getSettings(userId?: string, settingType?: string): Promise<Settings | undefined> {
     const conditions = [];
-    
+
     if (userId) {
       conditions.push(eq(settings.userId, userId));
     } else {
       conditions.push(sql`${settings.userId} IS NULL`);
     }
-    
+
     if (settingType) {
       conditions.push(eq(settings.settingType, settingType));
     }
@@ -943,12 +955,12 @@ export class DatabaseStorage implements IStorage {
       email: "sarah@5t.com",
       password: await hashPassword("sarah123"),
       firstName: "Sarah",
-      lastName: "Chen", 
+      lastName: "Chen",
       role: "talent",
     });
 
     const marcusUser = await this.createUser({
-      email: "marcus@5t.com", 
+      email: "marcus@5t.com",
       password: await hashPassword("marcus123"),
       firstName: "Marcus",
       lastName: "Rodriguez",
@@ -957,7 +969,7 @@ export class DatabaseStorage implements IStorage {
 
     const elenaUser = await this.createUser({
       email: "elena@5t.com",
-      password: await hashPassword("elena123"), 
+      password: await hashPassword("elena123"),
       firstName: "Elena",
       lastName: "Castillo",
       role: "talent",
@@ -1118,13 +1130,13 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(loginActivity.loginAt))
       .limit(limit);
 
-    return results.map(row => ({
-      ...row.login_activity,
-      user: {
-        ...row.users,
-        password: undefined, // Remove password from response
-      } as User,
-    }));
+    return results.map(row => {
+      const { password, ...userWithoutPassword } = row.users;
+      return {
+        ...row.login_activity,
+        user: userWithoutPassword as User,
+      };
+    });
   }
 }
 

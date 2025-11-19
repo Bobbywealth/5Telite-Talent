@@ -1,7 +1,42 @@
+# Dependencies
 node_modules
+
+# Build outputs
 dist
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Session and cookie files
+*_cookies.txt
+*_session.txt
+cookies.txt
+
+# OS files
 .DS_Store
+
+# Server public files
 server/public
+
+# Config backups
 vite.config.ts.*
+
+# Archives
 *.tar.gz
+
+# Local files
 .local/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
