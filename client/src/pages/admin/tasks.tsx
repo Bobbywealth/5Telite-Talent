@@ -752,7 +752,7 @@ export default function AdminTasks() {
             className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col relative z-[10000]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 flex-1 overflow-y-auto">
+            <div className="p-6 flex-1 overflow-y-auto pb-[300px]">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Create New Task</h2>
                       <Button
@@ -962,7 +962,7 @@ export default function AdminTasks() {
             className="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] border-2 border-gray-200 flex flex-col relative z-[10000]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 flex-1 overflow-y-auto">
+            <div className="p-6 flex-1 overflow-y-auto pb-[300px]">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Edit Task</h2>
                 <Button
