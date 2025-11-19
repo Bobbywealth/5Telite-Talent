@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -68,6 +67,9 @@ interface Task {
     lastName: string;
   };
 }
+
+const formSelectClass =
+  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 // Task Card Component for Kanban View
 const TaskCard = ({ task, onEdit, onDelete }: { 
@@ -470,29 +472,27 @@ export default function AdminTasks() {
                   />
                 </div>
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
-                      <SelectValue placeholder="All Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="todo">To Do</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="blocked">Blocked</SelectItem>
-                      <SelectItem value="done">Done</SelectItem>
-                    </SelectContent>
-                  </Select>
-                <Select value={scopeFilter} onValueChange={setScopeFilter}>
-                  <SelectTrigger className="w-40">
-                      <SelectValue placeholder="All Scopes" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Scopes</SelectItem>
-                    <SelectItem value="general">General</SelectItem>
-                      <SelectItem value="booking">Booking</SelectItem>
-                      <SelectItem value="talent">Talent</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Status</option>
+                  <option value="todo">To Do</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="blocked">Blocked</option>
+                  <option value="done">Done</option>
+                </select>
+                <select
+                  value={scopeFilter}
+                  onChange={(e) => setScopeFilter(e.target.value)}
+                  className="w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Scopes</option>
+                  <option value="general">General</option>
+                  <option value="booking">Booking</option>
+                  <option value="talent">Talent</option>
+                </select>
                   <Button 
                     variant="outline" 
                   onClick={() => {
@@ -564,28 +564,16 @@ export default function AdminTasks() {
                               </div>
                             </TableCell>
                             <TableCell>
-                          <Select
+                          <select
                             value={task.status}
-                            onValueChange={(value) => handleStatusChange(task.id, value as Task['status'])}
+                            onChange={(e) => handleStatusChange(task.id, e.target.value as Task['status'])}
+                            className="w-36 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
-                            <SelectTrigger className="w-36">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent 
-                              className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                              position="popper" 
-                              side="bottom" 
-                              align="start" 
-                              sideOffset={4}
-                              avoidCollisions={true}
-                              collisionPadding={20}
-                            >
-                              <SelectItem value="todo" className="cursor-pointer hover:bg-gray-100">To Do</SelectItem>
-                              <SelectItem value="in_progress" className="cursor-pointer hover:bg-blue-50">In Progress</SelectItem>
-                              <SelectItem value="blocked" className="cursor-pointer hover:bg-red-50">Blocked</SelectItem>
-                              <SelectItem value="done" className="cursor-pointer hover:bg-green-50">Done</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            <option value="todo">To Do</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="blocked">Blocked</option>
+                            <option value="done">Done</option>
+                          </select>
                         </TableCell>
                         <TableCell>
                           <Badge className={getPriorityBadgeColor(task.priority || 'medium')}>
@@ -791,74 +779,56 @@ export default function AdminTasks() {
                               </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="relative">
+                  <div>
                     <Label htmlFor="status">Status</Label>
-                    <Select value={taskForm.status} onValueChange={(value) => setTaskForm(prev => ({ ...prev, status: value as Task['status'] }))}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                        position="popper" 
-                        side="bottom" 
-                        align="start" 
-                        sideOffset={4}
-                        avoidCollisions={true}
-                        collisionPadding={20}
-                      >
-                        <SelectItem value="todo" className="cursor-pointer hover:bg-gray-100">To Do</SelectItem>
-                        <SelectItem value="in_progress" className="cursor-pointer hover:bg-blue-50">In Progress</SelectItem>
-                        <SelectItem value="blocked" className="cursor-pointer hover:bg-red-50">Blocked</SelectItem>
-                        <SelectItem value="done" className="cursor-pointer hover:bg-green-50">Done</SelectItem>
-                      </SelectContent>
-                    </Select>
-                              </div>
+                    <select
+                      id="status"
+                      value={taskForm.status}
+                      onChange={(e) =>
+                        setTaskForm((prev) => ({ ...prev, status: e.target.value as Task['status'] }))
+                      }
+                      className={formSelectClass}
+                    >
+                      <option value="todo">To Do</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="blocked">Blocked</option>
+                      <option value="done">Done</option>
+                    </select>
+                  </div>
 
-                  <div className="relative">
+                  <div>
                     <Label htmlFor="priority">Priority</Label>
-                    <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                        position="popper" 
-                        side="bottom" 
-                        align="start" 
-                        sideOffset={4}
-                        avoidCollisions={true}
-                        collisionPadding={20}
-                      >
-                        <SelectItem value="low" className="cursor-pointer hover:bg-green-50">Low</SelectItem>
-                        <SelectItem value="medium" className="cursor-pointer hover:bg-yellow-50">Medium</SelectItem>
-                        <SelectItem value="high" className="cursor-pointer hover:bg-red-50">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                            </div>
+                    <select
+                      id="priority"
+                      value={taskForm.priority}
+                      onChange={(e) =>
+                        setTaskForm((prev) => ({ ...prev, priority: e.target.value as Task['priority'] }))
+                      }
+                      className={formSelectClass}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
                         </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="relative">
+                  <div>
                     <Label htmlFor="scope">Scope</Label>
-                    <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                        position="popper" 
-                        side="bottom" 
-                        align="start" 
-                        sideOffset={4}
-                        avoidCollisions={true}
-                        collisionPadding={20}
-                      >
-                        <SelectItem value="general" className="cursor-pointer hover:bg-gray-50">General</SelectItem>
-                        <SelectItem value="booking" className="cursor-pointer hover:bg-blue-50">Booking Related</SelectItem>
-                        <SelectItem value="talent" className="cursor-pointer hover:bg-purple-50">Talent Specific</SelectItem>
-                      </SelectContent>
-                    </Select>
-                      </div>
+                    <select
+                      id="scope"
+                      value={taskForm.scope}
+                      onChange={(e) =>
+                        setTaskForm((prev) => ({ ...prev, scope: e.target.value as Task['scope'] }))
+                      }
+                      className={formSelectClass}
+                    >
+                      <option value="general">General</option>
+                      <option value="booking">Booking Related</option>
+                      <option value="talent">Talent Specific</option>
+                    </select>
+                  </div>
 
                         <div>
                     <Label htmlFor="dueAt">Due Date</Label>
@@ -871,66 +841,60 @@ export default function AdminTasks() {
                               </div>
                           </div>
 
-                <div className="relative">
+                <div>
                   <Label htmlFor="assigneeId">Assign To</Label>
-                  <Select value={taskForm.assigneeId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, assigneeId: value }))}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select assignee" />
-                    </SelectTrigger>
-                    <SelectContent 
-                      className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl max-h-[300px]" 
-                      position="popper" 
-                      side="bottom" 
-                      align="start" 
-                      sideOffset={4}
-                      avoidCollisions={true}
-                      collisionPadding={20}
-                    >
-                      <SelectItem value="unassigned" className="cursor-pointer hover:bg-gray-100">Unassigned</SelectItem>
-                      {talentsData?.talents?.map((talent: any) => (
-                        <SelectItem key={talent.userId} value={talent.userId} className="cursor-pointer hover:bg-purple-50">
-                          {talent.user.firstName} {talent.user.lastName}
-                          {talent.stageName && ` (${talent.stageName})`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                      </div>
+                  <select
+                    id="assigneeId"
+                    value={taskForm.assigneeId}
+                    onChange={(e) => setTaskForm((prev) => ({ ...prev, assigneeId: e.target.value }))}
+                    className={formSelectClass}
+                  >
+                    <option value="unassigned">Unassigned</option>
+                    {talentsData?.talents?.map((talent: any) => (
+                      <option key={talent.userId} value={talent.userId}>
+                        {talent.user.firstName} {talent.user.lastName}
+                        {talent.stageName && ` (${talent.stageName})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 {taskForm.scope === 'booking' && (
                         <div>
                     <Label htmlFor="bookingId">Related Booking</Label>
-                    <Select value={taskForm.bookingId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, bookingId: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select booking" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[10001]">
-                        {bookingsData?.bookings?.map((booking: any) => (
-                          <SelectItem key={booking.id} value={booking.id}>
-                            {booking.title} (#{booking.code})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="bookingId"
+                      value={taskForm.bookingId}
+                      onChange={(e) => setTaskForm((prev) => ({ ...prev, bookingId: e.target.value }))}
+                      className={formSelectClass}
+                    >
+                      <option value="">Select booking</option>
+                      {bookingsData?.bookings?.map((booking: any) => (
+                        <option key={booking.id} value={booking.id}>
+                          {booking.title} (#{booking.code})
+                        </option>
+                      ))}
+                    </select>
                         </div>
                       )}
 
                 {taskForm.scope === 'talent' && (
                         <div>
                     <Label htmlFor="talentId">Related Talent</Label>
-                    <Select value={taskForm.talentId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, talentId: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select talent" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[10001]">
-                        {talentsData?.talents?.map((talent: any) => (
-                          <SelectItem key={talent.userId} value={talent.userId}>
-                            {talent.user.firstName} {talent.user.lastName}
-                            {talent.stageName && ` (${talent.stageName})`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="talentId"
+                      value={taskForm.talentId}
+                      onChange={(e) => setTaskForm((prev) => ({ ...prev, talentId: e.target.value }))}
+                      className={formSelectClass}
+                    >
+                      <option value="">Select talent</option>
+                      {talentsData?.talents?.map((talent: any) => (
+                        <option key={talent.userId} value={talent.userId}>
+                          {talent.user.firstName} {talent.user.lastName}
+                          {talent.stageName && ` (${talent.stageName})`}
+                        </option>
+                      ))}
+                    </select>
                             </div>
                       )}
 
@@ -1002,73 +966,55 @@ export default function AdminTasks() {
                         </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                      <div className="relative">
+                      <div>
                     <Label htmlFor="edit-status">Status</Label>
-                    <Select value={taskForm.status} onValueChange={(value) => setTaskForm(prev => ({ ...prev, status: value as Task['status'] }))}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                        position="popper" 
-                        side="bottom" 
-                        align="start" 
-                        sideOffset={4}
-                        avoidCollisions={true}
-                        collisionPadding={20}
-                      >
-                        <SelectItem value="todo" className="cursor-pointer hover:bg-gray-100">To Do</SelectItem>
-                        <SelectItem value="in_progress" className="cursor-pointer hover:bg-blue-50">In Progress</SelectItem>
-                        <SelectItem value="blocked" className="cursor-pointer hover:bg-red-50">Blocked</SelectItem>
-                        <SelectItem value="done" className="cursor-pointer hover:bg-green-50">Done</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="edit-status"
+                      value={taskForm.status}
+                      onChange={(e) =>
+                        setTaskForm((prev) => ({ ...prev, status: e.target.value as Task['status'] }))
+                      }
+                      className={formSelectClass}
+                    >
+                      <option value="todo">To Do</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="blocked">Blocked</option>
+                      <option value="done">Done</option>
+                    </select>
                       </div>
 
-                      <div className="relative">
+                      <div>
                     <Label htmlFor="edit-priority">Priority</Label>
-                    <Select value={taskForm.priority} onValueChange={(value) => setTaskForm(prev => ({ ...prev, priority: value as Task['priority'] }))}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                        position="popper" 
-                        side="bottom" 
-                        align="start" 
-                        sideOffset={4}
-                        avoidCollisions={true}
-                        collisionPadding={20}
-                      >
-                        <SelectItem value="low" className="cursor-pointer hover:bg-green-50">Low</SelectItem>
-                        <SelectItem value="medium" className="cursor-pointer hover:bg-yellow-50">Medium</SelectItem>
-                        <SelectItem value="high" className="cursor-pointer hover:bg-red-50">High</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="edit-priority"
+                      value={taskForm.priority}
+                      onChange={(e) =>
+                        setTaskForm((prev) => ({ ...prev, priority: e.target.value as Task['priority'] }))
+                      }
+                      className={formSelectClass}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
                           </div>
                         </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                        <div className="relative">
+                        <div>
                     <Label htmlFor="edit-scope">Scope</Label>
-                    <Select value={taskForm.scope} onValueChange={(value) => setTaskForm(prev => ({ ...prev, scope: value as Task['scope'] }))}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="z-[999999] bg-white border-2 border-gray-200 shadow-2xl" 
-                        position="popper" 
-                        side="bottom" 
-                        align="start" 
-                        sideOffset={4}
-                        avoidCollisions={true}
-                        collisionPadding={20}
-                      >
-                        <SelectItem value="general" className="cursor-pointer hover:bg-gray-50">General</SelectItem>
-                        <SelectItem value="booking" className="cursor-pointer hover:bg-blue-50">Booking Related</SelectItem>
-                        <SelectItem value="talent" className="cursor-pointer hover:bg-purple-50">Talent Specific</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="edit-scope"
+                      value={taskForm.scope}
+                      onChange={(e) =>
+                        setTaskForm((prev) => ({ ...prev, scope: e.target.value as Task['scope'] }))
+                      }
+                      className={formSelectClass}
+                    >
+                      <option value="general">General</option>
+                      <option value="booking">Booking Related</option>
+                      <option value="talent">Talent Specific</option>
+                    </select>
                     </div>
 
                   <div>
@@ -1084,56 +1030,58 @@ export default function AdminTasks() {
 
                   <div>
                   <Label htmlFor="edit-assigneeId">Assign To</Label>
-                  <Select value={taskForm.assigneeId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, assigneeId: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select assignee" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[100000] bg-white" position="popper" side="bottom" align="center" sideOffset={8} alignOffset={0}>
-                      <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {talentsData?.talents?.map((talent: any) => (
-                        <SelectItem key={talent.userId} value={talent.userId}>
-                          {talent.user.firstName} {talent.user.lastName}
-                          {talent.stageName && ` (${talent.stageName})`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="edit-assigneeId"
+                    value={taskForm.assigneeId}
+                    onChange={(e) => setTaskForm((prev) => ({ ...prev, assigneeId: e.target.value }))}
+                    className={formSelectClass}
+                  >
+                    <option value="unassigned">Unassigned</option>
+                    {talentsData?.talents?.map((talent: any) => (
+                      <option key={talent.userId} value={talent.userId}>
+                        {talent.user.firstName} {talent.user.lastName}
+                        {talent.stageName && ` (${talent.stageName})`}
+                      </option>
+                    ))}
+                  </select>
                     </div>
 
                 {taskForm.scope === 'booking' && (
                   <div>
                     <Label htmlFor="edit-bookingId">Related Booking</Label>
-                    <Select value={taskForm.bookingId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, bookingId: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select booking" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[10001]">
-                        {bookingsData?.bookings?.map((booking: any) => (
-                          <SelectItem key={booking.id} value={booking.id}>
-                            {booking.title} (#{booking.code})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="edit-bookingId"
+                      value={taskForm.bookingId}
+                      onChange={(e) => setTaskForm((prev) => ({ ...prev, bookingId: e.target.value }))}
+                      className={formSelectClass}
+                    >
+                      <option value="">Select booking</option>
+                      {bookingsData?.bookings?.map((booking: any) => (
+                        <option key={booking.id} value={booking.id}>
+                          {booking.title} (#{booking.code})
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
 
                 {taskForm.scope === 'talent' && (
                   <div>
                     <Label htmlFor="edit-talentId">Related Talent</Label>
-                    <Select value={taskForm.talentId} onValueChange={(value) => setTaskForm(prev => ({ ...prev, talentId: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select talent" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[10001]">
-                        {talentsData?.talents?.map((talent: any) => (
-                          <SelectItem key={talent.userId} value={talent.userId}>
-                            {talent.user.firstName} {talent.user.lastName}
-                            {talent.stageName && ` (${talent.stageName})`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <select
+                      id="edit-talentId"
+                      value={taskForm.talentId}
+                      onChange={(e) => setTaskForm((prev) => ({ ...prev, talentId: e.target.value }))}
+                      className={formSelectClass}
+                    >
+                      <option value="">Select talent</option>
+                      {talentsData?.talents?.map((talent: any) => (
+                        <option key={talent.userId} value={talent.userId}>
+                          {talent.user.firstName} {talent.user.lastName}
+                          {talent.stageName && ` (${talent.stageName})`}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
 
