@@ -941,61 +941,70 @@ export default function AdminTalents() {
                 />
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-xl border-2 border-blue-200">
-                <Label htmlFor="experience" className="text-base font-bold text-gray-900 mb-2 block flex items-center gap-2">
-                  <span className="text-blue-600">📅</span>
-                  Years of Experience
-                  <span className="text-xs font-normal text-gray-600 ml-2">(How long have you been performing?)</span>
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-5 rounded-xl border-4 border-blue-400 shadow-lg relative z-10">
+                <Label htmlFor="experience" className="text-lg font-black text-gray-900 mb-3 block flex items-center gap-2">
+                  <span className="text-2xl">📅</span>
+                  <span className="text-blue-700">Years of Experience</span>
+                  <span className="text-xs font-normal text-gray-600 ml-2">(Required - How long have you been performing?)</span>
                 </Label>
                 <Select
                   value={newTalentData.experience}
                   onValueChange={(value) => setNewTalentData(prev => ({ ...prev, experience: value }))}
                 >
-                  <SelectTrigger className="h-14 text-base font-semibold bg-white border-2 border-blue-300 hover:border-blue-500 focus:border-blue-600 focus:ring-4 focus:ring-blue-200 transition-all shadow-sm">
-                    <SelectValue placeholder="👉 Click here to select your experience level" />
+                  <SelectTrigger className="h-16 text-lg font-bold bg-white border-4 border-blue-500 hover:border-blue-600 focus:border-blue-700 focus:ring-4 focus:ring-blue-300 transition-all shadow-lg hover:shadow-xl">
+                    <SelectValue placeholder="👉 CLICK HERE TO SELECT YOUR EXPERIENCE LEVEL" />
                   </SelectTrigger>
-                  <SelectContent className="z-[100000] bg-white border-2 border-blue-300 shadow-2xl" position="popper" side="bottom" align="start" sideOffset={8}>
-                    <SelectItem value="0-1" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">🌱</span>
+                  <SelectContent 
+                    className="z-[999999] bg-white border-4 border-blue-500 shadow-2xl min-w-[400px]" 
+                    position="popper" 
+                    side="bottom" 
+                    align="start" 
+                    sideOffset={8}
+                    avoidCollisions={true}
+                    collisionPadding={20}
+                  >
+                    <SelectItem value="0-1" className="text-lg font-semibold py-4 px-4 hover:bg-blue-100 cursor-pointer border-b-2 border-gray-200">
+                      <div className="flex items-center gap-4">
+                        <span className="text-3xl">🌱</span>
                         <div>
-                          <div className="font-bold text-gray-900">0-1 years</div>
-                          <div className="text-xs text-gray-600">Just starting out</div>
+                          <div className="font-black text-gray-900 text-base">0-1 years</div>
+                          <div className="text-sm text-gray-700 font-medium">Just starting out</div>
                         </div>
                       </div>
                     </SelectItem>
-                    <SelectItem value="2-5" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">🚀</span>
+                    <SelectItem value="2-5" className="text-lg font-semibold py-4 px-4 hover:bg-blue-100 cursor-pointer border-b-2 border-gray-200">
+                      <div className="flex items-center gap-4">
+                        <span className="text-3xl">🚀</span>
                         <div>
-                          <div className="font-bold text-gray-900">2-5 years</div>
-                          <div className="text-xs text-gray-600">Building experience</div>
+                          <div className="font-black text-gray-900 text-base">2-5 years</div>
+                          <div className="text-sm text-gray-700 font-medium">Building experience</div>
                         </div>
                       </div>
                     </SelectItem>
-                    <SelectItem value="6-10" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">⭐</span>
+                    <SelectItem value="6-10" className="text-lg font-semibold py-4 px-4 hover:bg-blue-100 cursor-pointer border-b-2 border-gray-200">
+                      <div className="flex items-center gap-4">
+                        <span className="text-3xl">⭐</span>
                         <div>
-                          <div className="font-bold text-gray-900">6-10 years</div>
-                          <div className="text-xs text-gray-600">Experienced professional</div>
+                          <div className="font-black text-gray-900 text-base">6-10 years</div>
+                          <div className="text-sm text-gray-700 font-medium">Experienced professional</div>
                         </div>
                       </div>
                     </SelectItem>
-                    <SelectItem value="10+" className="text-base font-medium py-3 hover:bg-blue-50 cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">👑</span>
+                    <SelectItem value="10+" className="text-lg font-semibold py-4 px-4 hover:bg-blue-100 cursor-pointer">
+                      <div className="flex items-center gap-4">
+                        <span className="text-3xl">👑</span>
                         <div>
-                          <div className="font-bold text-gray-900">10+ years</div>
-                          <div className="text-xs text-gray-600">Seasoned veteran</div>
+                          <div className="font-black text-gray-900 text-base">10+ years</div>
+                          <div className="text-sm text-gray-700 font-medium">Seasoned veteran</div>
                         </div>
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 {newTalentData.experience && (
-                  <p className="text-sm text-green-700 font-semibold mt-2 flex items-center gap-1">
-                    <span>✓</span> Experience level selected: {newTalentData.experience}
+                  <p className="text-base text-green-700 font-bold mt-3 flex items-center gap-2 bg-green-50 p-2 rounded-lg border-2 border-green-300">
+                    <span className="text-xl">✓</span> 
+                    <span>Experience level selected: <span className="text-green-800">{newTalentData.experience}</span></span>
                   </p>
                 )}
               </div>
@@ -1224,10 +1233,10 @@ export default function AdminTalents() {
                       })}
                     />
                   </div>
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-lg border-2 border-blue-200">
-                    <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                      <span className="text-blue-600">📅</span>
-                      Years of Experience
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-5 rounded-xl border-4 border-blue-400 shadow-lg relative z-10">
+                    <label className="block text-lg font-black text-gray-900 mb-3 flex items-center gap-2">
+                      <span className="text-2xl">📅</span>
+                      <span className="text-blue-700">Years of Experience</span>
                     </label>
                     <select
                       value={editingTalent.experience || ""}
@@ -1235,13 +1244,13 @@ export default function AdminTalents() {
                         ...editingTalent,
                         experience: e.target.value
                       })}
-                      className="w-full h-12 px-4 py-2 text-base font-semibold border-2 border-blue-300 rounded-lg bg-white hover:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-200 focus:border-blue-600 transition-all shadow-sm cursor-pointer"
+                      className="w-full h-16 px-4 py-2 text-lg font-bold border-4 border-blue-500 rounded-lg bg-white hover:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-700 transition-all shadow-lg hover:shadow-xl cursor-pointer"
                     >
-                      <option value="">👉 Select experience level</option>
-                      <option value="0-1">🌱 0-1 years (Just starting out)</option>
-                      <option value="2-5">🚀 2-5 years (Building experience)</option>
-                      <option value="6-10">⭐ 6-10 years (Experienced professional)</option>
-                      <option value="10+">👑 10+ years (Seasoned veteran)</option>
+                      <option value="" className="font-bold">👉 CLICK HERE TO SELECT EXPERIENCE LEVEL</option>
+                      <option value="0-1" className="font-bold text-base py-2">🌱 0-1 years (Just starting out)</option>
+                      <option value="2-5" className="font-bold text-base py-2">🚀 2-5 years (Building experience)</option>
+                      <option value="6-10" className="font-bold text-base py-2">⭐ 6-10 years (Experienced professional)</option>
+                      <option value="10+" className="font-bold text-base py-2">👑 10+ years (Seasoned veteran)</option>
                     </select>
                   </div>
                 </div>
