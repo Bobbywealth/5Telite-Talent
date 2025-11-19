@@ -118,7 +118,7 @@ main {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
-  body.task-modal-open select {
+  body.task-modal-open .task-page select {
     visibility: hidden;
   }
 
