@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -53,6 +53,9 @@ const availableLocations = [
 export default function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
   // Local state for search input to allow fast typing
   const [localSearch, setLocalSearch] = useState(filters.search);
+  
+  // Track if we're currently typing (to prevent external updates from interfering)
+  const isTypingRef = useRef(false);
 
   // Debounce search updates - only update parent when user stops typing
   useEffect(() => {
@@ -65,19 +68,25 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
           page: 1
         });
       }
-    }, 300); // 300ms debounce
+      // Mark typing as finished after debounce completes
+      isTypingRef.current = false;
+    }, 500); // 500ms debounce for better stability
 
     return () => clearTimeout(timer);
-  }, [localSearch]); // Only depend on localSearch, not filters
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localSearch]); // Only depend on localSearch
 
-  // Sync local search ONLY when filters are cleared externally (e.g., "Clear All" button)
+  // Sync local search ONLY when filters are cleared externally
   useEffect(() => {
-    // Only sync if filters.search is explicitly empty and localSearch is not
-    // This prevents cursor jump during normal typing
-    if (filters.search === "" && localSearch !== "") {
+    // Only sync if:
+    // 1. User is NOT currently typing
+    // 2. filters.search is empty (cleared externally)
+    // 3. localSearch is not empty
+    if (!isTypingRef.current && filters.search === "" && localSearch !== "") {
       setLocalSearch("");
     }
-  }, [filters.search, localSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.search]);
 
   const updateFilter = (key: string, value: any) => {
     onFiltersChange({
@@ -123,7 +132,10 @@ export default function SearchFilters({ filters, onFiltersChange }: SearchFilter
               id="search"
               placeholder="Name or keyword..."
               value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
+              onChange={(e) => {
+                isTypingRef.current = true;
+                setLocalSearch(e.target.value);
+              }}
               data-testid="input-search"
             />
           </div>
