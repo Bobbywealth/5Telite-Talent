@@ -745,8 +745,11 @@ export default function AuthPage() {
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none flex-1">
-                                <div className="text-sm font-normal text-gray-700">
-                                  <span className="select-none">I agree to the </span>
+                                <label
+                                  htmlFor="accept-terms-checkbox"
+                                  className="text-sm font-normal text-gray-700 cursor-pointer select-none"
+                                >
+                                  <span>I agree to the </span>
                                   <a 
                                     href="/terms" 
                                     className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
@@ -761,7 +764,7 @@ export default function AuthPage() {
                                   >
                                     Terms of Service
                                   </a>
-                                  <span className="select-none"> and </span>
+                                  <span> and </span>
                                   <a 
                                     href="/privacy" 
                                     className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
@@ -776,7 +779,7 @@ export default function AuthPage() {
                                   >
                                     Privacy Policy
                                   </a>
-                                </div>
+                                </label>
                               </div>
                             </div>
                             <FormMessage />
