@@ -135,9 +135,8 @@ export default function AdminTalents() {
         status: "active"
       });
 
-      // Then create talent profile
-      return apiRequest("POST", "/api/talents/admin-create", {
-        userId: userResponse.id,
+      // Update the automatically-created talent profile with full data
+      return apiRequest("PATCH", `/api/talents/${userResponse.id}`, {
         stageName: data.stageName || `${data.firstName} ${data.lastName}`,
         location: data.location,
         bio: data.bio,
