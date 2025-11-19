@@ -740,40 +740,43 @@ export default function AuthPage() {
                                   checked={field.value}
                                   onCheckedChange={field.onChange}
                                   data-testid="checkbox-accept-terms"
-                                  className="cursor-pointer"
+                                  className="cursor-pointer mt-0.5"
+                                  id="accept-terms-checkbox"
                                 />
                               </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-700">
+                              <div className="space-y-1 leading-none flex-1">
+                                <div className="text-sm font-normal text-gray-700">
                                   <span className="select-none">I agree to the </span>
                                   <a 
                                     href="/terms" 
-                                    className="text-blue-600 hover:underline font-medium inline-block cursor-pointer" 
+                                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-                                      window.open('/terms', '_blank');
+                                      window.open('/terms', '_blank', 'noopener,noreferrer');
                                     }}
+                                    onMouseDown={(e) => e.stopPropagation()}
                                   >
                                     Terms of Service
                                   </a>
                                   <span className="select-none"> and </span>
                                   <a 
                                     href="/privacy" 
-                                    className="text-blue-600 hover:underline font-medium inline-block cursor-pointer" 
+                                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-                                      window.open('/privacy', '_blank');
+                                      window.open('/privacy', '_blank', 'noopener,noreferrer');
                                     }}
+                                    onMouseDown={(e) => e.stopPropagation()}
                                   >
                                     Privacy Policy
                                   </a>
-                                </FormLabel>
+                                </div>
                               </div>
                             </div>
                             <FormMessage />
