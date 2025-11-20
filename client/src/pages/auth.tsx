@@ -744,12 +744,11 @@ export default function AuthPage() {
                                   id="accept-terms-checkbox"
                                 />
                               </FormControl>
-                              <button
-                                type="button"
-                                className="space-y-1 leading-none flex-1 text-left"
-                                onClick={() => field.onChange(!field.value)}
+                              <label
+                                htmlFor="accept-terms-checkbox"
+                                className="space-y-1 leading-none flex-1 text-left text-sm font-normal text-gray-700 cursor-pointer select-none"
                               >
-                                <span className="text-sm font-normal text-gray-700">
+                                <span>
                                   I agree to the{" "}
                                   <a 
                                     href="/terms" 
@@ -781,7 +780,7 @@ export default function AuthPage() {
                                     Privacy Policy
                                   </a>
                                 </span>
-                              </button>
+                              </label>
                             </div>
                             <FormMessage />
                           </FormItem>
