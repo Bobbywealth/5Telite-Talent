@@ -734,54 +734,48 @@ export default function AuthPage() {
                         name="acceptTerms"
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <div className="flex items-start space-x-3">
+                            <label className="flex items-start space-x-3 cursor-pointer select-none">
                               <FormControl>
                                 <Checkbox
                                   checked={field.value}
                                   onCheckedChange={(checked) => field.onChange(checked === true)}
                                   data-testid="checkbox-accept-terms"
                                   className="cursor-pointer mt-0.5"
-                                  id="accept-terms-checkbox"
                                 />
                               </FormControl>
-                              <label
-                                htmlFor="accept-terms-checkbox"
-                                className="space-y-1 leading-none flex-1 text-left text-sm font-normal text-gray-700 cursor-pointer select-none"
-                              >
-                                <span>
-                                  I agree to the{" "}
-                                  <a 
-                                    href="/terms" 
-                                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      window.open('/terms', '_blank', 'noopener,noreferrer');
-                                    }}
-                                    onMouseDown={(e) => e.stopPropagation()}
-                                  >
-                                    Terms of Service
-                                  </a>
-                                  {" "}and{" "}
-                                  <a 
-                                    href="/privacy" 
-                                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      window.open('/privacy', '_blank', 'noopener,noreferrer');
-                                    }}
-                                    onMouseDown={(e) => e.stopPropagation()}
-                                  >
-                                    Privacy Policy
-                                  </a>
-                                </span>
-                              </label>
-                            </div>
+                              <span className="text-sm font-normal text-gray-700">
+                                I agree to the{" "}
+                                <a 
+                                  href="/terms" 
+                                  className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.open('/terms', '_blank', 'noopener,noreferrer');
+                                  }}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                  Terms of Service
+                                </a>
+                                {" "}and{" "}
+                                <a 
+                                  href="/privacy" 
+                                  className="text-blue-600 hover:text-blue-800 hover:underline font-semibold inline-block cursor-pointer underline-offset-2 transition-colors" 
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.open('/privacy', '_blank', 'noopener,noreferrer');
+                                  }}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                  Privacy Policy
+                                </a>
+                              </span>
+                            </label>
                             <FormMessage />
                           </FormItem>
                         )}
