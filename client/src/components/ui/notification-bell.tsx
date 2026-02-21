@@ -55,13 +55,14 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications-new"] });
       queryClient.invalidateQueries({ queryKey: ["/api/notifications/unread-count"] });
     },
   });
 
   const notifications = notificationsData?.notifications || [];
-  const unreadCount = unreadData?.count || 0;
+  // Derive unread count from visible notifications to stay in sync with the displayed list
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   const handleNotificationClick = (notification: any) => {
     // Mark as read if not already read

@@ -416,29 +416,41 @@ export default function AdminTalents() {
       <div className="flex-1">
           <div className="flex-1">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4">
-          <div className="flex justify-between items-center">
+        <header className="bg-white shadow-sm border-b border-slate-200">
+          <div className="h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+          <div className="px-6 py-5 flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <img
-                src="/attached_assets/5t-logo.png"
-                alt="5T Talent Platform"
-                className="h-12 w-auto"
-              />
-              <h1 className="text-2xl font-bold text-slate-900">Talent Management</h1>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+                <i className="fas fa-users text-white text-base"></i>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">Talent Management</h1>
+                <p className="text-xs text-slate-500 mt-0.5">Manage and review talent profiles</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-slate-600">
-                {talentsData ? `${talentsData.talents.length} of ${talentsData.total} talents` : "Loading..."}
-              </span>
+              {talentsData && (
+                <div className="hidden sm:flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full">
+                  <i className="fas fa-users text-primary text-xs"></i>
+                  <span className="text-sm font-medium text-slate-700">
+                    {talentsData.talents.length} of {talentsData.total}
+                  </span>
+                  <span className="text-xs text-slate-500">talents</span>
+                </div>
+              )}
             </div>
           </div>
         </header>
 
         <main className="p-6">
           {/* Filters */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
+          <Card className="mb-6 border border-slate-200 shadow-sm overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <i className="fas fa-filter text-primary text-sm"></i>
+                Filter Talents
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -457,11 +469,22 @@ export default function AdminTalents() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="Commercial">Commercial</SelectItem>
-                      <SelectItem value="Runway">Runway</SelectItem>
-                      <SelectItem value="Editorial">Editorial</SelectItem>
-                      <SelectItem value="On-Camera">On-Camera</SelectItem>
-                      <SelectItem value="Voiceover">Voiceover</SelectItem>
+                      <SelectItem value="Actor">Actor</SelectItem>
+                      <SelectItem value="Model">Model</SelectItem>
+                      <SelectItem value="Dancer">Dancer</SelectItem>
+                      <SelectItem value="Singer">Singer</SelectItem>
+                      <SelectItem value="Musician">Musician</SelectItem>
+                      <SelectItem value="Voice Over">Voice Over</SelectItem>
+                      <SelectItem value="Comedian">Comedian</SelectItem>
+                      <SelectItem value="Host">Host/MC</SelectItem>
+                      <SelectItem value="Stunt Performer">Stunt Performer</SelectItem>
+                      <SelectItem value="Writer">Writer</SelectItem>
+                      <SelectItem value="Poet">Poet</SelectItem>
+                      <SelectItem value="Visual Artist">Visual Artist</SelectItem>
+                      <SelectItem value="Motivational Speaker">Motivational Speaker</SelectItem>
+                      <SelectItem value="DJ">DJ</SelectItem>
+                      <SelectItem value="Producer">Producer</SelectItem>
+                      <SelectItem value="Director">Director</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
