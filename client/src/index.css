@@ -720,4 +720,56 @@ main {
     position: relative !important;
     z-index: 10001 !important;
   }
+
+  /* ==============================
+     GLOBAL AESTHETIC ENHANCEMENTS
+     ============================== */
+
+  /* Page backgrounds - subtle texture */
+  .min-h-screen.bg-slate-50 {
+    background-image: radial-gradient(circle at 1px 1px, rgba(148,163,184,0.06) 1px, transparent 0);
+    background-size: 32px 32px;
+  }
+
+  /* Card polish - consistent shadow and border */
+  .rounded-2xl {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  /* Table row hover polish */
+  tr.hover\:bg-muted\/50:hover td {
+    background-color: rgba(241, 245, 249, 0.8);
+  }
+
+  /* Status badge polish */
+  .badge-approved {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+  }
+
+  .badge-pending {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+  }
+
+  .badge-rejected {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+  }
+
+  /* Primary/8 background helper (not in Tailwind by default) */
+  .bg-primary\/8 {
+    background-color: hsl(213.1 89.4% 52.5% / 0.08);
+  }
+
+  .hover\:bg-primary\/15:hover {
+    background-color: hsl(213.1 89.4% 52.5% / 0.15);
+  }
+
+  .hover\:bg-primary\/5:hover {
+    background-color: hsl(213.1 89.4% 52.5% / 0.05);
+  }
 }

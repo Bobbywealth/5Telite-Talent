@@ -325,12 +325,17 @@ export class DatabaseStorage implements IStorage {
       skills,
       location,
       search,
-      approvalStatus = "approved", // Default to approved for public talent directory
+      approvalStatus, // No default - callers must explicitly filter by status
       limit = 20,
       offset = 0,
     } = options;
 
-    const conditions = [eq(talentProfiles.approvalStatus, approvalStatus as "pending" | "approved" | "rejected")];
+    const conditions: any[] = [];
+
+    // Only filter by approvalStatus when a specific valid status is provided
+    if (approvalStatus && ["approved", "pending", "rejected"].includes(approvalStatus)) {
+      conditions.push(eq(talentProfiles.approvalStatus, approvalStatus as "pending" | "approved" | "rejected"));
+    }
 
     if (category) {
       conditions.push(sql`${category} = ANY(${talentProfiles.categories})`);
@@ -352,13 +357,13 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    let query = db
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    const talents = await db
       .select()
       .from(talentProfiles)
       .innerJoin(users, eq(talentProfiles.userId, users.id))
-      .where(and(...conditions));
-
-    const talents = await query
+      .where(whereClause)
       .limit(limit)
       .offset(offset)
       .orderBy(desc(talentProfiles.updatedAt));
@@ -367,7 +372,7 @@ export class DatabaseStorage implements IStorage {
       .select({ count: sql<number>`count(*)` })
       .from(talentProfiles)
       .innerJoin(users, eq(talentProfiles.userId, users.id))
-      .where(and(...conditions));
+      .where(whereClause);
 
     return {
       talents: talents.map(row => ({ ...row.talent_profiles, user: row.users })),
