@@ -12,14 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, clearAuthCache } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { Eye, EyeOff, Sparkles, Users, Briefcase, Shield, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import logoImage from "@assets/5t-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 const registerSchema = z.object({
@@ -118,26 +118,23 @@ export default function AuthPage() {
     mutationFn: async (data: LoginFormData) => {
       return await apiRequest("POST", "/api/login", data);
     },
-    onSuccess: async (data: any) => {
-      // Invalidate and refetch user data
-      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      
+    onSuccess: (data: any) => {
+      // Clear stale auth cache so useAuth picks up the new session
+      clearAuthCache(queryClient);
+
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      
-      // Small delay to ensure auth state updates
-      setTimeout(() => {
-        const redirectPaths: Record<string, string> = {
-          admin: '/admin',
-          talent: '/talent/dashboard', // Use talent-specific path
-          client: '/client'
-        };
-        const redirectPath = redirectPaths[data?.role] || '/';
-        window.location.href = redirectPath; // Force full page navigation
-      }, 1000); // Longer delay for auth state
+
+      // Redirect immediately using the role from the login response
+      const redirectPaths: Record<string, string> = {
+        admin: '/admin',
+        talent: '/talent/dashboard',
+        client: '/client'
+      };
+      const redirectPath = redirectPaths[data?.role] || '/';
+      window.location.href = redirectPath;
     },
     onError: (error: any) => {
       toast({
@@ -152,37 +149,35 @@ export default function AuthPage() {
     mutationFn: async (data: RegisterFormData) => {
       return await apiRequest("POST", "/api/register", data);
     },
-    onSuccess: async (data: any) => {
+    onSuccess: (data: any) => {
       // Check if account requires approval
       if (data.requiresApproval) {
         toast({
           title: "Account Created!",
           description: data.message || "Your account is pending admin approval. You'll receive an email once approved.",
         });
-        
+
         // Stay on auth page with message
         return;
       }
 
-      // For approved accounts, proceed with login
-      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
-      
+      // Clear stale auth cache so useAuth picks up the new session
+      clearAuthCache(queryClient);
+
       toast({
         title: "Welcome to 5T Talent!",
         description: "Your account has been created successfully.",
       });
-      
-      // Small delay to ensure auth state updates
-      setTimeout(() => {
-        const redirectPaths: Record<string, string> = {
-          admin: '/admin',
-          talent: '/talent/dashboard',
-          client: '/client'
-        };
-        const redirectPath = redirectPaths[data?.role || data?.user?.role] || '/';
-        window.location.href = redirectPath; // Force full page navigation
-      }, 1000);
+
+      // Redirect immediately using the role from the response
+      const redirectPaths: Record<string, string> = {
+        admin: '/admin',
+        talent: '/talent/dashboard',
+        client: '/client'
+      };
+      const role = data?.role || data?.user?.role;
+      const redirectPath = redirectPaths[role] || '/';
+      window.location.href = redirectPath;
     },
     onError: (error: any) => {
       toast({

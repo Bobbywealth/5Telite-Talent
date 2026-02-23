@@ -1,67 +1,47 @@
-import { useQuery } from "@tanstack/react-query";
-import { getQueryFn } from "@/lib/queryClient";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@/../../shared/schema";
-
-// Single global flag to prevent multiple auth checks
-let authCheckInProgress = false;
-let authResult: { user: User | null; timestamp: number } | null = null;
 
 export function useAuth() {
   const { data: user, isLoading, error } = useQuery<User | null>({
     queryKey: ["/api/user"],
     queryFn: async () => {
-      // If we have recent cached result, use it
-      if (authResult && (Date.now() - authResult.timestamp) < 5 * 60 * 1000) {
-        return authResult.user;
-      }
-
-      // Only make one request if none in progress
-      if (authCheckInProgress) {
-        return authResult?.user || null;
-      }
-
-      authCheckInProgress = true;
-
       try {
         const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
         const response = await fetch(`${baseUrl}/api/user`, {
           credentials: "include",
-          // Add timeout for slow backend responses
-          signal: AbortSignal.timeout(30000), // 30 second timeout
+          signal: AbortSignal.timeout(30000),
         });
 
-        let result = null;
         if (response.ok) {
-          result = await response.json();
+          return await response.json();
         }
 
-        authResult = {
-          user: result,
-          timestamp: Date.now(),
-        };
-
-        return result;
-      } catch (error) {
         return null;
-      } finally {
-        authCheckInProgress = false;
+      } catch {
+        return null;
       }
     },
-    enabled: !authResult || (Date.now() - authResult.timestamp) > 5 * 60 * 1000,
     retry: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,
-    refetchOnMount: false,
-    refetchIntervalInBackground: false,
   });
 
   return {
-    user: user ?? authResult?.user ?? null,
-    isLoading: isLoading && !authResult,
-    isAuthenticated: !!(user ?? authResult?.user),
+    user: user ?? null,
+    isLoading,
+    isAuthenticated: !!user,
     error,
   };
+}
+
+/**
+ * Clear auth cache and force a refetch. Call this after login/logout
+ * so the auth state updates immediately.
+ */
+export function clearAuthCache(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.removeQueries({ queryKey: ["/api/user"] });
+  queryClient.invalidateQueries({ queryKey: ["/api/user"] });
 }
