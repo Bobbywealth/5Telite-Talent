@@ -153,8 +153,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
         .where(eq(users.id, user.id));
 
-      // Send reset email
-      await enhancedEmailService.sendPasswordResetEmail(user, resetToken);
+      // Send reset email — if it fails, clear the token so the user can retry
+      try {
+        await enhancedEmailService.sendPasswordResetEmail(user, resetToken);
+      } catch (emailError) {
+        console.error("Failed to send password reset email:", emailError);
+        // Roll back the token so the user can request a new one
+        await db.update(users)
+          .set({ resetPasswordToken: null, resetPasswordExpires: null })
+          .where(eq(users.id, user.id));
+        return res.status(500).json({ message: "Failed to send reset email. Please try again later." });
+      }
 
       res.json({ message: "If an account exists with this email, a password reset link has been sent." });
     } catch (error) {
