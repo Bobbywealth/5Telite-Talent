@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import ClientNavbar from "@/components/layout/client-navbar";
+import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -144,20 +145,26 @@ export default function BookRequest() {
   
   // Restore form data after login if it exists
   useEffect(() => {
-    const savedData = localStorage.getItem('booking_form_data');
-    if (savedData && isAuthenticated) {
-      try {
+    try {
+      const savedData = localStorage.getItem('booking_form_data');
+      if (savedData && isAuthenticated) {
         const parsedData = JSON.parse(savedData);
         setFormData(prev => ({ ...prev, ...parsedData }));
         localStorage.removeItem('booking_form_data');
-      } catch (error) {
-        console.error('Error parsing saved form data:', error);
       }
+    } catch {
+      // Ignore localStorage errors
     }
   }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="Book Talent - 5T Elite Talent Platform"
+        description="Submit a booking request for professional talent. Tell us about your project and we'll connect you with the perfect match."
+        keywords="book talent, talent booking, hire talent, casting request, booking request"
+        url="/book"
+      />
       <Navbar />
 
       {/* Selected Talent Banner */}
