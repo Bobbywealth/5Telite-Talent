@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -12,11 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Menu, X } from "lucide-react";
 import logoImage from "@assets/5t-logo.png";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
   const [location, setLocation] = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -53,14 +56,21 @@ export default function Navbar() {
   const getDashboardLink = () => {
     if (user?.role === 'admin') return '/admin';
     if (user?.role === 'talent') return '/talent/dashboard';
+    if (user?.role === 'client') return '/client';
     return '/';
   };
+
+  const navLinks = [
+    { href: "/", label: "Home" },
+    { href: "/talent", label: "Find Talent" },
+    { href: "/announcements", label: "Announcements" },
+    { href: "/book", label: "Book Now" },
+  ];
 
   return (
     <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
-          {/* Left: Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center" data-testid="link-logo">
               <img 
@@ -71,63 +81,32 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Center: Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="/"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                location === "/" 
-                  ? "text-white bg-blue-600 shadow-md" 
-                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
-              }`}
-              data-testid="link-home"
-            >
-              Home
-            </Link>
-            <Link 
-              href="/talent"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive("/talent") 
-                  ? "text-white bg-blue-600 shadow-md" 
-                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
-              }`}
-              data-testid="link-find-talent"
-            >
-              Find Talent
-            </Link>
-            <Link 
-              href="/announcements"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive("/announcements") 
-                  ? "text-white bg-blue-600 shadow-md" 
-                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
-              }`}
-              data-testid="link-announcements"
-            >
-              Announcements
-            </Link>
-            <Link 
-              href="/book"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive("/book") 
-                  ? "text-white bg-blue-600 shadow-md" 
-                  : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
-              }`}
-              data-testid="link-book"
-            >
-              Book Now
-            </Link>
+            {navLinks.map((link) => (
+              <Link 
+                key={link.href}
+                href={link.href}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive(link.href) 
+                    ? "text-white bg-blue-600 shadow-md" 
+                    : "text-slate-800 hover:text-blue-600 hover:bg-blue-50 font-semibold"
+                }`}
+                data-testid={`link-${link.label.toLowerCase().replace(/\s/g, '-')}`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Right: User Actions */}
           <div className="flex items-center space-x-3">
             {!isAuthenticated ? (
               <Button 
                 onClick={() => window.location.href = "/auth"}
                 variant="outline"
                 data-testid="button-sign-in"
+                className="hidden sm:inline-flex"
               >
-                <i className="fas fa-user mr-2"></i>Sign In
+                Sign In
               </Button>
             ) : (
               <DropdownMenu>
@@ -154,14 +133,12 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href={getDashboardLink()}>
-                      <i className="fas fa-tachometer-alt mr-2 w-4"></i>
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                   {user?.role === 'talent' && (
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/profile">
-                        <i className="fas fa-user-edit mr-2 w-4"></i>
+                      <Link href="/talent/profile">
                         Edit Profile
                       </Link>
                     </DropdownMenuItem>
@@ -172,15 +149,52 @@ export default function Navbar() {
                     data-testid="button-logout"
                     disabled={logoutMutation.isPending}
                   >
-                    <i className="fas fa-sign-out-alt mr-2 w-4"></i>
                     {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-200 bg-white shadow-lg">
+          <div className="px-4 py-3 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors ${
+                  isActive(link.href)
+                    ? "text-white bg-blue-600"
+                    : "text-slate-700 hover:text-blue-600 hover:bg-blue-50"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            {!isAuthenticated && (
+              <Link
+                href="/auth"
+                className="block px-4 py-3 text-base font-medium rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
