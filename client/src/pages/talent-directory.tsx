@@ -11,6 +11,7 @@ import TalentCard from "@/components/talent-card";
 import SearchFilters from "@/components/search-filters";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SEO } from "@/components/SEO";
 
 export default function TalentDirectory() {
   const { isAuthenticated, user } = useAuth();
@@ -62,6 +63,12 @@ export default function TalentDirectory() {
   // Content component to avoid duplication
   const TalentDirectoryContent = () => (
     <div className="space-y-8">
+      <SEO 
+        title="Browse Talent - 5T Elite Talent Platform"
+        description="Explore our curated roster of professional talent across performance, modeling, hosting, and more. Find the perfect talent for your project."
+        keywords="talent directory, browse talent, models, actors, performers, professional talent"
+        url="/talent"
+      />
       {/* Hero Section */}
       <section className="relative bg-gradient-hero-enhanced overflow-hidden py-20">
         <div className="absolute inset-0">
