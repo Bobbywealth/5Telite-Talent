@@ -9,7 +9,7 @@ export function useAuth() {
         const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
         const response = await fetch(`${baseUrl}/api/user`, {
           credentials: "include",
-          signal: AbortSignal.timeout(30000),
+          signal: AbortSignal.timeout(8000), // 8s timeout to prevent infinite loading
         });
 
         if (response.ok) {
@@ -22,8 +22,8 @@ export function useAuth() {
       }
     },
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,

@@ -21,13 +21,17 @@ const TimezoneContext = createContext<TimezoneContextType | undefined>(undefined
 
 export function TimezoneProvider({ children }: { children: React.ReactNode }) {
   const [timezone, setTimezone] = useState<Timezone>(() => {
-    const saved = localStorage.getItem("timezone");
-    return (saved as Timezone) || "America/New_York";
+    try {
+      const saved = localStorage.getItem("timezone");
+      return (saved as Timezone) || "America/New_York";
+    } catch {
+      return "America/New_York";
+    }
   });
 
   const handleSetTimezone = (newTimezone: Timezone) => {
     setTimezone(newTimezone);
-    localStorage.setItem("timezone", newTimezone);
+    try { localStorage.setItem("timezone", newTimezone); } catch {}
   };
 
   const formatDate = (date: string | Date): string => {
