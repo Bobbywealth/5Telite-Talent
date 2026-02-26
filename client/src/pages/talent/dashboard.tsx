@@ -103,18 +103,14 @@ export default function TalentDashboard() {
   const { data: talentProfile, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ["/api/talents", user?.id],
     queryFn: async () => {
-      console.log("Fetching talent profile for user:", user?.id);
       const response = await fetch(`/api/talents/${user?.id}`, {
         credentials: "include",
       });
-      console.log("Profile fetch response:", response.status, response.statusText);
       if (!response.ok) {
         const errorText = await response.text();
-        console.log("Profile fetch error:", errorText);
         throw new Error(`Failed to fetch profile: ${response.status} ${errorText}`);
       }
       const profileData = await response.json();
-      console.log("Fetched talent profile:", profileData);
       return profileData;
     },
     enabled: !!(isAuthenticated && user?.role === 'talent' && user?.id),
@@ -122,7 +118,6 @@ export default function TalentDashboard() {
   });
 
   // Log profile fetch status
-  console.log("Profile loading:", profileLoading, "Profile error:", profileError, "Profile data:", talentProfile);
 
   if (isLoading) {
     return (
@@ -160,9 +155,7 @@ export default function TalentDashboard() {
   };
 
   const calculateProfileCompletion = (profile: any) => {
-    console.log("Profile data for completion calculation:", profile);
     if (!profile) {
-      console.log("No profile data found - Bobby needs to create his profile");
       return { 
         percentage: 0, 
         completed: [], 
