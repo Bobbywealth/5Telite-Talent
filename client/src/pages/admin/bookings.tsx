@@ -153,7 +153,6 @@ export default function AdminBookings() {
         status: "inquiry",
       };
       
-      console.log("Final booking data being sent:", bookingData);
 
       return apiRequest("POST", "/api/bookings", bookingData);
     },
@@ -244,10 +243,8 @@ export default function AdminBookings() {
         );
       }
 
-      console.log("Filtered talents:", filtered.length, "out of", talentsData.talents.length);
       setFilteredTalents(filtered);
     } else {
-      console.log("No talents data available");
       setFilteredTalents([]);
     }
   }, [talentsData, talentSearch, talentCategoryFilter]);
@@ -350,8 +347,6 @@ export default function AdminBookings() {
 
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit((data) => {
-                      console.log("Form data being submitted:", data);
-                      console.log("Form errors:", form.formState.errors);
                       createBookingRequestMutation.mutate(data);
                     })} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -547,7 +542,6 @@ export default function AdminBookings() {
                             : 'border-slate-200 hover:border-slate-300'
                         }`}
                         onClick={() => {
-                          console.log("Talent clicked:", talent.user.firstName, talent.user.lastName);
                           if (selectedTalents.includes(talent.userId)) {
                             setSelectedTalents(selectedTalents.filter(id => id !== talent.userId));
                           } else {
