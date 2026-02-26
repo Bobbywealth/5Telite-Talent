@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 export default function Support() {
   const { user } = useAuth();
@@ -42,6 +43,12 @@ export default function Support() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="Support & Contact - 5T Elite Talent Platform"
+        description="Get help and contact the 5T Elite Talent Platform team. We're here to assist with booking inquiries, technical support, and more."
+        keywords="support, contact, help, customer service, talent booking support"
+        url="/support"
+      />
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
