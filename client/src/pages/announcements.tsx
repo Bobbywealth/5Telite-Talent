@@ -6,6 +6,7 @@ import AdminNavbar from "@/components/layout/admin-navbar";
 import TalentNavbar from "@/components/layout/talent-navbar";
 import ClientNavbar from "@/components/layout/client-navbar";
 import Footer from "@/components/layout/footer";
+import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,67 +45,15 @@ export default function Announcements() {
       if (filters.category && filters.category !== "all") params.set("category", filters.category);
       if (filters.search) params.set("search", filters.search);
 
-      try {
-        const response = await fetch(`/api/announcements?${params}`);
-        
-        // Check if response is JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          // API endpoint doesn't exist yet, use mock data
-          return getMockAnnouncements();
-        }
-        
-        if (!response.ok) {
-          // If endpoint doesn't exist yet, return mock data for now
-          if (response.status === 404) {
-            return getMockAnnouncements();
-          }
-          throw new Error("Failed to fetch announcements");
-        }
-        
-        return response.json();
-      } catch (fetchError) {
-        // Network error or parsing error, fallback to mock data
-        console.log("Using mock data due to API error:", fetchError);
-        return getMockAnnouncements();
+      const response = await fetch(`/api/announcements?${params}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch announcements");
       }
+      return response.json();
     },
-    retry: false, // Don't retry since we're using fallback data
+    retry: 1
   });
 
-  // Mock data for now until backend endpoint is created
-  const getMockAnnouncements = () => ({
-    announcements: [
-      {
-        id: 1,
-        title: "Netflix Series - Principal Cast Open Call",
-        category: "open-call",
-        description: "Major streaming series seeking lead and supporting actors for new drama series filming in Atlanta. Professional production with established showrunners and A-list producers.",
-        location: "Atlanta, GA",
-        date: "2025-09-15",
-        deadline: "2025-09-05",
-        requirements: ["Ages 25-45", "Strong dramatic acting experience", "Available for 6-month shoot", "Union preferred but not required"],
-        compensation: "$15,000-$35,000/episode",
-        contact: "casting@5tagency.com",
-        featured: true,
-        createdAt: "2025-08-20T10:00:00Z"
-      },
-      {
-        id: 2,
-        title: "Industry Networking Gala - Meet the Makers",
-        category: "event",
-        description: "Exclusive evening connecting top talent with casting directors, agents, and production companies. Premium networking opportunity with panel discussions and portfolio reviews.",
-        location: "Beverly Hills, CA",
-        date: "2025-10-12",
-        deadline: null,
-        requirements: ["Professional performers only", "Portfolio/reel required", "Formal attire", "RSVP by October 1st"],
-        compensation: null,
-        contact: "events@5tagency.com",
-        featured: false,
-        createdAt: "2025-08-25T15:30:00Z"
-      }
-    ]
-  });
 
   const announcements: Announcement[] = announcementsData?.announcements || [];
   const filteredAnnouncements = announcements.filter((announcement: Announcement) => {
@@ -151,6 +100,12 @@ export default function Announcements() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="Announcements & Open Calls - 5T Elite Talent Platform"
+        description="Browse current announcements and open casting calls. Stay updated with the latest opportunities in the entertainment industry."
+        keywords="casting calls, open calls, announcements, auditions, talent opportunities"
+        url="/announcements"
+      />
       <NavigationComponent />
 
       {/* Hero Section */}
@@ -295,7 +250,7 @@ export default function Announcements() {
                       <ul className="text-sm text-slate-600 space-y-1">
                         {announcement.requirements.slice(0, 2).map((req: string, index: number) => (
                           <li key={index} className="flex items-start">
-                            <span className="text-primary mr-2">•</span>
+                            <span className="text-primary mr-2">&bull;</span>
                             {req}
                           </li>
                         ))}
