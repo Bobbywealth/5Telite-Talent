@@ -100,7 +100,6 @@ export default function TalentProfileEdit() {
       // Try to fetch talent profile
       try {
         const talentProfileResponse = await apiRequest("GET", `/api/talents/${userData.id}`);
-        console.log("Fresh profile data loaded:", talentProfileResponse);
         return { ...userData, talentProfile: talentProfileResponse.talentProfile };
       } catch (error) {
         console.error("Error fetching talent profile:", error);
@@ -116,10 +115,8 @@ export default function TalentProfileEdit() {
 
   // Populate form with existing data when profile loads
   useEffect(() => {
-    console.log("Profile data changed:", profileData);
     if (profileData?.talentProfile) {
       const profile = profileData.talentProfile;
-      console.log("Updating form with profile data:", profile);
       setFormData({
         stageName: profile.stageName || "",
         categories: profile.categories || [],
