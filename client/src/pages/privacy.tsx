@@ -1,9 +1,16 @@
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { SEO } from "@/components/SEO";
 
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="Privacy Policy - 5T Elite Talent Platform"
+        description="Read the privacy policy for 5T Elite Talent Platform. Learn how we collect, use, and protect your personal information."
+        keywords="privacy policy, data protection, personal information"
+        url="/privacy"
+      />
       <Navbar />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -62,4 +69,3 @@ export default function Privacy() {
     </div>
   );
 }
-

@@ -1,9 +1,16 @@
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { SEO } from "@/components/SEO";
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-slate-50">
+      <SEO 
+        title="Terms of Service - 5T Elite Talent Platform"
+        description="Read the terms of service for 5T Elite Talent Platform. Understand the rules and guidelines for using our talent booking platform."
+        keywords="terms of service, terms and conditions, legal"
+        url="/terms"
+      />
       <Navbar />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -55,4 +62,3 @@ export default function Terms() {
     </div>
   );
 }
-
