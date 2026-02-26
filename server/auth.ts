@@ -45,7 +45,6 @@ async function comparePasswords(supplied: string, stored: string): Promise<boole
 }
 
 export function setupAuth(app: Express) {
-  // Validate SESSION_SECRET in production
   if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
     throw new Error(
       'SESSION_SECRET environment variable is required in production. ' +
@@ -53,7 +52,6 @@ export function setupAuth(app: Express) {
     );
   }
 
-  // Session configuration
   const PostgresSessionStore = connectPg(session);
 
   const sessionSettings: session.SessionOptions = {
@@ -66,10 +64,10 @@ export function setupAuth(app: Express) {
       tableName: 'sessions',
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // Use lax for same-origin
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
     },
   };
 
@@ -78,7 +76,6 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Passport Local Strategy
   passport.use(
     new LocalStrategy(
       {
@@ -97,7 +94,6 @@ export function setupAuth(app: Express) {
             return done(null, false, { message: "Invalid email or password" });
           }
 
-          // Check if user is approved
           if (user.status === "pending") {
             return done(null, false, { message: "Your account is pending admin approval. Please wait for approval before logging in." });
           }
@@ -106,7 +102,6 @@ export function setupAuth(app: Express) {
             return done(null, false, { message: "Your account has been suspended. Please contact support." });
           }
 
-          // Remove password and reset token from user object
           const { password: _, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
           return done(null, userWithoutPassword);
         } catch (error) {
@@ -132,18 +127,16 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Register endpoint
   app.post("/api/register", async (req, res, next) => {
     try {
-      const { email, password, firstName, lastName, role = "talent" } = req.body;
+      const { email, password, firstName, lastName, role: requestedRole = "talent" } = req.body;
+      const role = requestedRole === "admin" ? "talent" : requestedRole;
 
-      // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({ message: "User already exists with this email" });
       }
 
-      // Hash password and create user
       const hashedPassword = await hashPassword(password);
       const user = await storage.createUser({
         email,
@@ -155,12 +148,9 @@ export function setupAuth(app: Express) {
 
       console.log("DEBUG: Created user with status:", user.status, "for email:", email);
 
-      // Remove password and reset token from response
       const { password: _, resetPasswordToken: __, resetPasswordExpires: ___, ...userWithoutPassword } = user;
 
-      // Check if user needs admin approval
       if (user.status === "pending") {
-        // Send confirmation email but don't log in
         try {
           if (role === "talent") {
             await enhancedEmailService.sendTalentWelcomeEmail({ ...userWithoutPassword, password: '' } as any);
@@ -176,17 +166,14 @@ export function setupAuth(app: Express) {
         });
       }
 
-      // 📧 Send welcome email for approved users
       if (role === "talent") {
         try {
           await enhancedEmailService.sendTalentWelcomeEmail({ ...userWithoutPassword, password: '' } as any);
         } catch (emailError) {
           console.error("Failed to send welcome email to new talent:", emailError);
-          // Don't fail the request if email fails
         }
       }
 
-      // Log user in only if approved
       req.login(userWithoutPassword as any, (err) => {
         if (err) return next(err);
         res.status(201).json(userWithoutPassword);
@@ -197,7 +184,6 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Login endpoint
   app.post("/api/login", (req, res, next) => {
     passport.authenticate("local", async (err: any, user: any, info: any) => {
       if (err) {
@@ -212,14 +198,12 @@ export function setupAuth(app: Express) {
           return res.status(500).json({ message: "Login failed" });
         }
 
-        // Record login activity
         try {
           const ipAddress = req.ip || req.connection.remoteAddress;
           const userAgent = req.get('User-Agent');
           await storage.recordLoginActivity(user.id, user.role, ipAddress, userAgent);
         } catch (activityError) {
           console.error("Failed to record login activity:", activityError);
-          // Don't fail the login if activity recording fails
         }
 
         res.status(200).json(user);
@@ -227,11 +211,9 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  // Logout endpoint
   app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
-      // Destroy the session to ensure complete logout
       req.session.destroy((err) => {
         if (err) return next(err);
         res.clearCookie('connect.sid');
@@ -240,15 +222,12 @@ export function setupAuth(app: Express) {
     });
   });
 
-  // Handle direct GET navigation to logout
   app.get("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
-      // Destroy the session to ensure complete logout
       req.session.destroy((err) => {
         if (err) return next(err);
         res.clearCookie('connect.sid');
-        // Send HTML with JavaScript redirect to ensure client-side routing works
         res.send(`
           <html>
             <head>
@@ -264,7 +243,6 @@ export function setupAuth(app: Express) {
     });
   });
 
-  // Get current user endpoint
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -273,7 +251,6 @@ export function setupAuth(app: Express) {
   });
 }
 
-// Middleware to check if user is authenticated
 export function isAuthenticated(req: any, res: any, next: any) {
   if (req.isAuthenticated()) {
     return next();

@@ -1,43 +1,39 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
-// CORS configuration - allow frontend to connect to backend
 const allowedOrigins = [
-  'http://localhost:5173', // Vite dev server
-  'http://localhost:3000', // Alternative dev port
-  'http://localhost:5000', // Local production test
-  'https://5telite.netlify.app', // Production Netlify domain
-  'https://fivetelite-talent.onrender.com', // Render deployment
-  'https://5telite.org', // Production domain
-  'https://www.5telite.org', // Production domain with www
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://5telite.netlify.app',
+  'https://fivetelite-talent.onrender.com',
+  'https://5telite.org',
+  'https://www.5telite.org',
 ];
 
-// Add environment-specific frontend URL if set
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
 
-    // Check if origin is in allowed list or is a Netlify/Render preview
     if (allowedOrigins.includes(origin) || 
         origin.endsWith('.netlify.app') || 
         origin.endsWith('.onrender.com')) {
       callback(null, true);
     } else {
-      // Log rejected origins for debugging
       console.warn(`CORS rejected origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // Allow cookies/sessions
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 };
@@ -45,6 +41,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { message: "Too many attempts. Please try again in 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api/login", authLimiter);
+app.use("/api/register", authLimiter);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -66,7 +72,7 @@ app.use((req, res, next) => {
       }
 
       if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
+        logLine = logLine.slice(0, 79) + "\u2026";
       }
 
       log(logLine);
@@ -76,7 +82,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
@@ -92,19 +97,12 @@ app.get("/api/health", (_req, res) => {
     res.status(status).json({ message });
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
