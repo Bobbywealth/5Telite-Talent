@@ -154,13 +154,12 @@ export default function Landing() {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 relative z-[150]">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 relative z-10">
               <Button 
                 size="lg" 
-                className="w-full sm:w-auto bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold z-[999999] !important" 
+                className="w-full sm:w-auto bg-white text-primary hover:bg-slate-50 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl px-8 py-4 text-lg font-semibold" 
                 data-testid="button-browse-talent" 
                 onClick={() => {
-                  console.log("BUTTON CLICKED!!!"); 
                   window.location.href = "/talent";
                 }}
               >
@@ -198,8 +197,10 @@ export default function Landing() {
                 <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Verified Talent</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">200+</div>
-                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Completed Projects</div>
+                <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">
+                  {talentsData?.total ? `${talentsData.total}+` : "\u2014"}
+                </div>
+                <div className="text-sm-plus text-slate-200 uppercase tracking-wider font-medium">Registered Talent</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl lg:text-5xl font-bold mb-2 tracking-tight">24hr</div>
@@ -234,11 +235,11 @@ export default function Landing() {
             <div className="grid lg:grid-cols-4 gap-6 mb-12">
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6 text-center">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-full p-4 w-16 h-16 mx-auto mb-5 group-hover:scale-110 transition-transform duration-300">
-                    <i className="fas fa-graduation-cap text-white icon-2xl"></i>
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-full p-4 w-16 h-16 mx-auto mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <i className="fas fa-graduation-cap text-white text-xl"></i>
                   </div>
-                  <h3 className="card-title text-slate-900 mb-3">Educational Programming</h3>
-                  <p className="card-body leading-relaxed">
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Educational Programming</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     School assemblies, afterschool programs, and educational content that enriches school communities.
                   </p>
                 </CardContent>
@@ -246,7 +247,7 @@ export default function Landing() {
 
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6 text-center">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-full p-4 w-16 h-16 mx-auto mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <i className="fas fa-building text-white text-xl"></i>
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-3">Corporate Talent</h3>
@@ -258,7 +259,7 @@ export default function Landing() {
 
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6 text-center">
-                  <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full p-4 w-16 h-16 mx-auto mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <i className="fas fa-tv text-white text-xl"></i>
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-3">Media & Entertainment</h3>
@@ -270,7 +271,7 @@ export default function Landing() {
 
               <Card className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6 text-center">
-                  <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-full p-3 w-14 h-14 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-orange-500 to-orange-700 rounded-full p-4 w-16 h-16 mx-auto mb-5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <i className="fas fa-briefcase text-white text-xl"></i>
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-3">Employment Services</h3>
@@ -288,41 +289,41 @@ export default function Landing() {
                 <div className="space-y-2">
                   <h4 className="font-semibold text-slate-800">Performers</h4>
                   <ul className="text-sm text-slate-600 space-y-1">
-                    <li>• Dancers</li>
-                    <li>• Actors</li>
-                    <li>• Singers</li>
-                    <li>• Musicians</li>
-                    <li>• Comedians</li>
+                    <li>&bull; Dancers</li>
+                    <li>&bull; Actors</li>
+                    <li>&bull; Singers</li>
+                    <li>&bull; Musicians</li>
+                    <li>&bull; Comedians</li>
                   </ul>
                 </div>
                 <div className="space-y-2">
                   <h4 className="font-semibold text-slate-800">Models</h4>
                   <ul className="text-sm text-slate-600 space-y-1">
-                    <li>• Runway Models</li>
-                    <li>• Video & Print Models</li>
-                    <li>• All Races & Ethnicities</li>
-                    <li>• Children</li>
-                    <li>• Seniors</li>
+                    <li>&bull; Runway Models</li>
+                    <li>&bull; Video & Print Models</li>
+                    <li>&bull; All Races & Ethnicities</li>
+                    <li>&bull; Children</li>
+                    <li>&bull; Seniors</li>
                   </ul>
                 </div>
                 <div className="space-y-2">
                   <h4 className="font-semibold text-slate-800">Creative Professionals</h4>
                   <ul className="text-sm text-slate-600 space-y-1">
-                    <li>• Writers</li>
-                    <li>• Poets</li>
-                    <li>• Visual Artists</li>
-                    <li>• Graphic Designers</li>
-                    <li>• Animators</li>
+                    <li>&bull; Writers</li>
+                    <li>&bull; Poets</li>
+                    <li>&bull; Visual Artists</li>
+                    <li>&bull; Graphic Designers</li>
+                    <li>&bull; Animators</li>
                   </ul>
                 </div>
                 <div className="space-y-2">
                   <h4 className="font-semibold text-slate-800">Specialists</h4>
                   <ul className="text-sm text-slate-600 space-y-1">
-                    <li>• Motivational Speakers</li>
-                    <li>• Lecturers</li>
-                    <li>• Broadcasters</li>
-                    <li>• Stunt Performers</li>
-                    <li>• Performers with Disabilities</li>
+                    <li>&bull; Motivational Speakers</li>
+                    <li>&bull; Lecturers</li>
+                    <li>&bull; Broadcasters</li>
+                    <li>&bull; Stunt Performers</li>
+                    <li>&bull; Performers with Disabilities</li>
                   </ul>
                 </div>
               </div>
@@ -376,7 +377,7 @@ export default function Landing() {
           <div className="text-center">
             <Button 
               data-testid="button-load-more-talent" 
-              className="relative z-[999999]"
+              className="relative z-10"
               onClick={() => window.location.href = "/talent"}
             >
               Load More Talent
@@ -401,9 +402,9 @@ export default function Landing() {
             </p>
           </div>
 
-          <Card className="max-w-2xl mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl relative z-[999999]">
+          <Card className="max-w-2xl mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl relative z-10">
             <CardContent className="p-8">
-              <form onSubmit={handleBookingSubmit} className="space-y-6 relative z-[999999]">
+              <form onSubmit={handleBookingSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="title">Project Title</Label>
@@ -431,6 +432,12 @@ export default function Landing() {
                         <SelectItem value="Fashion">Fashion</SelectItem>
                         <SelectItem value="Editorial">Editorial</SelectItem>
                         <SelectItem value="Event">Event</SelectItem>
+                        <SelectItem value="Corporate">Corporate</SelectItem>
+                        <SelectItem value="Film/TV">Film/TV</SelectItem>
+                        <SelectItem value="Music Video">Music Video</SelectItem>
+                        <SelectItem value="Photography">Photography</SelectItem>
+                        <SelectItem value="Educational">Educational</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
