@@ -24,22 +24,16 @@ import Announcements from "@/pages/announcements";
 import NotFound from "@/pages/not-found";
 
 // Admin Pages
-import AdminDashboard from "@/pages/admin/dashboard";
-import AdminDashboardTest from "@/pages/admin/dashboard-test";
 import AdminDashboardSimple from "@/pages/admin/dashboard-simple";
 import AdminTalents from "@/pages/admin/talents";
 import AdminBookings from "@/pages/admin/bookings";
 import AdminBookingRequests from "@/pages/admin/booking-requests";
 import AdminTasks from "@/pages/admin/tasks";
-import AdminTasksTest from "@/pages/admin/tasks-test";
 import AdminAnnouncements from "@/pages/admin/announcements";
 import AdminTraining from "@/pages/admin/training";
 import AdminReports from "@/pages/admin/reports";
 import AdminApprovals from "@/pages/admin/approvals";
 import AdminSettings from "@/pages/admin/settings";
-import RemoveBobby from "@/pages/admin/remove-bobby";
-import DatabaseFix from "@/pages/admin/database-fix";
-import AgeVerificationSetup from "@/pages/admin/age-verification-setup";
 import Support from "@/pages/support";
 
 // Talent Pages
@@ -63,18 +57,6 @@ import Privacy from "@/pages/privacy";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Show simple loading only briefly
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-sm text-gray-500">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Switch>
       {!isAuthenticated ? (
@@ -91,12 +73,11 @@ function Router() {
           <Route path="/contracts" component={Contracts} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/support" component={Support} />
         </>
       ) : (
         <>
           <Route path="/" component={Home} />
-          
-          {/* Talent-specific routes (must come before /talent/:id) */}
           {user?.role === 'talent' && (
             <>
               <Route path="/talent/dashboard" component={TalentDashboard} />
@@ -107,8 +88,6 @@ function Router() {
               <Route path="/talent/settings" component={Settings} />
             </>
           )}
-
-          {/* Admin routes */}
           {user?.role === 'admin' && (
             <>
               <Route path="/admin" component={AdminDashboardSimple} />
@@ -123,14 +102,8 @@ function Router() {
               <Route path="/admin/training" component={AdminTraining} />
               <Route path="/admin/reports" component={AdminReports} />
               <Route path="/admin/approvals" component={AdminApprovals} />
-              <Route path="/admin/remove-bobby" component={RemoveBobby} />
-              <Route path="/admin/database-fix" component={DatabaseFix} />
-              <Route path="/admin/age-verification-setup" component={AgeVerificationSetup} />
             </>
           )}
-          
-
-          {/* Public routes */}
           <Route path="/talent" component={TalentDirectory} />
           <Route path="/talent/:id" component={TalentProfile} />
           <Route path="/announcements" component={Announcements} />
@@ -139,16 +112,12 @@ function Router() {
           <Route path="/support" component={Support} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
-
-          {/* Client routes */}
           {user?.role === 'client' && (
             <>
               <Route path="/client" component={ClientDashboard} />
               <Route path="/client/bookings" component={ClientBookings} />
             </>
           )}
-
-          {/* Dashboard redirect route - redirect to role-specific dashboard */}
           <Route path="/dashboard" component={() => {
             const redirectPaths: Record<string, string> = {
               admin: '/admin',
@@ -159,8 +128,6 @@ function Router() {
             window.location.replace(redirectPath);
             return null;
           }} />
-
-          {/* Shared routes for all authenticated users */}
           <Route path="/profile" component={Profile} />
           <Route path="/settings" component={Settings} />
           <Route path="/contracts" component={Contracts} />
