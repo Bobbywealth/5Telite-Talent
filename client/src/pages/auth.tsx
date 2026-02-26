@@ -30,7 +30,7 @@ const registerSchema = z.object({
   ),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  role: z.enum(["admin", "talent", "client"]).default("talent"),
+  role: z.enum(["talent", "client"]).default("talent"),
   isOver18: z.boolean(),
   guardianPhone: z.string().optional(),
   acceptTerms: z.boolean().refine(val => val === true, "You must accept the terms and conditions"),
@@ -783,9 +783,9 @@ export default function AuthPage() {
                           <span className="text-sm font-medium text-blue-900">What happens next?</span>
                         </div>
                         <div className="text-xs text-blue-700 space-y-1">
-                          <p>• We'll send a verification email to confirm your account</p>
-                          <p>• Complete your profile to get the most out of the platform</p>
-                          <p>• Start connecting with the talent community right away!</p>
+                          <p>&bull; We'll send a verification email to confirm your account</p>
+                          <p>&bull; Complete your profile to get the most out of the platform</p>
+                          <p>&bull; Start connecting with the talent community right away!</p>
                         </div>
                       </div>
 
